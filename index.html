@@ -189,6 +189,56 @@
   .sa-modal .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 22px 16px;border-top:1px solid #f0ece2;font-size:12px;color:var(--muted);}
   .sa-modal .foot .done{background:#fff;border:1px solid #d8d2c0;border-radius:6px;padding:8px 20px;font-weight:600;cursor:pointer;}
 
+  /* ---------- REVIEW POP-UP (sheet upload) ---------- */
+  .rv-bg{position:fixed;inset:0;background:rgba(15,36,23,.55);z-index:90;display:flex;align-items:center;justify-content:center;padding:18px;}
+  .rv-bg[hidden]{display:none;}
+  .rv{background:var(--cream);border-radius:12px;width:1180px;max-width:100%;height:92vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.35);font-family:'Inter',sans-serif;}
+  .rv-head{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 20px;border-bottom:1px solid #e4ded0;background:#fff;border-radius:12px 12px 0 0;flex-wrap:wrap;}
+  .rv-head h3{margin:0;font-family:'Playfair Display',serif;color:var(--forest);font-size:20px;}
+  .rv-file{font-size:12px;color:var(--muted);margin-top:2px;}
+  .rv-chips{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .rv-chip{font-size:12px;font-weight:700;border-radius:20px;padding:5px 11px;}
+  .rv-chip:empty{display:none;}
+  .c-all{background:#e8f0ea;color:var(--forest);} .c-bad{background:#fbe9e8;color:var(--danger);} .c-warn{background:#fff3dc;color:#8a5a00;} .c-ok{background:#e6f4ea;color:#2E7D32;}
+  .rv-selall{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:var(--forest);background:#fff;border:1px solid #d8d2c0;border-radius:8px;padding:7px 12px;cursor:pointer;}
+  .rv-selall span{font-weight:500;color:var(--muted);}
+  .rv-selall input,.rv-pick{width:18px;height:18px;accent-color:var(--forest);margin:0;cursor:pointer;}
+  .rv-body{flex:1;overflow:auto;padding:14px 20px;display:flex;flex-direction:column;gap:12px;}
+  .rv-card{background:#fff;border:1px solid #e4ded0;border-radius:10px;padding:12px 14px;box-shadow:inset 4px 0 0 #2E7D32;}
+  .rv-card.bad{border-color:#e3a19c;box-shadow:inset 4px 0 0 var(--danger);}
+  .rv-card.warn{border-color:#f2d39b;box-shadow:inset 4px 0 0 #E0A43A;}
+  .rv-card.off{opacity:.5;}
+  .rv-ch{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .rv-num{background:var(--forest);color:#fff;font-weight:800;font-size:12px;border-radius:5px;padding:3px 8px;white-space:nowrap;}
+  .rv-title{font-weight:700;color:var(--forest);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .rv-row{font-size:11.5px;color:var(--muted);white-space:nowrap;}
+  .rv-sp{flex:1;}
+  .rv-msg{font-size:12px;font-weight:600;border-radius:6px;padding:6px 10px;margin-bottom:8px;}
+  .rv-msg:empty{display:none;}
+  .rv-msg.bad{background:#fbe9e8;color:var(--danger);} .rv-msg.warn{background:#fff3dc;color:#8a5a00;}
+  .rv-g{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px 10px;}
+  .rv-f label{display:block;font-size:10.5px;font-weight:600;color:#4b493f;margin-bottom:2px;}
+  .rv .rv-f input,.rv .rv-f select{width:100%;box-sizing:border-box;padding:6px 8px;border:1px solid #d8d2c0;border-radius:6px;font-size:12.5px;font-family:'Inter';background:#fff;color:var(--ink);}
+  .rv .rv-f.err input{border-color:var(--danger);background:#fdf3f2;}
+  .rv .rv-f.err label{color:var(--danger);}
+  .rv .rv-f.w input{border-color:#E0A43A;background:#fffaf0;}
+  .rv-g .s2{grid-column:span 2;} .rv-g .s3{grid-column:span 3;}
+  .rv-ph,.rv-cour{display:flex;gap:4px;}
+  .rv .rv-ph input[data-k="cc"]{flex:0 0 84px;width:84px;}
+  .rv .rv-cour select{flex:0 0 68px;width:68px;padding-left:4px;padding-right:2px;}
+  .rv .rv-cour input{flex:1 1 auto;min-width:0;}
+  .rv-cour.sa input{display:none;}
+  .rv-cour.sa select{flex:1 1 auto;width:100%;font-weight:700;color:var(--forest);}
+  .rv .rv-f.awb input{text-align:center;font-weight:700;color:#2E7D32;background:#f2f9f3;}
+  .rv-cb{display:flex;align-items:center;gap:6px;font-size:11.5px;color:#4b493f;font-weight:600;margin-top:16px;cursor:pointer;}
+  .rv-cb input{width:15px;height:15px;accent-color:var(--forest);margin:0;}
+  .rv-foot{display:flex;align-items:center;gap:12px;padding:12px 20px;border-top:1px solid #e4ded0;background:#fff;border-radius:0 0 12px 12px;}
+  .rv-sum{flex:1;font-size:13px;color:#4b493f;} .rv-sum b{color:var(--forest);}
+  .rv-btn{border-radius:8px;padding:11px 20px;font-weight:700;font-size:14px;border:1px solid #d8d2c0;background:#fff;cursor:pointer;}
+  .rv-print{background:var(--forest);color:#fff;border:none;}
+  .rv-print:disabled{opacity:.45;cursor:not-allowed;}
+  @media (max-width: 900px){ .rv-g{grid-template-columns:repeat(2,minmax(0,1fr));} .rv-g .s3{grid-column:span 2;} }
+
   /* ---------- CITY CODE ---------- */
   .hub-row{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12px;}
   .hub-label{background:var(--forest);color:#fff;font-weight:600;border-radius:5px;padding:5px 9px;}
@@ -524,6 +574,27 @@
     <div class="foot"><span id="saModalNext"></span><button type="button" class="done" id="saModalDone">Done</button></div>
   </div>
 </div>
+
+<div class="rv-bg" id="rvModal" hidden>
+  <div class="rv" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
+    <div class="rv-head">
+      <div><h3 id="rvTitle">Review orders before printing</h3><div class="rv-file" id="rvFile"></div></div>
+      <div class="rv-chips">
+        <label class="rv-selall"><input type="checkbox" id="rvSelAll"> Select all <span id="rvSelCount"></span></label>
+        <span class="rv-chip c-all" id="rvChipSel"></span>
+        <span class="rv-chip c-bad" id="rvChipBad"></span>
+        <span class="rv-chip c-warn" id="rvChipWarn"></span>
+      </div>
+    </div>
+    <div class="rv-body" id="rvBody"></div>
+    <div class="rv-foot">
+      <div class="rv-sum" id="rvSum"></div>
+      <button type="button" class="rv-btn" id="rvCancel">Cancel</button>
+      <button type="button" class="rv-btn rv-print" id="rvPrint">Print</button>
+    </div>
+  </div>
+</div>
+<datalist id="rvCcList"></datalist>
 
 <div id="printArea"></div>
 
@@ -1230,34 +1301,38 @@ async function handleBulkFile(file){
     range.s.r = headerRow;
     const rows = XLSX.utils.sheet_to_json(sheet, { defval:'', raw:true, range });
 
-    const good = [], bad = [];
+    const all = [];
     rows.forEach((row, i)=>{
       const values = Object.values(row).map(cellText).filter(Boolean);
       if(!values.length) return; // skip blank rows
       const v = rowToLabelData(row);
-      const rowNo = (typeof row.__rowNum__ === 'number' ? row.__rowNum__ : i + 1) + 1; // actual sheet row number
-      const probs = rowProblems(v);
-      if(probs.length) bad.push(`Row ${rowNo}${v.orderid ? ' ('+esc(v.orderid)+')' : ''}: missing or invalid ${probs.join(', ')}`);
-      else good.push(v);
+      v._row = (typeof row.__rowNum__ === 'number' ? row.__rowNum__ : i + 1) + 1; // actual sheet row number
+      all.push(v);
     });
 
-    if(!good.length){
-      status.innerHTML = '<span class="bad">No valid orders found in this sheet.</span>' +
-        (bad.length ? '<ul>' + bad.map(b=>'<li>'+b+'</li>').join('') + '</ul>'
-                    : '<br>Check that the header row matches the template.');
+    if(!all.length){
+      status.innerHTML = '<span class="bad">No orders found in this sheet.</span><br>Check that the header row matches the template.';
       return;
     }
 
     // Fill City/State from the PIN code where the sheet left them blank
-    const needPins = [...new Set(good.filter(v=>!v.city || !v.state).map(v=>v.pincode))];
+    const needPins = [...new Set(all.filter(v=>(!v.city || !v.state) && /^\d{6}$/.test(v.pincode)).map(v=>v.pincode))];
     for(let i=0;i<needPins.length;i+=5){
       setBulkBusy(true, `Looking up PIN codes… (${Math.min(i+5,needPins.length)}/${needPins.length})`);
       await Promise.all(needPins.slice(i,i+5).map(fetchPinInfo));
     }
-    good.forEach(v=>{
+    all.forEach(v=>{
       const info = pinCache[v.pincode];
       if(info){ if(!v.city) v.city = info.city; if(!v.state) v.state = info.state; }
     });
+
+    // Review pop-up: edit anything, tick the orders to print
+    setBulkBusy(true, 'Reviewing…');
+    status.textContent = 'Review the orders in the pop-up, then click Print.';
+    const good = await openReview(all, file.name);
+    if(!good){ status.textContent = 'Cancelled. Nothing was printed.'; return; }
+    const bad = [];
+    setBulkBusy(true, 'Printing…');
 
     const stamp = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}).replace(/\s+/g,'-');
     const fileName = `BoxUp Labels ${stamp} (${good.length} orders).pdf`;
@@ -1441,6 +1516,213 @@ $('f_trkAll').addEventListener('change', ()=>{ updateTrkHint(); render(); });
 
 /* "AWB1, AWB2, AWB3" in one sheet cell -> one per box. A single value applies to all boxes. */
 function splitList(x){ return cellText(x).split(/[,;\n]+/).map(t=>t.trim()).filter(Boolean); }
+
+/* ================= REVIEW POP-UP FOR SHEET UPLOADS ================= */
+var rvOrders = [];        // [{ v, sel }]
+var rvResolve = null;
+
+(function fillCcList(){
+  $('rvCcList').innerHTML = COUNTRIES.map(([name,iso,dial])=>`<option value="${iso} +${dial}">${esc(name)}</option>`).join('');
+})();
+
+function ccLabel(dial){ const iso = isoForDial(dial || '91'); return `${iso} +${dial || '91'}`; }
+
+/* the order as it will be printed, built from what is in the card */
+function rvFinal(o){
+  const v = Object.assign({}, o.v);
+  const p = normalizePhone(o.v.phoneRaw != null ? o.v.phoneRaw : o.v.phone, isoFromCountryCell(o.v.ccText || ccLabel(o.v.phoneDial)));
+  v.phone = p.number; v.phoneDial = p.dial;
+  v.totalpkg = Math.min(5000, Math.max(1, parseInt(o.v.totalpkg,10) || 1));
+  const auto = autoHub(v.pincode, v.city);
+  const typedHub = String(o.v.hubText || '').trim().toUpperCase();
+  v.hubcode = typedHub && typedHub !== auto ? typedHub : '';
+  v.hubManual = !!v.hubcode;
+  v.trackid = String(v.trackid || '').trim();
+  v.trackAuto = false;
+  v.cats = null; v.catError = false; v.trackPer = null;
+  return v;
+}
+
+function rvCheck(o, dupIds){
+  const v = rvFinal(o);
+  const bad = rowProblems(v);
+  const warn = [];
+  if(!v.city || !v.state) warn.push(`City / State empty${/^\d{6}$/.test(v.pincode) ? ' for PIN ' + v.pincode : ''}. You can type them or print as is.`);
+  if(v.orderid && dupIds && dupIds.has(v.orderid)) warn.push(`Order ID ${v.orderid} is used on more than one selected order.`);
+  if(isSA(v.courier) && !logOn()) warn.push('Shree Anjani AWBs need the Google Sheet link, which is not set.');
+  return { v, bad, warn };
+}
+
+function rvDupIds(){
+  const seen = {}, dup = new Set();
+  rvOrders.forEach(o=>{ if(!o.sel) return; const id = String(o.v.orderid||'').trim(); if(!id) return; if(seen[id]) dup.add(id); seen[id] = 1; });
+  return dup;
+}
+
+function rvField(i, key, label, val, extra){
+  extra = extra || {};
+  return `<div class="rv-f ${extra.cls||''}" data-f="${key}"><label>${label}</label><input type="text" data-i="${i}" data-k="${key}" value="${esc(val==null?'':String(val))}" placeholder="${esc(extra.ph||'')}" autocomplete="off"${extra.list?` list="${extra.list}"`:''}></div>`;
+}
+
+function rvCardHTML(o, i){
+  const v = o.v, sa = isSA(v.courier);
+  const opt = (val, cur)=>`<option${val===cur?' selected':''}>${val}</option>`;
+  return `<div class="rv-card" id="rvc${i}" data-i="${i}">
+    <div class="rv-ch"><input type="checkbox" class="rv-pick" data-i="${i}" ${o.sel?'checked':''} title="Print this order">
+      <span class="rv-num">Order ${i+1}</span><span class="rv-title" id="rvt${i}"></span>
+      <span class="rv-row">Sheet row ${v._row||''}</span><span class="rv-sp"></span><span class="rv-chip" id="rvs${i}"></span></div>
+    <div class="rv-msg" id="rvm${i}"></div>
+    <div class="rv-g">
+      ${rvField(i,'orderid','Order ID *',v.orderid)}
+      ${rvField(i,'name','Name *',v.name)}
+      <div class="s2">${rvField(i,'company','Company',v.company)}</div>
+      <div class="rv-f s2" data-f="phone"><label>Phone *</label><div class="rv-ph">
+        <input type="text" data-i="${i}" data-k="cc" value="${esc(v.ccText || ccLabel(v.phoneDial))}" list="rvCcList" title="Country code" autocomplete="off">
+        <input type="text" data-i="${i}" data-k="phone" value="${esc(v.phoneRaw != null ? v.phoneRaw : (v.phone||''))}" placeholder="10-digit mobile" autocomplete="off"></div></div>
+      <div class="s3">${rvField(i,'address','Address *',v.address)}</div>
+      ${rvField(i,'landmark','Landmark',v.landmark)}
+      ${rvField(i,'pincode','Pincode *',v.pincode)}
+      ${rvField(i,'city','City',v.city,{ph:'not found'})}
+      ${rvField(i,'state','State',v.state)}
+      ${rvField(i,'hub','City code',v.hubText!=null?v.hubText:(v.hubManual?v.hubcode:''),{ph:autoHub(v.pincode,v.city)||'auto'})}
+      ${rvField(i,'alt','Alt. details',v.alt)}
+      <div class="rv-f"><label>Courier</label><div class="rv-cour ${sa?'sa':''}" id="rvcour${i}">
+        <select data-i="${i}" data-k="courierSel"><option value="sa"${sa?' selected':''}>Shree Anjani</option><option value="other"${sa?'':' selected'}>Other</option></select>
+        <input type="text" data-i="${i}" data-k="courier" value="${esc(sa?'':(v.courier||''))}" placeholder="Name" autocomplete="off"></div></div>
+      ${rvField(i,'trackid','Tracking ID',v.trackid,{cls: sa?'awb':'', ph: sa?'Auto: next free AWB':''})}
+      <label class="rv-cb"><input type="checkbox" data-i="${i}" data-k="trkAll" ${v.trkAllLabels?'checked':''}> Tracking on all labels</label>
+      <div class="rv-f"><label>Shipment type</label><select data-i="${i}" data-k="shiptype">${opt('Forward',v.shiptype)}${opt('Reverse',v.shiptype)}</select></div>
+      <div class="rv-f"><label>Mode</label><select data-i="${i}" data-k="mode">${opt('Air Shipping',v.mode)}${opt('Surface Shipping',v.mode)}${opt('Express Ground',v.mode)}</select></div>
+      ${rvField(i,'totalpkg','Total boxes',v.totalpkg)}
+    </div></div>`;
+}
+
+const RV_FIELD_FOR = { 'Name':'name', 'Phone (10 digits)':'phone', 'Phone':'phone', 'Address':'address', 'Pincode (6 digits)':'pincode', 'Order ID':'orderid' };
+
+function rvPaintCard(i, dup){
+  const o = rvOrders[i], card = $('rvc'+i); if(!card) return null;
+  const r = rvCheck(o, dup);
+  card.classList.toggle('off', !o.sel);
+  card.classList.toggle('bad', r.bad.length > 0);
+  card.classList.toggle('warn', !r.bad.length && r.warn.length > 0);
+  $('rvt'+i).textContent = `${r.v.orderid || '(no Order ID)'} · ${r.v.name || '(no name)'}`;
+  const chip = $('rvs'+i);
+  if(!o.sel){ chip.className = 'rv-chip c-all'; chip.textContent = 'Not selected · will not print'; }
+  else if(r.bad.length){ chip.className = 'rv-chip c-bad'; chip.textContent = 'Needs fixing'; }
+  else if(r.warn.length){ chip.className = 'rv-chip c-warn'; chip.textContent = 'Warning'; }
+  else { chip.className = 'rv-chip c-ok'; chip.textContent = '✓ Ready'; }
+  const m = $('rvm'+i);
+  if(r.bad.length){ m.className = 'rv-msg bad'; m.textContent = `✕ Missing / invalid: ${r.bad.join(', ')}. ${o.sel ? 'Fix it to print this order, or untick it.' : 'Fix it, or leave this order unticked.'}`; }
+  else if(r.warn.length){ m.className = 'rv-msg warn'; m.textContent = '! ' + r.warn.join(' '); }
+  else { m.className = 'rv-msg'; m.textContent = ''; }
+  const errKeys = new Set(r.bad.map(b=>RV_FIELD_FOR[b]).filter(Boolean));
+  card.querySelectorAll('.rv-f[data-f]').forEach(f=>{
+    const k = f.getAttribute('data-f');
+    f.classList.toggle('err', errKeys.has(k));
+    f.classList.toggle('w', !errKeys.has(k) && (k==='city' || k==='state') && !String(r.v[k]||'').trim());
+  });
+  const hubIn = card.querySelector('[data-k="hub"]'); if(hubIn) hubIn.placeholder = autoHub(r.v.pincode, r.v.city) || 'auto';
+  return r;
+}
+
+function rvRefresh(){
+  const dup = rvDupIds();
+  let sel = 0, labels = 0, bad = 0, warn = 0, sa = 0;
+  rvOrders.forEach((o,i)=>{
+    const r = rvPaintCard(i, dup);
+    if(!o.sel) return;
+    sel++; labels += r.v.totalpkg;
+    if(r.bad.length) bad++; else if(r.warn.length) warn++;
+    if(isSA(r.v.courier)) sa++;
+  });
+  const n = rvOrders.length;
+  $('rvSelAll').checked = sel === n && n > 0;
+  $('rvSelAll').indeterminate = sel > 0 && sel < n;
+  $('rvSelCount').textContent = `(${sel} of ${n})`;
+  $('rvChipSel').textContent = `${sel} selected · ${labels} label${labels===1?'':'s'}`;
+  $('rvChipBad').textContent = bad ? `${bad} to fix` : '';
+  $('rvChipWarn').textContent = warn ? `${warn} warning${warn>1?'s':''}` : '';
+  const off = n - sel;
+  $('rvSum').innerHTML = `<b>${sel} of ${n} orders selected · ${labels} labels</b>` +
+    (sa ? ` · ${sa} Shree Anjani (AWBs given on Print)` : '') +
+    (bad ? ` · <span style="color:var(--danger);font-weight:600">fix ${bad} selected order${bad>1?'s':''} to print</span>` : '') +
+    (off ? ` · ${off} not selected` : '');
+  $('rvPrint').disabled = sel === 0 || bad > 0;
+  $('rvPrint').textContent = sel ? `Print ${sel} selected order${sel>1?'s':''}` : 'Print';
+}
+
+function openReview(list, fileName){
+  rvOrders = list.map(v=>{
+    const o = { v: Object.assign({}, v), sel: true };
+    o.v.phoneRaw = v.phone || '';
+    o.v.ccText = ccLabel(v.phoneDial);
+    o.v.hubText = v.hubManual ? v.hubcode : '';
+    o.sel = rowProblems(rvFinal(o)).length === 0;     // orders with red problems start unticked
+    return o;
+  });
+  $('rvFile').textContent = `${fileName} · edit anything below, tick the orders to print, then click Print`;
+  $('rvBody').innerHTML = rvOrders.map((o,i)=>rvCardHTML(o,i)).join('');
+  rvRefresh();
+  $('rvModal').hidden = false;
+  $('rvBody').scrollTop = 0;
+  return new Promise(res=>{ rvResolve = res; });
+}
+
+function rvClose(result){
+  $('rvModal').hidden = true;
+  $('rvBody').innerHTML = '';
+  const r = rvResolve; rvResolve = null;
+  if(r) r(result);
+}
+
+$('rvBody').addEventListener('input', (e)=>{
+  const t = e.target, i = +t.getAttribute('data-i'), k = t.getAttribute('data-k');
+  if(isNaN(i) || !rvOrders[i]) return;
+  if(t.classList.contains('rv-pick')){ rvOrders[i].sel = t.checked; rvRefresh(); return; }
+  if(!k) return;
+  const v = rvOrders[i].v;
+  if(k === 'trkAll'){ v.trkAllLabels = t.checked; return; }
+  if(k === 'courierSel'){
+    const sa = t.value === 'sa';
+    $('rvcour'+i).classList.toggle('sa', sa);
+    v.courier = sa ? 'Shree Anjani' : ($('rvcour'+i).querySelector('[data-k="courier"]').value.trim());
+    const tf = $('rvc'+i).querySelector('[data-f="trackid"]');
+    tf.classList.toggle('awb', sa); tf.querySelector('input').placeholder = sa ? 'Auto: next free AWB' : '';
+    rvRefresh(); return;
+  }
+  if(k === 'courier'){ v.courier = t.value.trim(); return; }
+  if(k === 'phone'){ v.phoneRaw = t.value; }
+  else if(k === 'cc'){ v.ccText = t.value; }
+  else if(k === 'hub'){ v.hubText = t.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4); t.value = v.hubText; }
+  else if(k === 'pincode'){ v.pincode = t.value.replace(/\D/g,'').slice(0,6); t.value = v.pincode; rvPinLookup(i); }
+  else v[k] = t.value;
+  rvRefresh();
+});
+
+/* new PIN typed in a card: fill City / State if they are empty */
+async function rvPinLookup(i){
+  const v = rvOrders[i].v;
+  if(!/^\d{6}$/.test(v.pincode) || (v.city && v.state)) return;
+  const pin = v.pincode;
+  const info = await fetchPinInfo(pin);
+  if(!info || !rvOrders[i] || rvOrders[i].v.pincode !== pin) return;
+  const card = $('rvc'+i); if(!card) return;
+  if(!v.city){ v.city = info.city; card.querySelector('[data-k="city"]').value = info.city; }
+  if(!v.state){ v.state = info.state; card.querySelector('[data-k="state"]').value = info.state; }
+  rvRefresh();
+}
+
+$('rvSelAll').addEventListener('change', ()=>{
+  const on = $('rvSelAll').checked;
+  rvOrders.forEach((o,i)=>{ o.sel = on; const cb = document.querySelector(`.rv-pick[data-i="${i}"]`); if(cb) cb.checked = on; });
+  rvRefresh();
+});
+$('rvCancel').addEventListener('click', ()=> rvClose(null));
+$('rvPrint').addEventListener('click', ()=>{
+  const chosen = rvOrders.filter(o=>o.sel).map(o=>{ const v = rvFinal(o); delete v.phoneRaw; delete v.ccText; delete v.hubText; return v; });
+  if(!chosen.length) return;
+  rvClose(chosen);
+});
 
 /* ================= GOOGLE SHEET LOG ================= */
 // Paste the Google Apps Script "Web app" link here (ends with /exec). Leave empty to turn the log off.
