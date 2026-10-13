@@ -151,7 +151,8 @@
 
   /* ---------- COURIER + SHREE ANJANI AWB ---------- */
   .courier-pick{display:flex;gap:6px;}
-  .form-panel .courier-pick select{flex:0 0 auto;width:auto;max-width:100%;font-weight:600;}
+  .form-panel .courier-pick select{flex:0 0 74px;width:74px;padding-left:6px;padding-right:2px;font-weight:600;}
+  .courier-pick.sa select{flex:1 1 auto !important;width:100% !important;}
   .courier-pick.sa select{flex:1 1 auto;width:100%;color:var(--forest);font-weight:700;}
   .courier-pick.sa input{display:none;}
   .form-panel .courier-pick input{flex:1 1 auto;min-width:0;}
@@ -238,6 +239,25 @@
   .rv-print{background:var(--forest);color:#fff;border:none;}
   .rv-print:disabled{opacity:.45;cursor:not-allowed;}
   @media (max-width: 900px){ .rv-g{grid-template-columns:repeat(2,minmax(0,1fr));} .rv-g .s3{grid-column:span 2;} }
+
+  /* ---------- TOP BAR: i help + Log Sheet ---------- */
+  .up-grp{position:relative;display:flex;align-items:stretch;}
+  .up-grp .btn-upload{border-radius:8px 0 0 8px;}
+  .ibtn{width:36px;border-radius:0 8px 8px 0;border:none;border-left:1px solid rgba(255,255,255,.25);background:var(--forest);color:#fff;font:italic 700 15px/1 Georgia,serif;cursor:pointer;padding:0;}
+  .ibtn:hover,.ibtn[aria-expanded="true"]{background:var(--forest-2);}
+  .info-pop{position:absolute;top:calc(100% + 10px);right:-120px;width:330px;background:#fff;border:1px solid #e4ded0;border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,.18);padding:14px 16px;z-index:60;text-align:left;}
+  .info-pop[hidden]{display:none;}
+  .info-pop:before{content:'';position:absolute;top:-7px;right:132px;width:12px;height:12px;background:#fff;border-left:1px solid #e4ded0;border-top:1px solid #e4ded0;transform:rotate(45deg);}
+  .info-pop h4{margin:0 0 6px;color:var(--forest);font-size:14px;font-family:'Inter';}
+  .info-pop ol{margin:0 0 12px;padding-left:18px;font-size:12px;color:#4b493f;line-height:1.55;white-space:normal;}
+  .info-dl{display:block;width:100%;background:var(--forest);color:#fff;border:none;border-radius:8px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;}
+  .info-dl:hover{background:var(--forest-2);}
+  .info-x{position:absolute;right:8px;top:6px;border:none;background:none;color:var(--muted);font-size:15px;cursor:pointer;padding:2px 4px;}
+  .btn-sheet{display:inline-flex;align-items:center;gap:7px;background:#e6f4ea;color:#137333;border:1px solid #a8d5b5;border-radius:8px;font-weight:700;text-decoration:none;font-size:12.5px;padding:9px 12px;white-space:nowrap;}
+  .btn-sheet:hover{background:#d4ecdb;}
+  .btn-sheet[hidden]{display:none;}
+  .sh-ic{width:13px;height:16px;background:#188038;border-radius:2px;position:relative;display:inline-block;}
+  .sh-ic:after{content:'';position:absolute;left:3px;top:5px;width:7px;height:7px;border:1.5px solid #fff;border-radius:1px;}
 
   /* ---------- CITY CODE ---------- */
   .hub-row{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12px;}
@@ -447,11 +467,24 @@
         <h1>Shipping Label Generator</h1>
       </div>
       <div class="bulk-inline">
-        <button type="button" class="btn-upload" id="bulkUploadBtn">Upload sheet</button>
-        <button type="button" class="btn-secondary" id="templateBtn">Download template</button>
+        <div class="up-grp">
+          <button type="button" class="btn-upload" id="bulkUploadBtn">Upload sheet</button>
+          <button type="button" class="ibtn" id="infoBtn" title="How bulk upload works / Download template" aria-expanded="false" aria-controls="infoPop">i</button>
+          <div class="info-pop" id="infoPop" hidden role="dialog" aria-label="Bulk upload help">
+            <button type="button" class="info-x" id="infoClose" aria-label="Close">&#10005;</button>
+            <h4>Bulk upload: how it works</h4>
+            <ol>
+              <li>Download the template and fill one row per order (from row 3).</li>
+              <li>Click <b>Upload sheet</b> and choose the filled file.</li>
+              <li>Check and edit the orders in the review pop-up, then Print.</li>
+            </ol>
+            <button type="button" class="info-dl" id="templateBtn">&#11015; Download Template Excel</button>
+          </div>
+        </div>
         <button type="button" class="btn-secondary" id="pdfEditBtn">Edit from PDF</button>
         <input type="file" id="bulkFile" accept=".xlsx,.xls,.csv" hidden>
         <input type="file" id="pdfFile" accept="application/pdf,.pdf" hidden>
+        <a class="btn-sheet" id="logSheetBtn" href="#" target="_blank" rel="noopener" title="Open the BoxUp Label Log Google Sheet" hidden><span class="sh-ic"></span>Log Sheet</a>
       </div>
     </div>
     <div class="bulk-status" id="bulkStatus"></div>
@@ -797,7 +830,7 @@ function buildLabelHTML(v, boxIndex, cat){
   if(v.alt) optRows += `<div class="kv"><span class="k">Alt:</span><span class="v">${esc(v.alt)}</span></div>`;
   let landmarkRow = v.landmark ? `<div class="kv"><span class="k">Landmark:</span><span class="v">${esc(v.landmark)}</span></div>` : '';
 
-  const printDate = new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+  const printDate = v.shipDate || new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
 
   return `
     <div class="blk blk12">
@@ -1105,11 +1138,13 @@ async function downloadLabelPdf(){
     const safeOrder = (v.orderid || 'ORDER').replace(/[^a-zA-Z0-9-_]/g,'');
     const safeName = (v.name || 'Label').replace(/[^a-zA-Z0-9 '\-]/g,'').trim().replace(/\s+/g,' ');
     const fileName = `${safeOrder} ${safeName}.pdf`;
+    const batchId = newBatchId();
+    v.shipDate = todayLabelDate();
     let saResult = null;
     if(isSA(v.courier) && logOn()){
       // get the AWB confirmed in the Shree Anjani tab BEFORE printing, so no two orders share one
       btn.textContent = 'Getting AWB…';
-      saResult = await sendToSheet([v], 'Single label', fileName);
+      saResult = await sendToSheet([v], 'Single label', fileName, batchId);
       if(!saResult.ok){ alert('Could not get a Shree Anjani AWB:\n' + saResult.error + '\n\nNothing was printed.'); return; }
       const got = saResult.orders[0];
       v.trackid = got.awb; v.tracklink = got.link;
@@ -1125,7 +1160,7 @@ async function downloadLabelPdf(){
       showSaModal([{ v, r: saResult.orders[0] }]);
       $('logStatus').innerHTML = '<span class="ok">AWB ' + esc(v.trackid) + ' saved in the Shree Anjani tab and the Label Log.</span>';
     } else {
-      logToSheet([v], 'Single label', fileName);
+      logToSheet([v], 'Single label', fileName, batchId);
     }
   }catch(err){
     console.error(err);
@@ -1336,6 +1371,8 @@ async function handleBulkFile(file){
 
     const stamp = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}).replace(/\s+/g,'-');
     const fileName = `BoxUp Labels ${stamp} (${good.length} orders).pdf`;
+    const batchId = newBatchId();
+    good.forEach(v=>{ v.shipDate = todayLabelDate(); });
     let saResult = null;
     good.forEach(v=>{ if(isSA(v.courier)) v.courier = 'Shree Anjani'; });
     const anySA = good.some(v=>isSA(v.courier));
@@ -1344,7 +1381,7 @@ async function handleBulkFile(file){
       // the sheet confirms Shree Anjani AWBs (and spots typed AWBs that are in the Shree Anjani tab)
       setBulkBusy(true, 'Checking AWBs…');
       status.textContent = 'Checking AWBs with the Google Sheet…';
-      const res = await sendToSheet(good, 'Bulk sheet: ' + file.name, fileName);
+      const res = await sendToSheet(good, 'Bulk sheet: ' + file.name, fileName, batchId);
       if(res.ok){
         saResult = res;
         res.orders.forEach((r,i)=>{
@@ -1376,7 +1413,7 @@ async function handleBulkFile(file){
       if(items.some(x=>isSA(x.v.courier))) showSaBulkModal(items, xlsName);
       $('logStatus').innerHTML = `<span class="ok">Saved ${good.length} order${good.length>1?'s':''} to the Google Sheet log.</span>`;
     } else {
-      logToSheet(good, 'Bulk sheet: ' + file.name, fileName);
+      logToSheet(good, 'Bulk sheet: ' + file.name, fileName, batchId);
     }
 
     status.innerHTML = `<span class="ok">Done: ${entries.length} label${entries.length>1?'s':''} for ${good.length} order${good.length>1?'s':''} downloaded.</span>` +
@@ -1737,9 +1774,20 @@ function phoneForLog(v){
 }
 
 /* Sends one row per order to the Google Sheet. Never blocks or breaks printing. */
-function sheetPayload(orders, source, fileName){
+const TOOL_URL = /^https?:/.test(location.protocol) ? location.origin + location.pathname : 'https://logisticsboxup.github.io/boxup-labels/';
+function newBatchId(){ return 'B-' + Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
+/* the order exactly as printed, saved in the log so the PDF can be rebuilt later */
+function labelSnapshot(v){
+  const keep = ['name','company','phone','phoneDial','alt','address','landmark','pincode','city','state','shiptype','courier',
+    'trackid','trkAllLabels','mode','orderid','totalpkg','hubcode','hubManual','shipDate'];
+  const o = {}; keep.forEach(k=>{ if(v[k] !== undefined && v[k] !== '' && v[k] !== null) o[k] = v[k]; });
+  return o;
+}
+function todayLabelDate(){ return new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}); }
+
+function sheetPayload(orders, source, fileName, batchId){
   return {
-    source, fileName,
+    source, fileName, batchId: batchId || '', reprintUrl: TOOL_URL,
     orders: orders.map(v=>({
       orderid: v.orderid||'', hub: hubFor(v), name: v.name||'', company: v.company||'', phone: phoneForLog(v),
       alt: v.alt||'', address: v.address||'', landmark: v.landmark||'', pincode: v.pincode||'', city: v.city||'',
@@ -1747,16 +1795,17 @@ function sheetPayload(orders, source, fileName){
       trackid: v.trackPer ? v.trackPer.map(t=>t.id).filter(Boolean).join(', ') : (v.trackid||''),
       tracklink: '',
       boxes: v.totalpkg||1,
-      auto: !!v.trackAuto
+      auto: !!v.trackAuto,
+      label: labelSnapshot(Object.assign({}, v, { shipDate: v.shipDate || todayLabelDate() }))
     }))
   };
 }
 
 /* Sends orders and waits for the sheet's answer (used for Shree Anjani: the sheet confirms each AWB) */
-async function sendToSheet(orders, source, fileName){
+async function sendToSheet(orders, source, fileName, batchId){
   try{
     const res = await fetch(LOG_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-      body: JSON.stringify(sheetPayload(orders, source, fileName)) });
+      body: JSON.stringify(sheetPayload(orders, source, fileName, batchId)) });
     const data = await res.json();
     if(!data || !data.ok) return { ok:false, error:(data && data.error) || 'The sheet did not answer.' };
     return data;
@@ -1767,10 +1816,10 @@ async function sendToSheet(orders, source, fileName){
 }
 
 /* Other couriers: send and carry on (never blocks printing) */
-async function logToSheet(orders, source, fileName){
+async function logToSheet(orders, source, fileName, batchId){
   if(!logOn() || !orders || !orders.length) return;
   const st = $('logStatus');
-  const payload = sheetPayload(orders, source, fileName);
+  const payload = sheetPayload(orders, source, fileName, batchId || newBatchId());
   st.textContent = 'Saving to the Google Sheet log…';
   try{
     // text/plain + no-cors is the way Google Apps Script accepts posts from a web page
@@ -1884,8 +1933,10 @@ function markAwbUsed(list){
 }
 
 $('f_courierSel').addEventListener('change', ()=>{
-  if(courierIsSA()){ saManual = false; $('f_trackid').value = ''; }
-  else if(!$('f_courier').value.trim()) $('f_trackid').value = $('f_trackid').value;  // keep what is there
+  // switching courier always starts with an empty Tracking ID
+  // (Shree Anjani then fills the next free AWB; Other stays empty to type one if needed)
+  saManual = false; saPrinted = false;
+  $('f_trackid').value = '';
   applyCourierUI();
   if(!courierIsSA()) $('f_courier').focus();
 });
@@ -1928,6 +1979,7 @@ function downloadTrackingExcel(items, fileName){
 var lastTrackingExcel = null;
 
 function showSaBulkModal(items, xlsName){
+  resetSaModalChrome();
   const sa = items.filter(x=>isSA(x.v.courier));
   const warns = [];
   sa.forEach(({v,r})=>{
@@ -1961,7 +2013,12 @@ function fallbackCopy(text){
   ta.remove(); return ok;
 }
 
+function resetSaModalChrome(){
+  document.querySelector('#saModal .logo').style.display = '';
+  $('saModalDone').textContent = 'Done';
+}
 function showSaModal(items){
+  resetSaModalChrome();
   const body = $('saModalBody');
   const warns = [];
   items.forEach(({v,r})=>{
@@ -2004,6 +2061,72 @@ $('saModalDone').addEventListener('click', ()=>{ $('saModal').hidden = true; });
 document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && !$('saModal').hidden) $('saModal').hidden = true; });
 
 applyCourierUI();
+
+/* ================= TOP BAR: i help pop-up ================= */
+function setInfoPop(open){
+  $('infoPop').hidden = !open;
+  $('infoBtn').setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+$('infoBtn').addEventListener('click', (e)=>{ e.stopPropagation(); setInfoPop($('infoPop').hidden); });
+$('infoClose').addEventListener('click', ()=> setInfoPop(false));
+$('infoPop').addEventListener('click', (e)=> e.stopPropagation());
+document.addEventListener('click', ()=> setInfoPop(false));
+document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') setInfoPop(false); });
+$('templateBtn').addEventListener('click', ()=> setTimeout(()=>setInfoPop(false), 300));
+
+/* ================= TOP BAR: Log Sheet button ================= */
+(async function setupLogSheetBtn(){
+  if(!logOn()) return;
+  try{
+    const res = await fetch(LOG_URL + (LOG_URL.includes('?') ? '&' : '?') + 'action=info&t=' + Date.now());
+    const data = await res.json();
+    if(data.ok && data.sheetUrl){ $('logSheetBtn').href = data.sheetUrl; $('logSheetBtn').hidden = false; }
+  }catch(e){ /* sheet not reachable: keep the button hidden */ }
+})();
+
+/* ================= RE-DOWNLOAD FROM THE LOG (?reprint=BATCH) ================= */
+async function reprintFromLink(){
+  const id = new URLSearchParams(location.search).get('reprint');
+  if(!id) return;
+  const body = $('saModalBody');
+  document.querySelector('#saModal .logo').style.display = 'none';
+  $('saModalDone').textContent = 'Close';
+  $('saModalNext').textContent = '';
+  body.innerHTML = `<h3 id="saModalTitle">&#8635; Re-download labels</h3><div class="sub">Loading batch ${esc(id)} from the Label Log…</div>`;
+  $('saModal').hidden = false;
+  if(!logOn()){ body.innerHTML += '<div class="sa-warn">The Google Sheet link is not set in this tool.</div>'; return; }
+  let data;
+  try{
+    const res = await fetch(LOG_URL + (LOG_URL.includes('?') ? '&' : '?') + 'action=batch&id=' + encodeURIComponent(id) + '&t=' + Date.now());
+    data = await res.json();
+  }catch(e){ data = { ok:false, error:'Could not reach the Google Sheet. Check the internet connection.' }; }
+  if(!data.ok){ body.innerHTML = `<h3 id="saModalTitle">&#8635; Re-download labels</h3><div class="sa-warn">${esc(data.error || 'Not found.')}</div>`; return; }
+  const orders = data.orders;
+  const labels = orders.reduce((a,v)=>a + (parseInt(v.totalpkg,10)||1), 0);
+  const fileName = data.fileName || `BoxUp Labels (${orders.length} orders).pdf`;
+  body.innerHTML = `<h3 id="saModalTitle">&#8635; Re-download labels</h3>
+    <div class="sub">From the Label Log · Batch ${esc(id)}${data.loggedAt ? ' · printed ' + esc(data.loggedAt) : ''}</div>
+    <div class="lbl">File</div>
+    <div class="sa-linkrow"><input type="text" readonly value="${esc(fileName)}"><button type="button" id="reprintGo">&#11015; Download PDF</button></div>
+    <div style="font-size:12.5px;color:#4b493f;line-height:1.6;margin-top:6px">${orders.length} order${orders.length>1?'s':''} · ${labels} label${labels>1?'s':''} · exactly as printed (same AWBs, boxes and shipment date)<br>
+      ${orders.slice(0,40).map(v=>esc(v.orderid||'?')).join(' · ')}${orders.length>40?' …':''}</div>
+    <div class="sa-copied" id="reprintMsg" style="color:#7A776C;font-weight:500">Nothing is logged again and no new AWBs are used.</div>`;
+  $('reprintGo').addEventListener('click', async ()=>{
+    if(!pdfToolsReady()) return;
+    const btn = $('reprintGo'); btn.disabled = true;
+    try{
+      const entries = [];
+      orders.forEach(v=>{ v.totalpkg = Math.min(5000, Math.max(1, parseInt(v.totalpkg,10)||1)); labelEntries(v).forEach(e=>entries.push(e)); });
+      const pdf = await buildLabelsPdf(entries, (n,t)=>{ btn.textContent = `Building… (${n}/${t})`; });
+      pdf.save(fileName);
+      $('reprintMsg').textContent = '✓ Downloaded. Nothing was logged again and no new AWBs were used.';
+      $('reprintMsg').style.color = '#2E7D32'; $('reprintMsg').style.fontWeight = '600';
+    }catch(err){
+      console.error(err); $('reprintMsg').textContent = 'Could not build the PDF. Please try again.';
+    }finally{ btn.disabled = false; btn.innerHTML = '&#11015; Download PDF'; }
+  });
+}
+reprintFromLink();
 
 /* ================= RESET ALL ================= */
 function resetAll(){
