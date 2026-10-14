@@ -238,6 +238,28 @@
   .rv-btn{border-radius:8px;padding:11px 20px;font-weight:700;font-size:14px;border:1px solid #d8d2c0;background:#fff;cursor:pointer;}
   .rv-print{background:var(--forest);color:#fff;border:none;}
   .rv-print:disabled{opacity:.45;cursor:not-allowed;}
+  .rv-addbtn{display:flex;align-items:center;gap:6px;font-weight:700;font-size:13px;color:var(--forest);background:#fff;border:1.5px dashed var(--forest);border-radius:8px;padding:7px 12px;cursor:pointer;font-family:'Inter',sans-serif;}
+  .rv-addbtn.on{background:var(--forest);color:#fff;border-style:solid;}
+  .rv-bk{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 20px;background:#EEF4EF;border-bottom:1px solid #d6e3d8;font-size:13px;color:var(--forest);}
+  .rv-bk[hidden],.rv-done[hidden]{display:none;}
+  .rv-bk b{font-weight:800;}
+  .rv-bk select,.rv-bk input[type=text]{padding:7px 9px;border:1px solid #c9d6cc;border-radius:7px;font:inherit;background:#fff;color:var(--ink);}
+  .rv-bk select{font-weight:700;width:160px;}
+  .rv-bk input[type=text]{width:170px;}
+  .rv-bk label{display:flex;align-items:center;gap:6px;font-weight:600;cursor:pointer;}
+  .rv-bk label input{width:16px;height:16px;accent-color:var(--forest);margin:0;}
+  .rv-bk .ap{background:var(--forest);color:#fff;border:none;border-radius:7px;padding:8px 18px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .rv-bk .ap:disabled{opacity:.45;cursor:not-allowed;}
+  .rv-bk .cn{background:#fff;color:var(--forest);border:1px solid #c9d6cc;border-radius:7px;padding:7px 12px;font-weight:600;cursor:pointer;font-family:inherit;}
+  .rv-bk .x{background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;padding:0 4px;}
+  .rv-bk .hint{color:#4b493f;font-size:12px;flex:1;min-width:0;}
+  .rv-bk [hidden]{display:none!important;}
+  .rv-done{display:flex;align-items:center;gap:12px;padding:9px 20px;background:#E6F4EA;border-bottom:1px solid #cfe6d5;font-size:13px;color:#2E7D32;font-weight:600;}
+  .rv-done.bad{background:#fbe9e8;color:var(--danger);border-color:#f1c9c6;}
+  .rv-done button{margin-left:auto;background:#fff;border:1px solid #c9d6cc;border-radius:7px;padding:6px 12px;font-weight:600;color:var(--forest);cursor:pointer;font-family:inherit;}
+  .rv-autotag{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;background:#2E7D32;color:#fff;border-radius:4px;padding:1px 5px;vertical-align:1px;}
+  .rv .rv-cour.none select{flex:1 1 auto;width:100%;color:var(--muted);}
+  .rv-cour.none input{display:none;}
   @media (max-width: 900px){ .rv-g{grid-template-columns:repeat(2,minmax(0,1fr));} .rv-g .s3{grid-column:span 2;} }
 
   /* ---------- AWB series option ---------- */
@@ -657,12 +679,24 @@
     <div class="rv-head">
       <div><h3 id="rvTitle">Review orders before printing</h3><div class="rv-file" id="rvFile"></div></div>
       <div class="rv-chips">
+        <button type="button" class="rv-addbtn" id="rvAddBtn">＋ Add courier to selected</button>
         <label class="rv-selall"><input type="checkbox" id="rvSelAll"> Select all <span id="rvSelCount"></span></label>
         <span class="rv-chip c-all" id="rvChipSel"></span>
         <span class="rv-chip c-bad" id="rvChipBad"></span>
         <span class="rv-chip c-warn" id="rvChipWarn"></span>
       </div>
     </div>
+    <div class="rv-bk" id="rvBk" hidden>
+      <b id="rvBkTitle">Add to selected orders:</b>
+      Courier <select id="rvBkCour"><option value="sa">Shree Anjani</option><option value="other">Other</option></select>
+      <input type="text" id="rvBkName" placeholder="Courier name" autocomplete="off" hidden>
+      <label id="rvBkSerWrap"><input type="checkbox" id="rvBkSer" checked> AWB series for multi-box orders</label>
+      <button type="button" class="ap" id="rvBkAdd">Add</button>
+      <button type="button" class="cn" id="rvBkCancel">Cancel</button>
+      <span class="hint" id="rvBkHint">Shree Anjani: tracking IDs fill in series (next free AWB)</span>
+      <button type="button" class="x" id="rvBkX" title="Close">✕</button>
+    </div>
+    <div class="rv-done" id="rvDone" hidden><span id="rvDoneMsg"></span><button type="button" id="rvUndo">Undo</button></div>
     <div class="rv-body" id="rvBody"></div>
     <div class="rv-foot">
       <div class="rv-sum" id="rvSum"></div>
@@ -1650,8 +1684,9 @@ function rvFinal(o){
   const typedHub = String(o.v.hubText || '').trim().toUpperCase();
   v.hubcode = typedHub && typedHub !== auto ? typedHub : '';
   v.hubManual = !!v.hubcode;
-  v.trackid = String(v.trackid || '').trim();
+  v.trackid = o.v.trkAuto ? '' : String(v.trackid || '').trim();   // AUTO preview: the sheet gives the AWBs on Print
   v.trackAuto = false;
+  delete v.trkAuto; delete v.courOther; delete v.autoShort;
   v.cats = null; v.catError = false; v.trackPer = null;
   v.awbSeries = !!(o.v.awbSeries && isSA(v.courier) && v.totalpkg > 1);
   return v;
@@ -1664,6 +1699,7 @@ function rvCheck(o, dupIds){
   if(!v.city || !v.state) warn.push(`City / State empty${/^\d{6}$/.test(v.pincode) ? ' for PIN ' + v.pincode : ''}. You can type them or print as is.`);
   if(v.orderid && dupIds && dupIds.has(v.orderid)) warn.push(`Order ID ${v.orderid} is used on more than one selected order.`);
   if(isSA(v.courier) && !logOn()) warn.push('Shree Anjani AWBs need the Google Sheet link, which is not set.');
+  if(o.sel && o.v.trkAuto && o.v.autoShort) warn.push('Not enough free Shree Anjani AWBs for this order. Add more AWBs to the Shree Anjani tab before printing.');
   return { v, bad, warn };
 }
 
@@ -1680,6 +1716,7 @@ function rvField(i, key, label, val, extra){
 
 function rvCardHTML(o, i){
   const v = o.v, sa = isSA(v.courier);
+  const none = !sa && !v.courOther && !String(v.courier||'').trim();
   const opt = (val, cur)=>`<option${val===cur?' selected':''}>${val}</option>`;
   return `<div class="rv-card" id="rvc${i}" data-i="${i}">
     <div class="rv-ch"><input type="checkbox" class="rv-pick" data-i="${i}" ${o.sel?'checked':''} title="Print this order">
@@ -1700,8 +1737,8 @@ function rvCardHTML(o, i){
       ${rvField(i,'state','State',v.state)}
       ${rvField(i,'hub','City code',v.hubText!=null?v.hubText:(v.hubManual?v.hubcode:''),{ph:autoHub(v.pincode,v.city)||'auto'})}
       ${rvField(i,'alt','Alt. details',v.alt)}
-      <div class="rv-f"><label>Courier</label><div class="rv-cour ${sa?'sa':''}" id="rvcour${i}">
-        <select data-i="${i}" data-k="courierSel"><option value="sa"${sa?' selected':''}>Shree Anjani</option><option value="other"${sa?'':' selected'}>Other</option></select>
+      <div class="rv-f"><label>Courier</label><div class="rv-cour ${sa?'sa':''}${none?' none':''}" id="rvcour${i}">
+        <select data-i="${i}" data-k="courierSel"><option value="none"${none?' selected':''}>Not set</option><option value="sa"${sa?' selected':''}>Shree Anjani</option><option value="other"${!sa&&!none?' selected':''}>Other</option></select>
         <input type="text" data-i="${i}" data-k="courier" value="${esc(sa?'':(v.courier||''))}" placeholder="Name" autocomplete="off"></div></div>
       ${rvField(i,'trackid','Tracking ID',v.trackid,{cls: sa?'awb':'', ph: sa?'Auto: next free AWB':''})}
       <div class="rv-f"><label>&nbsp;</label>
@@ -1738,20 +1775,31 @@ function rvPaintCard(i, dup){
     f.classList.toggle('w', !errKeys.has(k) && (k==='city' || k==='state') && !String(r.v[k]||'').trim());
   });
   const hubIn = card.querySelector('[data-k="hub"]'); if(hubIn) hubIn.placeholder = autoHub(r.v.pincode, r.v.city) || 'auto';
+  const tf = card.querySelector('[data-f="trackid"]');
+  if(tf){
+    const lab = tf.querySelector('label'), inp = tf.querySelector('input');
+    const auto = !!o.v.trkAuto && isSA(o.v.courier);
+    lab.innerHTML = 'Tracking ID' + (auto ? '<span class="rv-autotag">AUTO</span>' : '');
+    if(auto && document.activeElement !== inp) inp.value = o.sel ? (o.v.autoShort ? '' : (o.v.trackid || '')) : '';
+    inp.placeholder = isSA(o.v.courier) ? (o.v.autoShort ? 'No free AWB left' : (o.sel ? 'Auto: next free AWB' : 'Tick the order to get an AWB')) : '';
+    inp.title = auto ? 'Preview. The AWB is confirmed by the Google Sheet when you Print.' : '';
+  }
   const serOk = isSA(r.v.courier) && r.v.totalpkg > 1;
   const ser = $('rvser'+i); if(ser){ ser.classList.toggle('dis', !serOk); ser.querySelector('input').disabled = !serOk; }
   return r;
 }
 
 function rvRefresh(){
+  rvReflowAwbs();
   const dup = rvDupIds();
-  let sel = 0, labels = 0, bad = 0, warn = 0, sa = 0;
+  let sel = 0, labels = 0, bad = 0, warn = 0, sa = 0, noCour = 0;
   rvOrders.forEach((o,i)=>{
     const r = rvPaintCard(i, dup);
     if(!o.sel) return;
     sel++; labels += r.v.totalpkg;
     if(r.bad.length) bad++; else if(r.warn.length) warn++;
     if(isSA(r.v.courier)) sa++;
+    else if(!String(r.v.courier||'').trim()) noCour++;
   });
   const n = rvOrders.length;
   $('rvSelAll').checked = sel === n && n > 0;
@@ -1762,7 +1810,8 @@ function rvRefresh(){
   $('rvChipWarn').textContent = warn ? `${warn} warning${warn>1?'s':''}` : '';
   const off = n - sel;
   $('rvSum').innerHTML = `<b>${sel} of ${n} orders selected · ${labels} labels</b>` +
-    (sa ? ` · ${sa} Shree Anjani (AWBs given on Print)` : '') +
+    (sa ? ` · ${sa} Shree Anjani (AWBs confirmed on Print)` : '') +
+    (noCour ? ` · courier not set on ${noCour}` : '') +
     (bad ? ` · <span style="color:var(--danger);font-weight:600">fix ${bad} selected order${bad>1?'s':''} to print</span>` : '') +
     (off ? ` · ${off} not selected` : '');
   $('rvPrint').disabled = sel === 0 || bad > 0;
@@ -1776,8 +1825,11 @@ function openReview(list, fileName){
     o.v.ccText = ccLabel(v.phoneDial);
     o.v.hubText = v.hubManual ? v.hubcode : '';
     o.sel = rowProblems(rvFinal(o)).length === 0;     // orders with red problems start unticked
+    if(isSA(v.courier) && !String(v.trackid||'').trim()) o.v.trkAuto = true;
     return o;
   });
+  rvUndoData = null; $('rvDone').hidden = true; rvBkShow(false);
+  if(rvOrders.some(o=>o.v.trkAuto) && saFree === null && logOn()) rvLoadFree().then(()=>rvRefresh());
   $('rvFile').textContent = `${fileName} · edit anything below, tick the orders to print, then click Print`;
   $('rvBody').innerHTML = rvOrders.map((o,i)=>rvCardHTML(o,i)).join('');
   rvRefresh();
@@ -1787,6 +1839,7 @@ function openReview(list, fileName){
 }
 
 function rvClose(result){
+  rvBkShow(false); $('rvDone').hidden = true;
   $('rvModal').hidden = true;
   $('rvBody').innerHTML = '';
   const r = rvResolve; rvResolve = null;
@@ -1801,20 +1854,130 @@ $('rvBody').addEventListener('input', (e)=>{
   const v = rvOrders[i].v;
   if(k === 'trkAll'){ v.trkAllLabels = t.checked; return; }
   if(k === 'series'){ v.awbSeries = t.checked; rvRefresh(); return; }
-  if(k === 'courierSel'){
-    const sa = t.value === 'sa';
-    $('rvcour'+i).classList.toggle('sa', sa);
-    v.courier = sa ? 'Shree Anjani' : ($('rvcour'+i).querySelector('[data-k="courier"]').value.trim());
-    const tf = $('rvc'+i).querySelector('[data-f="trackid"]');
-    tf.classList.toggle('awb', sa); tf.querySelector('input').placeholder = sa ? 'Auto: next free AWB' : '';
-    rvRefresh(); return;
-  }
+  if(k === 'courierSel'){ rvSetCourier(i, t.value, $('rvcour'+i).querySelector('[data-k="courier"]').value.trim()); rvRefresh(); return; }
+  if(k === 'trackid'){ v.trkAuto = false; v.autoShort = false; v.trackid = t.value; rvRefresh(); return; }
   if(k === 'courier'){ v.courier = t.value.trim(); return; }
   if(k === 'phone'){ v.phoneRaw = t.value; }
   else if(k === 'cc'){ v.ccText = t.value; }
   else if(k === 'hub'){ v.hubText = t.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4); t.value = v.hubText; }
   else if(k === 'pincode'){ v.pincode = t.value.replace(/\D/g,'').slice(0,6); t.value = v.pincode; rvPinLookup(i); }
   else v[k] = t.value;
+  rvRefresh();
+});
+
+/* ---- courier for one order in the review pop-up ---- */
+function rvSetCourier(i, kind, otherName){
+  const v = rvOrders[i].v, wasSA = isSA(v.courier);
+  if(kind === 'sa'){
+    v.courier = 'Shree Anjani'; v.courOther = false;
+    if(!wasSA || !String(v.trackid||'').trim() || v.trkAuto){ v.trkAuto = true; v.trackid = ''; }
+  } else {
+    v.courier = kind === 'other' ? (otherName || '') : '';
+    v.courOther = kind === 'other';
+    if(wasSA || v.trkAuto){ v.trackid = ''; }       // a Shree Anjani AWB never stays on another courier
+    v.trkAuto = false; v.autoShort = false;
+  }
+  rvPaintCourier(i);
+}
+function rvPaintCourier(i){
+  const v = rvOrders[i].v, card = $('rvc'+i); if(!card) return;
+  const sa = isSA(v.courier), none = !sa && !v.courOther && !String(v.courier||'').trim();
+  const box = $('rvcour'+i);
+  box.classList.toggle('sa', sa); box.classList.toggle('none', none);
+  box.querySelector('select').value = sa ? 'sa' : (none ? 'none' : 'other');
+  const nm = box.querySelector('[data-k="courier"]'); if(!sa && document.activeElement !== nm) nm.value = v.courier || '';
+  const tf = card.querySelector('[data-f="trackid"]');
+  tf.classList.toggle('awb', sa);
+  const inp = tf.querySelector('input'); if(!v.trkAuto) inp.value = v.trackid || '';
+  const ser = card.querySelector('[data-k="series"]'); if(ser) ser.checked = !!v.awbSeries;
+}
+
+/* free AWB list for previews (same list the single-label form uses) */
+async function rvLoadFree(){
+  if(!logOn()) return;
+  try{
+    const res = await fetch(LOG_URL + (LOG_URL.includes('?') ? '&' : '?') + 'action=awbs&t=' + Date.now());
+    const data = await res.json();
+    if(data.ok) saFree = data.free || [];
+  }catch(e){ console.warn(e); }
+}
+
+/* hand out preview AWBs in order to every ticked AUTO Shree Anjani order.
+   Typed AWBs are skipped. The sheet gives the real ones on Print (same order). */
+function rvReflowAwbs(){
+  const typed = new Set();
+  rvOrders.forEach(o=>{ if(o.sel && isSA(o.v.courier) && !o.v.trkAuto) splitList(o.v.trackid).forEach(a=>typed.add(String(a))); });
+  const pool = (saFree || []).map(x=>String(x.awb)).filter(a=>!typed.has(a));
+  let k = 0, first = '', last = '', short = 0;
+  rvOrders.forEach(o=>{
+    const v = o.v;
+    if(!v.trkAuto || !isSA(v.courier)) return;
+    if(!o.sel){ v.trackid = ''; v.autoShort = false; return; }
+    if(saFree === null){ v.trackid = ''; v.autoShort = false; return; }   // list not loaded: sheet picks on Print
+    const boxes = Math.max(1, parseInt(v.totalpkg,10) || 1);
+    const need = (v.awbSeries && boxes > 1) ? boxes : 1;
+    const got = pool.slice(k, k + need); k += need;
+    if(got.length < need){ v.trackid = ''; v.autoShort = true; short++; return; }
+    v.autoShort = false; v.trackid = got.join(', ');
+    if(!first) first = got[0]; last = got[got.length-1];
+  });
+  return { first, last, short, used: k };
+}
+
+/* ---- "Add courier to selected" bar ---- */
+var rvUndoData = null;
+function rvBkShow(on){
+  $('rvBk').hidden = !on; $('rvAddBtn').classList.toggle('on', on);
+  if(on){
+    const n = rvOrders.filter(o=>o.sel).length;
+    $('rvBkTitle').textContent = `Add to ${n} selected order${n===1?'':'s'}:`;
+    $('rvBkAdd').disabled = n === 0;
+    rvBkKind();
+  }
+}
+function rvBkKind(){
+  const sa = $('rvBkCour').value === 'sa';
+  $('rvBkName').hidden = sa; $('rvBkSerWrap').hidden = !sa;
+  $('rvBkHint').textContent = sa ? 'Shree Anjani: tracking IDs fill in series (next free AWB)' : 'Type the courier name. Tracking ID stays empty to type later';
+}
+$('rvAddBtn').addEventListener('click', ()=> rvBkShow($('rvBk').hidden));
+$('rvBkCancel').addEventListener('click', ()=> rvBkShow(false));
+$('rvBkX').addEventListener('click', ()=> rvBkShow(false));
+$('rvBkCour').addEventListener('change', rvBkKind);
+$('rvBkAdd').addEventListener('click', async ()=>{
+  const kind = $('rvBkCour').value, name = $('rvBkName').value.trim();
+  if(kind === 'other' && !name){ $('rvBkName').focus(); $('rvBkName').style.borderColor = 'var(--danger)'; return; }
+  $('rvBkName').style.borderColor = '';
+  const idx = rvOrders.map((o,i)=>o.sel ? i : -1).filter(i=>i >= 0);
+  if(!idx.length) return;
+  const keys = ['courier','courOther','trackid','trkAuto','autoShort','awbSeries'];
+  rvUndoData = idx.map(i=>({ i, v: Object.fromEntries(keys.map(k=>[k, rvOrders[i].v[k]])) }));
+  const series = $('rvBkSer').checked;
+  idx.forEach(i=>{
+    rvSetCourier(i, kind, name);
+    if(kind === 'sa'){ const v = rvOrders[i].v; v.awbSeries = series && (parseInt(v.totalpkg,10)||1) > 1; }
+    rvPaintCourier(i);
+  });
+  rvBkShow(false);
+  const msg = $('rvDoneMsg'), box = $('rvDone');
+  box.classList.remove('bad'); box.hidden = false;
+  if(kind === 'sa'){
+    if(saFree === null && logOn()){ msg.textContent = 'Loading free AWBs…'; await rvLoadFree(); }
+    rvRefresh();
+    const f = rvReflowAwbs();
+    const n = idx.length;
+    if(saFree === null) msg.textContent = `✓ Shree Anjani added to ${n} order${n>1?'s':''} · AWBs will be given when you Print (free list could not be loaded)`;
+    else if(f.short){ box.classList.add('bad'); msg.textContent = `Shree Anjani added to ${n} order${n>1?'s':''}, but ${f.short} order${f.short>1?'s':''} did not get an AWB. Only ${saFree.length} free AWBs in the sheet.`; }
+    else msg.textContent = `✓ Shree Anjani added to ${n} order${n>1?'s':''} · AWBs ${f.first}${f.last && f.last !== f.first ? ' to ' + f.last : ''} lined up (confirmed when you Print)`;
+  } else {
+    msg.textContent = `✓ ${name} added to ${idx.length} order${idx.length>1?'s':''}`;
+    rvRefresh();
+  }
+});
+$('rvUndo').addEventListener('click', ()=>{
+  if(!rvUndoData) return;
+  rvUndoData.forEach(({i, v})=>{ Object.assign(rvOrders[i].v, v); rvPaintCourier(i); });
+  rvUndoData = null; $('rvDone').hidden = true;
   rvRefresh();
 });
 
