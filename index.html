@@ -240,6 +240,9 @@
   .rv-print:disabled{opacity:.45;cursor:not-allowed;}
   .shp-btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;background:#008060;color:#fff;border:none;border-radius:7px;padding:6px 12px;font:700 12.5px 'Inter',sans-serif;cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.15);}
   .shp-btn:hover{background:#006e52;}
+  .shp-btn.wa{margin-left:6px;background:#1FA855;} .shp-btn.wa:hover{background:#178a45;}
+  .shp.wa .shp-hd{background:#1FA855;} .shp.wa .shp-bd textarea:focus{border-color:#1FA855;box-shadow:0 0 0 3px rgba(31,168,85,.15);}
+  .shp.wa .shp-ft .go{background:#1FA855;}
   .shp-bg{position:fixed;inset:0;background:rgba(15,36,23,.55);z-index:260;display:flex;align-items:center;justify-content:center;padding:18px;}
   .shp-bg[hidden]{display:none;}
   .shp{background:#fff;border-radius:12px;width:640px;max-width:100%;box-shadow:0 24px 60px rgba(0,0,0,.35);font-family:'Inter',sans-serif;overflow:hidden;}
@@ -601,7 +604,8 @@
 
     <div class="section">
       <div class="section-title"><span class="idx">01</span> Recipient
-        <button type="button" class="shp-btn" id="shpBtn" title="Paste the shipping address copied from a Shopify order">&#128203; Paste from Shopify</button></div>
+        <button type="button" class="shp-btn" id="shpBtn" title="Paste the shipping address copied from a Shopify order">&#128203; Paste from Shopify</button>
+        <button type="button" class="shp-btn wa" id="waBtn" title="Paste the order message copied from WhatsApp">&#128172; Paste from WhatsApp</button></div>
       <div class="g4">
         <div class="field s2"><label>Name <span class="req">*</span></label>
           <input type="text" id="f_name" placeholder="Recipient's full name" autocomplete="off"></div>
@@ -736,11 +740,11 @@
 </div>
 
 <div class="shp-bg" id="shpModal" hidden>
-  <div class="shp" role="dialog" aria-modal="true" aria-labelledby="shpTitle">
-    <div class="shp-hd"><h3 id="shpTitle">Paste from Shopify</h3><span>Shipping address of the order</span></div>
+  <div class="shp" id="shpBox" role="dialog" aria-modal="true" aria-labelledby="shpTitle">
+    <div class="shp-hd"><h3 id="shpTitle">Paste from Shopify</h3><span id="shpSub">Shipping address of the order</span></div>
     <div class="shp-bd">
-      <textarea id="shpText" placeholder="Paste the Shopify shipping address here (Ctrl+V)"></textarea>
-      <div class="shp-tip">Name, address, PIN code and phone are picked up automatically. City, State and City code fill from the PIN. Add the rest (Order ID, courier, boxes) in the form.</div>
+      <textarea id="shpText"></textarea>
+      <div class="shp-tip" id="shpTip">Name, address, PIN code and phone are picked up automatically. City, State and City code fill from the PIN. Add the rest (Order ID, courier, boxes) in the form.</div>
       <div class="shp-grid" id="shpPrev"></div>
     </div>
     <div class="shp-ft"><span class="sp">Tip: Ctrl+Enter fills the form</span>
@@ -882,9 +886,19 @@ $('f_phone').addEventListener('blur', ()=>{ applyPhoneCleanup(); render(); });
 let pinTimer=null;
 let pinRequestId=0;
 
+/* Bangalore PIN (city code BLR) -> Mode of shipping = Express Ground; another PIN puts Air back */
+var modeAutoSet = false;
+function applyBlrMode(pin){
+  if(!/^\d{6}$/.test(pin)) return;
+  const blr = autoHub(pin, '') === 'BLR';
+  if(blr){ if($('f_mode').value !== 'Express Ground'){ $('f_mode').value = 'Express Ground'; modeAutoSet = true; } }
+  else if(modeAutoSet){ $('f_mode').value = 'Air Shipping'; modeAutoSet = false; }
+}
+$('f_mode').addEventListener('change', ()=>{ modeAutoSet = false; });
 function schedulePinLookup(delay){
   clearTimeout(pinTimer);
   const pin = $('f_pincode').value;
+  applyBlrMode(pin);
   const hint = $('pin_hint');
   if(pin.length !== 6){
     hint.textContent = 'India PIN codes only. City / State fill in automatically.';
@@ -1410,6 +1424,7 @@ function rowToLabelData(row){
   let mode = 'Air Shipping';
   if(modeRaw.includes('surface')) mode = 'Surface Shipping';
   else if(modeRaw.includes('express') || modeRaw.includes('ground')) mode = 'Express Ground';
+  else if(!modeRaw && autoHub(digitsOf(r.pincode), cellText(r.city)) === 'BLR') mode = 'Express Ground';   // Bangalore: Express Ground
   const boxes = parseInt(cellText(r.totalpkg), 10);
   return {
     name: cellText(r.name),
@@ -1765,26 +1780,116 @@ function parseShopifyAddress(text){
   out.address = rest.join(', ').replace(/\s*,\s*,+/g,', ').replace(/,\s*/g,', ').replace(/\s+/g,' ').trim();
   return out;
 }
+/* WhatsApp order message: "Key : value" lines in any order; Address can run over several lines */
+function parseWhatsAppOrder(text){
+  const out = { name:'', company:'', phone:'', address:'', pincode:'', orderid:'', boxes:'', courier:'', alt:'' };
+  const KEYS = [
+    ['company', /^(company|company name|firm|organisation|organization)$/],
+    ['name',    /^(client|client name|customer|customer name|name|recipient|recipient name|contact name|contact person)$/],
+    ['phone',   /^(phone|phone no|phone number|mobile|mobile no|mobile number|contact|contact no|contact number|ph|mob|number)$/],
+    ['alt',     /^(alt|alt no|alt number|alternate|alternate no|alternate number|alt phone|alternate contact)$/],
+    ['address', /^(address|delivery address|shipping address|addr)$/],
+    ['boxes',   /^(hamper qty|hamper quantity|hampers|qty|quantity|boxes|box|no of boxes|total boxes|no of hampers)$/],
+    ['orderid', /^(estimate|estimate no|estimate number|est|order|order id|order no|order number)$/],
+    ['courier', /^(delivery mode|courier|courier name|mode|mode of delivery|delivery by|shipping mode)$/]
+  ];
+  const keyOf = k => { k = k.toLowerCase().replace(/[.#]/g,'').replace(/\s+/g,' ').trim(); const f = KEYS.find(([,re])=>re.test(k)); return f ? f[0] : null; };
+  const lines = String(text||'').split(/\r?\n/).map(l=>l.replace(/^\s*\[[^\]]{3,40}\]\s*[^:]{1,40}:\s*/,'').replace(/\s+/g,' ').trim());
+  const addr = []; let inAddr = false;
+  lines.forEach(l=>{
+    if(!l){ return; }
+    // "Key : value", "Key - value", "Key = value"
+    const m = l.match(/^([A-Za-z][A-Za-z .#/()]{0,30}?)\s*(?::|=|\s-\s|\s-(?=\S)|-\s)\s*(.*)$/);
+    const key = m ? keyOf(m[1]) : null;
+    if(key){
+      inAddr = key === 'address';
+      if(key === 'address'){ if(m[2]) addr.push(m[2]); }
+      else if(!out[key]) out[key] = m[2].trim();
+      return;
+    }
+    if(m && m[1].trim().split(' ').length <= 3 && /(:|=|\s-\s)/.test(l)){ inAddr = false; return; }   // other "Key: value" lines (Dispatch Date, Job card...)
+    if(inAddr) addr.push(l);
+  });
+  // phone: 10 digits (drop +91 / 0)
+  const tenDigits = t => { const d = String(t||'').replace(/\D/g,''); return d.length >= 10 ? d.slice(-10) : ''; };
+  out.phone = tenDigits(out.phone);
+  out.alt = out.alt ? out.alt : '';
+  // address: drop the name and phone repeated at the start, take the PIN out
+  let parts = addr.map(x=>x.trim()).filter(Boolean);
+  if(parts.length){
+    let f = parts[0];
+    if(out.name && f.toLowerCase().startsWith(out.name.toLowerCase())) f = f.slice(out.name.length);
+    f = f.replace(/(\+?91[\s-]?)?\b\d[\d\s-]{8,}\d\b/, m=>{ if(!out.phone) out.phone = tenDigits(m); return ''; }).replace(/^[\s,:-]+|[\s,:-]+$/g,'');
+    parts[0] = f;
+  }
+  parts = parts.map(x=>{
+    const pm = x.match(/(^|\D)(\d{6})(\D|$)/);
+    if(pm && !out.pincode){
+      out.pincode = pm[2];
+      let rest = x.replace(pm[2],' ').replace(/\s+/g,' ').replace(/^[\s,-]+|[\s,-]+$/g,'').trim();
+      // "BLR 560102" / "Bangalore - 560102": the city fills from the PIN, so a lone city word is dropped
+      if(/^[A-Za-z]+$/.test(rest) && rest.length <= 12) rest = '';
+      return rest;
+    }
+    return x;
+  }).filter(Boolean);
+  out.address = parts.join(', ').replace(/\s*,\s*/g,', ').replace(/,\s*,/g,',').replace(/[,\s]*\bIndia\b[,\s]*$/i,'').trim();
+  out.boxes = String(out.boxes||'').match(/\d+/) ? String(out.boxes).match(/\d+/)[0] : '';
+  // "EST-004446 (Dispatch Date: 19/10/2026)" -> "EST-004446"
+  out.orderid = String(out.orderid||'').replace(/\(.*$/,'').replace(/\b(dispatch|date|job|jc)\b.*$/i,'').trim().split(/[\s,;]+/)[0] || '';
+  out.courier = String(out.courier||'').trim();
+  return out;
+}
+
+var pasteSrc = 'shopify';
+function pasteParse(){ return pasteSrc === 'whatsapp' ? parseWhatsAppOrder($('shpText').value) : parseShopifyAddress($('shpText').value); }
 function shpPreview(){
-  const r = parseShopifyAddress($('shpText').value);
+  const r = pasteParse();
   const cell = v => v ? `<span>${esc(v)}</span>` : '<span class="no">not found</span>';
-  $('shpPrev').innerHTML = `<b>Name</b>${cell(r.name)}<b>Address</b>${cell(r.address)}<b>PIN code</b>${cell(r.pincode + (r.pincode && r.city ? ' (' + r.city + ')' : ''))}<b>Phone</b>${cell(r.phone)}`;
+  let html = '';
+  if(pasteSrc === 'whatsapp'){
+    html = `<b>Name</b>${cell(r.name)}<b>Company</b>${cell(r.company)}<b>Phone</b>${cell(r.phone)}<b>Address</b>${cell(r.address)}<b>PIN code</b>${cell(r.pincode)}`
+      + `<b>Order ID</b>${cell(r.orderid)}<b>Total boxes</b>${cell(r.boxes)}<b>Courier</b>${cell(r.courier)}`;
+  } else {
+    html = `<b>Name</b>${cell(r.name)}<b>Address</b>${cell(r.address)}<b>PIN code</b>${cell(r.pincode + (r.pincode && r.city ? ' (' + r.city + ')' : ''))}<b>Phone</b>${cell(r.phone)}`;
+  }
+  $('shpPrev').innerHTML = html;
   $('shpFill').disabled = !(r.name || r.address || r.pincode || r.phone);
   return r;
 }
-function shpOpen(){ $('shpText').value = ''; shpPreview(); $('shpModal').hidden = false; setTimeout(()=>$('shpText').focus(), 30); }
+function shpOpen(src){
+  pasteSrc = src || 'shopify';
+  const wa = pasteSrc === 'whatsapp';
+  $('shpBox').classList.toggle('wa', wa);
+  $('shpTitle').textContent = wa ? 'Paste from WhatsApp' : 'Paste from Shopify';
+  $('shpSub').textContent = wa ? 'Order message from the team' : 'Shipping address of the order';
+  $('shpTip').textContent = wa
+    ? 'Company, Client name, Phone, Address, PIN, Estimate (Order ID), Hamper qty (boxes) and Delivery mode (courier) are picked up, in any order. City, State and City code fill from the PIN.'
+    : 'Name, address, PIN code and phone are picked up automatically. City, State and City code fill from the PIN. Add the rest (Order ID, courier, boxes) in the form.';
+  $('shpText').value = ''; shpPreview(); $('shpModal').hidden = false; setTimeout(()=>$('shpText').focus(), 30);
+}
 function shpClose(){ $('shpModal').hidden = true; }
 function shpFill(){
   const r = shpPreview();
   if(r.name) $('f_name').value = r.name;
+  if(r.company) $('f_company').value = r.company;
   if(r.address) $('f_address').value = r.address;
+  if(r.alt) $('f_alt').value = r.alt;
   if(r.phone){ $('f_phone').value = r.phone; applyPhoneCleanup(); }
+  if(r.orderid) $('f_orderid').value = r.orderid;
+  if(r.boxes){ $('f_totalpkg').value = r.boxes; $('f_totalpkg').dispatchEvent(new Event('input', {bubbles:true})); }
+  if(r.courier){
+    if(isSA(r.courier)){ $('f_courier').value = ''; $('f_courierSel').value = 'sa'; $('f_courierSel').dispatchEvent(new Event('change')); }
+    else { $('f_courierSel').value = 'other'; $('f_courierSel').dispatchEvent(new Event('change')); $('f_courier').value = r.courier; $('f_courier').dispatchEvent(new Event('input', {bubbles:true})); }
+  }
   if(r.pincode){ $('f_pincode').value = r.pincode; $('f_city').value = ''; $('f_state').value = ''; schedulePinLookup(0); }
   shpClose();
   render();
-  const next = $('f_orderid'); if(next){ next.focus(); }
+  const next = !$('f_orderid').value ? $('f_orderid') : $('printBtn');
+  if(next) next.focus();
 }
-$('shpBtn').addEventListener('click', shpOpen);
+$('shpBtn').addEventListener('click', ()=> shpOpen('shopify'));
+$('waBtn').addEventListener('click', ()=> shpOpen('whatsapp'));
 $('shpCancel').addEventListener('click', shpClose);
 $('shpFill').addEventListener('click', shpFill);
 $('shpText').addEventListener('input', shpPreview);
