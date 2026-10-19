@@ -347,6 +347,10 @@
   .sec-it.on{background:#F1F8F3;} .sec-it small{display:block;color:var(--muted);font-size:11.5px;} .sec-it .nn{font-size:12px;color:var(--forest);font-weight:600;white-space:nowrap;}
   .sec input[type=checkbox]{width:16px;height:16px;accent-color:var(--forest);margin:0;cursor:pointer;}
   .sec-sum{margin-top:10px;background:#e8f0ea;border-radius:8px;padding:9px 12px;font-size:13px;color:var(--forest);} .sec-sum small{color:#4b493f;font-weight:400;}
+  .asg-opts{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:10px;font-size:13px;color:var(--forest);font-weight:700;}
+  .asg-opts select,.asg-opts input[type=text]{border:1px solid #d8d2c0;border-radius:7px;padding:7px 10px;font:600 13px 'Inter',sans-serif;margin-left:6px;}
+  .asg-chk{display:flex;align-items:center;gap:6px;font-weight:600;color:#4b493f;cursor:pointer;}
+  .sec-it.off{opacity:.55;cursor:not-allowed;} .sec-it .tg{font-size:10.5px;font-weight:800;border-radius:5px;padding:2px 6px;margin-left:6px;background:#E0EEF7;color:#1D5C96;} .sec-it .tg.c{background:#EDE4F7;color:#5B2E91;}
   .sec-msg{padding:24px;text-align:center;color:var(--muted);font-size:13px;}
   .sec-ft{display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid #eee;}
   .sec-ft button{border-radius:8px;padding:9px 16px;font:700 13.5px 'Inter',sans-serif;cursor:pointer;border:1px solid #d8d2c0;background:#fff;color:var(--forest);}
@@ -566,6 +570,35 @@
     }
     @page{ size: 10cm 15cm; margin: 0 0 0 0.8mm; }
   }
+  .shp-btn[hidden]{display:none !important;}
+  .qp-wrap{position:relative;margin-left:auto;font-family:'Inter',sans-serif;}
+  .qp-btn{width:46px;height:38px;border-radius:10px;border:2px solid #16311F;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .qp-btn:hover,.qp-btn[aria-expanded="true"]{background:#F3EFE3;}
+  .qp-btn{padding:0 !important;flex:none;}
+  .qp-btn svg{width:30px !important;height:22px !important;max-width:none !important;flex:none;}
+  .qp-panel{position:absolute;right:0;top:46px;z-index:240;width:260px;background:#fff;border-radius:20px;box-shadow:0 18px 50px rgba(22,49,31,.22),0 2px 6px rgba(0,0,0,.06);padding:18px 16px 12px;}
+  .qp-panel[hidden]{display:none;}
+  .qp-panel .qa-ic svg{width:28px !important;height:28px !important;}
+  .qa-ic .qa-logo{display:none;width:100%;height:100%;object-fit:contain;}
+  .qa-ic.has-logo{background:#fff !important;box-shadow:0 2px 8px rgba(0,0,0,.12);overflow:hidden;}
+  .qa-ic.has-logo .qa-logo{display:block;} .qa-ic.has-logo svg{display:none;}
+  /* ---------- Quick access (app grid) ---------- */
+  .bulk-inline{display:none !important;}
+  .qa-wrap{position:relative;margin-left:auto;}
+  .qa-btn{width:46px;height:46px;border-radius:12px;border:2px solid #16311F;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;}
+  .qa-btn:hover,.qa-btn[aria-expanded="true"]{background:#F3EFE3;}
+  .qa-btn svg{width:22px !important;height:22px !important;max-width:none !important;flex:none;}
+  .qa-ic svg{width:26px !important;height:26px !important;max-width:none !important;}
+  .qa-panel{position:absolute;right:0;top:56px;z-index:250;width:300px;background:#fff;border-radius:20px;box-shadow:0 18px 50px rgba(22,49,31,.22),0 2px 6px rgba(0,0,0,.06);padding:18px 16px 12px;font-family:'Inter',sans-serif;}
+  .qa-panel[hidden]{display:none;}
+  .qa-hd{display:flex;justify-content:space-between;align-items:baseline;padding:0 6px 10px;}
+  .qa-hd b{font-size:16px;color:#161512;} .qa-hd span{font-size:11.5px;color:var(--muted);font-weight:600;}
+  .qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+  .qa-tile{display:flex;flex-direction:column;align-items:center;gap:9px;padding:14px 6px 12px;border:0;background:transparent;border-radius:14px;cursor:pointer;font-family:inherit;}
+  .qa-tile:hover{background:#F5F2EA;}
+  .qa-tile[disabled]{opacity:.4;cursor:not-allowed;}
+  .qa-ic{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,.15);}
+  .qa-tx{font-size:12.5px;font-weight:700;color:#161512;text-align:center;}
 </style>
 </head>
 <body>
@@ -578,6 +611,13 @@
       <div>
         <div class="brandmark"><span class="dot"></span><span>BoxUp Luxury Gifting</span></div>
         <h1>Shipping Label Generator</h1>
+      </div>
+      <div class="qa-wrap">
+        <button type="button" class="qa-btn" id="qaBtn" title="Quick access" aria-expanded="false" aria-controls="qaPanel"><svg viewBox="0 0 24 24" width="22" height="22" fill="#16311F"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg></button>
+        <div class="qa-panel" id="qaPanel" hidden role="menu">
+          <div class="qa-hd"><b>Quick access</b><span>6 apps</span></div>
+          <div class="qa-grid"><button type="button" class="qa-tile" id="qaUpload"><span class="qa-ic" style="background:linear-gradient(145deg,#1a9b6c,#0d6b49)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg></span><span class="qa-tx">Upload sheet</span></button><button type="button" class="qa-tile" id="qaTemplate"><span class="qa-ic" style="background:linear-gradient(145deg,#3f8f5a,#22643a)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 12v6"/><path d="M9 15l3 3 3-3"/></svg></span><span class="qa-tx">Template</span></button><button type="button" class="qa-tile" id="qaPdf"><span class="qa-ic" style="background:linear-gradient(145deg,#2f5240,#16311F)"><b style="color:#fff;font:800 15px Inter,sans-serif;letter-spacing:.02em">PDF</b></span><span class="qa-tx">Edit from PDF</span></button><button type="button" class="qa-tile" id="qaAssign"><span class="qa-ic" style="background:linear-gradient(145deg,#2f77b8,#1D5C96)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></span><span class="qa-tx">Assign Courier</span></button><button type="button" class="qa-tile" id="qaSecurity"><span class="qa-ic" style="background:linear-gradient(145deg,#a8701f,#7A4E12)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg></span><span class="qa-tx">Security Record</span></button><button type="button" class="qa-tile" id="qaSheet"><span class="qa-ic" style="background:linear-gradient(145deg,#2fae6a,#188038)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M5 9h14M5 14h14M10 9v11"/></svg></span><span class="qa-tx">Log Sheet</span></button></div>
+        </div>
       </div>
       <div class="bulk-inline">
         <div class="up-grp">
@@ -598,6 +638,7 @@
         <input type="file" id="bulkFile" accept=".xlsx,.xls,.csv" hidden>
         <input type="file" id="pdfFile" accept="application/pdf,.pdf" hidden>
  <button type="button" class="btn-sec" id="secBtn" title="Security outward record for the gate">&#128737; Security Record</button>
+ <button type="button" class="btn-sec" id="asgBtn" style="background:#1D5C96" title="Give a courier and AWB to printed orders that have none, and reprint">&#128666; Assign Courier</button>
         <a class="btn-sheet" id="logSheetBtn" href="#" target="_blank" rel="noopener" title="Open the BoxUp Label Log Google Sheet" hidden><span class="sh-ic"></span>Log Sheet</a>
       </div>
     </div>
@@ -605,8 +646,18 @@
 
     <div class="section">
       <div class="section-title"><span class="idx">01</span> Recipient
-        <button type="button" class="shp-btn" id="shpBtn" title="Paste the shipping address copied from a Shopify order">&#128203; Paste from Shopify</button>
-        <button type="button" class="shp-btn wa" id="waBtn" title="Paste the order message copied from WhatsApp">&#128172; Paste from WhatsApp</button></div>
+        <span class="qp-wrap">
+          <button type="button" class="qp-btn" id="qpBtn" title="Quick paste: Shopify or WhatsApp" aria-expanded="false" aria-controls="qpPanel"><svg viewBox="0 0 32 24" width="30" height="22" fill="none" stroke="#161512" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9h8M5 14h6"/><path d="M19 2l-6 10h6l-3 10 9-13h-6l3-7z"/></svg></button>
+          <div class="qp-panel" id="qpPanel" hidden role="menu">
+            <div class="qa-hd"><b>Quick paste</b><span>2 apps</span></div>
+            <div class="qa-grid">
+              <button type="button" class="qa-tile" id="qpShopify"><span class="qa-ic" style="background:#95BF47" data-logo="shopify-logo.png"><img class="qa-logo" src="shopify-logo.png" alt="" onload="this.parentNode.classList.add('has-logo')" onerror="this.remove()"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span class="qa-tx">Shopify</span></button>
+              <button type="button" class="qa-tile" id="qpWhatsapp"><span class="qa-ic" style="background:#25D366" data-logo="whatsapp-logo.png"><img class="qa-logo" src="whatsapp-logo.png" alt="" onload="this.parentNode.classList.add('has-logo')" onerror="this.remove()"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18l1.3-3.6A8 8 0 1 1 8.6 18.9z"/><path d="M9 10h6M9 13.5h4"/></svg></span><span class="qa-tx">WhatsApp</span></button>
+            </div>
+          </div>
+        </span>
+        <button type="button" class="shp-btn" id="shpBtn" hidden>Paste from Shopify</button>
+        <button type="button" class="shp-btn wa" id="waBtn" hidden>Paste from WhatsApp</button></div>
       <div class="g4">
         <div class="field s2"><label>Name <span class="req">*</span></label>
           <input type="text" id="f_name" placeholder="Recipient's full name" autocomplete="off"></div>
@@ -737,6 +788,24 @@
       <div class="sec-sum" id="secSum"></div>
     </div>
     <div class="sec-ft"><button type="button" id="secCancel">Cancel</button><button type="button" class="go" id="secGo" disabled>&#11015; Download Security Record (PDF)</button></div>
+  </div>
+</div>
+
+<div class="sec-bg" id="asgModal" hidden>
+  <div class="sec" role="dialog" aria-modal="true" aria-labelledby="asgTitle" style="width:760px">
+    <div class="sec-hd"><h3 id="asgTitle">&#128666; Assign Courier &amp; Reprint</h3><div>Printed orders with no courier. Tick them, pick the courier, and the tool gives the AWBs, updates the Label Log and downloads the new labels.</div></div>
+    <div class="sec-bd">
+      <div class="sec-tools"><span id="asgCount">Orders without a courier</span><input type="search" id="asgSearch" placeholder="&#128269; Search order ID, name, company or file" autocomplete="off"></div>
+      <div class="sec-list" id="asgList"><div class="sec-msg">Loading…</div></div>
+      <div class="asg-opts">
+        <label>Courier
+          <select id="asgCourier"><option value="sa">Shree Anjani (AWB given automatically)</option><option value="other">Other courier…</option></select></label>
+        <input type="text" id="asgOther" placeholder="Courier name" hidden>
+        <label class="asg-chk" id="asgSeriesWrap"><input type="checkbox" id="asgSeries" checked> Separate AWB for each box (multi-box orders)</label>
+      </div>
+      <div class="sec-sum" id="asgSum"></div>
+    </div>
+    <div class="sec-ft"><button type="button" id="asgCancel">Cancel</button><button type="button" class="go" id="asgGo" disabled>&#11015; Assign &amp; Reprint</button></div>
   </div>
 </div>
 
@@ -2781,6 +2850,122 @@ $('secGo').addEventListener('click', async ()=>{
   }
 });
 
+/* ---------- Assign Courier: printed orders without a courier get one (and AWBs), then reprint ---------- */
+var asgList = [], asgSel = new Set();
+function asgKey(o){ return String(o.orderid).toLowerCase(); }
+function asgOpen(){
+  $('asgModal').hidden = false; $('asgSearch').value = ''; asgSel = new Set(); asgList = [];
+  $('asgList').innerHTML = '<div class="sec-msg">Loading orders without a courier from the Label Log…</div>'; asgSummary();
+  if(!logOn()){ $('asgList').innerHTML = '<div class="sec-msg">The Google Sheet link is not set in this tool.</div>'; return; }
+  fetch(LOG_URL + (LOG_URL.includes('?') ? '&' : '?') + 'action=unassigned&t=' + Date.now()).then(r=>r.json()).then(d=>{
+    if(!d || !d.ok) throw new Error((d && d.error) || 'bad answer');
+    asgList = d.list || []; asgRender();
+  }).catch(err=>{
+    console.warn(err);
+    $('asgList').innerHTML = '<div class="sec-msg">Could not load the orders. Check the internet connection and make sure the Google Sheet script is up to date.</div>';
+  });
+}
+function asgClose(){ $('asgModal').hidden = true; }
+function asgRender(){
+  const q = $('asgSearch').value.trim().toLowerCase();
+  const list = asgList.filter(o=> !q || [o.orderid, o.name, o.company, o.source, o.city].some(x=>String(x||'').toLowerCase().includes(q)));
+  $('asgCount').textContent = `${asgList.length} order${asgList.length===1?'':'s'} without a courier`;
+  if(!list.length){ $('asgList').innerHTML = `<div class="sec-msg">${asgList.length ? 'Nothing matches the search.' : 'Every printed order already has a courier.'}</div>`; asgSummary(); return; }
+  let html = '', grp = null;
+  list.forEach(o=>{
+    const g = o.source || 'Single label';
+    if(g !== grp){
+      grp = g;
+      const ids = list.filter(x=>(x.source||'Single label') === g && x.label).map(asgKey);
+      const all = ids.length && ids.every(id=>asgSel.has(id));
+      html += `<div class="sec-day"><span>${esc(g)}</span>${ids.length ? `<label><input type="checkbox" data-grp="${esc(g)}" ${all?'checked':''}> Select all</label>` : ''}</div>`;
+    }
+    const ok = !!o.label, on = asgSel.has(asgKey(o));
+    html += `<label class="sec-it${on?' on':''}${ok?'':' off'}"><input type="checkbox" data-id="${esc(asgKey(o))}" ${on?'checked':''} ${ok?'':'disabled'}>
+      <div><b>${esc(o.orderid)}</b><span class="tg${o.category==='B2C'?' c':''}">${esc(o.category||'')}</span><small>${esc([o.name, o.company, o.city].filter(Boolean).join(' · '))}${ok ? '' : ' · no saved label, reprint it with Edit from PDF'}</small></div>
+      <span class="nn">${esc(o.boxes||1)} box${(+o.boxes||1)===1?'':'es'} · ${esc(String(o.printed||'').split(' ')[0])}</span></label>`;
+  });
+  $('asgList').innerHTML = html;
+  asgSummary();
+}
+function asgPicked(){ return asgList.filter(o=>o.label && asgSel.has(asgKey(o))); }
+function asgSummary(){
+  const p = asgPicked(), boxes = p.reduce((a,o)=>a + (parseInt(o.boxes,10)||1), 0);
+  const sa = $('asgCourier').value === 'sa', series = sa && $('asgSeries').checked;
+  const awbs = sa ? p.reduce((a,o)=>a + (series ? (parseInt(o.boxes,10)||1) : 1), 0) : 0;
+  $('asgOther').hidden = sa; $('asgSeriesWrap').style.display = sa ? '' : 'none';
+  $('asgSum').innerHTML = p.length
+    ? `<b>${p.length} order${p.length>1?'s':''} · ${boxes} label${boxes>1?'s':''}${sa ? ` · ${awbs} Shree Anjani AWB${awbs>1?'s':''} will be used` : ''}</b><br><small>The Label Log gets the courier and AWB, and the new labels download as one PDF.</small>`
+    : '<small>Tick the orders to assign.</small>';
+  $('asgGo').disabled = !p.length || (!sa && !$('asgOther').value.trim());
+}
+$('asgBtn').addEventListener('click', asgOpen);
+$('asgCancel').addEventListener('click', asgClose);
+$('asgModal').addEventListener('click', e=>{ if(e.target === $('asgModal')) asgClose(); });
+$('asgModal').addEventListener('keydown', e=>{ if(e.key === 'Escape') asgClose(); });
+$('asgSearch').addEventListener('input', asgRender);
+['asgCourier','asgSeries'].forEach(id=>$(id).addEventListener('change', asgSummary));
+$('asgOther').addEventListener('input', asgSummary);
+$('asgList').addEventListener('change', e=>{
+  const t = e.target;
+  if(t.dataset.id){ t.checked ? asgSel.add(t.dataset.id) : asgSel.delete(t.dataset.id); }
+  else if(t.dataset.grp !== undefined){
+    asgList.filter(o=>(o.source||'Single label') === t.dataset.grp && o.label).forEach(o=>{ t.checked ? asgSel.add(asgKey(o)) : asgSel.delete(asgKey(o)); });
+  }
+  asgRender();
+});
+$('asgGo').addEventListener('click', async ()=>{
+  if(!pdfToolsReady()) return;
+  const picked = asgPicked();
+  if(!picked.length) return;
+  const sa = $('asgCourier').value === 'sa', series = sa && $('asgSeries').checked;
+  const courier = sa ? SA_NAME : $('asgOther').value.trim();
+  const btn = $('asgGo'), label = btn.innerHTML; btn.disabled = true;
+  try{
+    const orders = picked.map(o=>{
+      const v = Object.assign({}, o.label);
+      v.totalpkg = Math.min(5000, Math.max(1, parseInt(v.totalpkg || o.boxes, 10) || 1));
+      v.courier = courier; v.trackid = ''; v.tracklink = ''; v.trackPer = null;
+      v.trackAuto = sa; v.awbSeries = !!(series && v.totalpkg > 1);
+      v.shipDate = todayLabelDate();
+      return v;
+    });
+    const stamp = todayLabelDate().replace(/\s+/g,'-');
+    const fileName = orders.length === 1
+      ? `${(orders[0].orderid||'ORDER').replace(/[^a-zA-Z0-9-_]/g,'')} ${(orders[0].name||'Label').replace(/[^a-zA-Z0-9 '\-]/g,'').trim().replace(/\s+/g,' ')}.pdf`
+      : `BoxUp Labels ${stamp} Courier assigned (${orders.length} orders).pdf`;
+    const source = orders.length === 1 ? 'Courier assigned' : 'Bulk sheet: Courier assigned ' + stamp;
+    const batchId = newBatchId();
+    let res = null;
+    if(sa){
+      btn.textContent = 'Getting AWBs…';
+      res = await sendToSheet(orders, source, fileName, batchId);
+      if(!res.ok){ $('asgSum').innerHTML = `<span style="color:var(--danger);font-weight:600">Could not get Shree Anjani AWBs: ${esc(res.error)} Nothing was changed.</span>`; return; }
+      res.orders.forEach((r,i)=>{ orders[i].trackid = r.awb; orders[i].tracklink = r.link; orders[i].trackPer = r.awbs && r.awbs.length > 1 ? r.awbs.slice() : null; });
+      markAwbUsed([].concat(...res.orders.map(r=>r.awbs && r.awbs.length ? r.awbs : [r.awb])));
+      refreshSaList();
+    }
+    const entries = [];
+    orders.forEach(v=>labelEntries(v).forEach(e=>entries.push(e)));
+    const pdf = await buildLabelsPdf(entries, (n,t)=>{ btn.textContent = `Building PDF… (${n}/${t})`; });
+    pdf.save(fileName);
+    if(!sa) await logToSheet(orders, source, fileName, batchId);
+    const items = orders.map((v,i)=>({ v, r: res ? res.orders[i] : null }));
+    asgClose();
+    if(sa){
+      const xlsName = `BoxUp Tracking Links ${stamp} Courier assigned (${orders.length} orders).xlsx`;
+      downloadTrackingExcel(items, xlsName);
+      showSaBulkModal(items, xlsName, { batchId, source: 'Courier assigned', date: todayLabelDate() });
+    }
+    $('logStatus').innerHTML = `<span class="ok">${orders.length} order${orders.length>1?'s':''} assigned to ${esc(courier)} and reprinted. The Label Log is updated.</span>`;
+  }catch(err){
+    console.error(err);
+    $('asgSum').innerHTML = `<span style="color:var(--danger);font-weight:600">${esc(err.message || 'Could not assign and reprint.')}</span>`;
+  }finally{
+    btn.disabled = false; btn.innerHTML = label;
+  }
+});
+
 /* ---------- pop-up with the tracking link(s) ---------- */
 function copyText(text){
   if(navigator.clipboard && window.isSecureContext){
@@ -3179,6 +3364,34 @@ $('pdfFile').addEventListener('change', (e)=>{
   e.target.value = '';
   if(f) handlePdfFile(f);
 });
+
+/* ---------- Quick access: one grid button opens all the tools ---------- */
+(function(){
+  const btn = $('qaBtn'), panel = $('qaPanel');
+  const open = on => { panel.hidden = !on; btn.setAttribute('aria-expanded', on ? 'true' : 'false'); if(on) qaSheetState(); };
+  function qaSheetState(){ const a = $('logSheetBtn'); $('qaSheet').disabled = !(a && a.href && !/#$/.test(a.getAttribute('href') || '#')); }
+  btn.addEventListener('click', e => { e.stopPropagation(); open(panel.hidden); });
+  document.addEventListener('click', e => { if(!panel.hidden && !e.target.closest('.qa-wrap')) open(false); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && !panel.hidden) open(false); });
+  const go = (id, fn) => $(id).addEventListener('click', () => { open(false); fn(); });
+  go('qaUpload', () => $('bulkUploadBtn').click());
+  go('qaTemplate', () => $('templateBtn').click());
+  go('qaPdf', () => $('pdfEditBtn').click());
+  go('qaAssign', () => $('asgBtn').click());
+  go('qaSecurity', () => $('secBtn').click());
+  go('qaSheet', () => { const a = $('logSheetBtn'); if(a && a.href) window.open(a.href, '_blank', 'noopener'); });
+})();
+
+/* ---------- Quick paste: one button opens Shopify / WhatsApp paste ---------- */
+(function(){
+  const btn = $('qpBtn'), panel = $('qpPanel');
+  const open = on => { panel.hidden = !on; btn.setAttribute('aria-expanded', on ? 'true' : 'false'); };
+  btn.addEventListener('click', e => { e.stopPropagation(); open(panel.hidden); });
+  document.addEventListener('click', e => { if(!panel.hidden && !e.target.closest('.qp-wrap')) open(false); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && !panel.hidden) open(false); });
+  $('qpShopify').addEventListener('click', () => { open(false); shpOpen('shopify'); });
+  $('qpWhatsapp').addEventListener('click', () => { open(false); shpOpen('whatsapp'); });
+})();
 </script>
 </body>
 </html>
