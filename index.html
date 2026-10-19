@@ -194,9 +194,21 @@
   .sa-modal .foot .done{background:#fff;border:1px solid #d8d2c0;border-radius:6px;padding:8px 20px;font-weight:600;cursor:pointer;}
 
   /* ---------- REVIEW POP-UP (sheet upload) ---------- */
+  .rv-prog{position:absolute;inset:0;z-index:5;background:rgba(250,247,239,.94);border-radius:12px;display:flex;align-items:center;justify-content:center;}
+  .rv-prog[hidden]{display:none;}
+  .rv-prog-card{background:#fff;border:1px solid #e4ded0;border-radius:16px;box-shadow:0 18px 50px rgba(22,49,31,.18);padding:28px 30px;width:440px;max-width:92%;text-align:center;font-family:'Inter',sans-serif;}
+  .rv-spin{width:42px;height:42px;margin:0 auto 14px;border-radius:50%;border:4px solid #e8f0ea;border-top-color:var(--forest);animation:rvspin .8s linear infinite;}
+  .rv-spin.ok{animation:none;border-color:#2E7D32;background:#2E7D32;position:relative;} .rv-spin.ok:after{content:"\2713";color:#fff;font:800 22px/34px Inter;}
+  .rv-spin.bad{animation:none;border-color:var(--danger);background:var(--danger);} .rv-spin.bad:after{content:"!";color:#fff;font:800 22px/34px Inter;}
+  @keyframes rvspin{to{transform:rotate(360deg)}}
+  .rv-prog-title{font:800 18px 'Inter',sans-serif;color:var(--forest);}
+  .rv-prog-bar{height:8px;background:#EEE9DC;border-radius:99px;overflow:hidden;margin:14px 0 10px;} .rv-prog-bar i{display:block;height:100%;width:8%;background:var(--forest);border-radius:99px;transition:width .25s;}
+  .rv-prog-msg{font-size:13px;color:#4b493f;line-height:1.5;} .rv-prog-msg .bad{color:var(--danger);font-weight:600;} .rv-prog-msg .ok{color:#2E7D32;font-weight:600;}
+  .rv-prog-msg ul{text-align:left;margin:6px 0 0 18px;max-height:140px;overflow:auto;}
+  .rv-prog-close{margin-top:16px;background:var(--forest);color:#fff;border:none;border-radius:8px;padding:9px 22px;font:700 13.5px 'Inter',sans-serif;cursor:pointer;}
   .rv-bg{position:fixed;inset:0;background:rgba(15,36,23,.55);z-index:90;display:flex;align-items:center;justify-content:center;padding:18px;}
   .rv-bg[hidden]{display:none;}
-  .rv{background:var(--cream);border-radius:12px;width:1180px;max-width:100%;height:92vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.35);font-family:'Inter',sans-serif;}
+  .rv{position:relative;background:var(--cream);border-radius:12px;width:1180px;max-width:100%;height:92vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.35);font-family:'Inter',sans-serif;}
   .rv-head{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 20px;border-bottom:1px solid #e4ded0;background:#fff;border-radius:12px 12px 0 0;flex-wrap:wrap;}
   .rv-head h3{margin:0;font-family:'Playfair Display',serif;color:var(--forest);font-size:20px;}
   .rv-file{font-size:12px;color:var(--muted);margin-top:2px;}
@@ -846,6 +858,15 @@
       <button type="button" class="cn" id="rvBkCancel">Cancel</button>
       <span class="hint" id="rvBkHint">Shree Anjani: tracking IDs fill in series (next free AWB)</span>
       <button type="button" class="x" id="rvBkX" title="Close">✕</button>
+    </div>
+    <div class="rv-prog" id="rvProg" hidden>
+      <div class="rv-prog-card">
+        <div class="rv-spin" id="rvProgSpin"></div>
+        <div class="rv-prog-title" id="rvProgTitle">Printing…</div>
+        <div class="rv-prog-bar"><i id="rvProgBar"></i></div>
+        <div class="rv-prog-msg" id="rvProgMsg"></div>
+        <button type="button" class="rv-prog-close" id="rvProgClose" hidden>Close</button>
+      </div>
     </div>
     <div class="rv-done" id="rvDone" hidden><span id="rvDoneMsg"></span><button type="button" id="rvUndo">Undo</button></div>
     <div class="rv-body" id="rvBody"></div>
@@ -2309,8 +2330,47 @@ $('rvCancel').addEventListener('click', ()=> rvClose(null));
 $('rvPrint').addEventListener('click', ()=>{
   const chosen = rvOrders.filter(o=>o.sel).map(o=>{ const v = rvFinal(o); delete v.phoneRaw; delete v.ccText; delete v.hubText; return v; });
   if(!chosen.length) return;
-  rvClose(chosen);
+  rvStartProgress(chosen.length);
+  const r = rvResolve; rvResolve = null;
+  if(r) r(chosen);
 });
+
+/* While the bulk set is being made, the review pop-up stays open and shows the status */
+var rvWorking = false;
+function rvStartProgress(n){
+  rvWorking = true;
+  $('rvProg').hidden = false; $('rvProgClose').hidden = true;
+  $('rvProgSpin').className = 'rv-spin';
+  $('rvProgTitle').textContent = `Printing ${n} order${n>1?'s':''}…`;
+  $('rvProgBar').style.width = '8%';
+  $('rvProgMsg').textContent = 'Starting…';
+}
+function rvProgUpdate(label){
+  if(!rvWorking) return;
+  if(label) $('rvProgTitle').textContent = label;
+  const m = String(label||'').match(/\((\d+)\/(\d+)\)/);
+  if(m) $('rvProgBar').style.width = Math.max(8, Math.round(+m[1] / +m[2] * 100)) + '%';
+  else if(/AWB/i.test(label||'')) $('rvProgBar').style.width = '15%';
+  const st = $('bulkStatus').innerHTML;
+  if(st) $('rvProgMsg').innerHTML = st;
+}
+function rvEndProgress(){
+  if(!rvWorking) return;
+  rvWorking = false;
+  if(!$('saModal').hidden){ $('rvProg').hidden = true; rvClose(null); return; }   // done: the result pop-up takes over
+  const st = $('bulkStatus').innerHTML, ok = /class="ok"/.test(st) && !/class="bad"/.test(st);
+  $('rvProgSpin').className = 'rv-spin ' + (ok ? 'ok' : 'bad');
+  $('rvProgTitle').textContent = ok ? 'Done' : 'Could not finish';
+  $('rvProgBar').style.width = ok ? '100%' : $('rvProgBar').style.width;
+  $('rvProgMsg').innerHTML = st || (ok ? '' : 'Something went wrong. Nothing more was printed.');
+  $('rvProgClose').hidden = false;
+}
+$('rvProgClose').addEventListener('click', ()=>{ $('rvProg').hidden = true; rvClose(null); });
+new MutationObserver(()=>rvProgUpdate()).observe($('bulkStatus'), { childList:true, characterData:true, subtree:true });
+(function(){
+  const orig = setBulkBusy;
+  setBulkBusy = function(busy, label){ orig(busy, label); if(busy) rvProgUpdate(label); else rvEndProgress(); };
+})();
 
 /* ================= GOOGLE SHEET LOG ================= */
 // Paste the Google Apps Script "Web app" link here (ends with /exec). Leave empty to turn the log off.
@@ -2753,6 +2813,7 @@ async function downloadManifest(btn, msg){
     await addSecurityPages(pdf, host, groups, state);
     pdf.setProperties({ title:'BoxUp Shipment Manifest', subject:'Shipment manifest' });
     pdf.save(`BoxUp Manifest ${(meta.date||todayLabelDate()).replace(/\s+/g,'-')} (${items.length} orders).pdf`);
+    printPdf(pdf);   // also open it in the print preview
     if(msg){ msg.textContent = `✓ Manifest downloaded (${groups.length} courier${groups.length>1?'s':''}) with the Security check page.`; msg.style.color = '#2E7D32'; msg.style.fontWeight = '600'; }
   }catch(err){
     console.error(err);
@@ -3052,9 +3113,9 @@ $('saModalBody').addEventListener('click', (e)=>{
 $('saModalBody').addEventListener('focusin', (e)=>{ if(e.target.matches('.sa-linkrow input')) e.target.select(); });
 var lastLabelPdf = null;
 /* Print: opens the labels just made in the print preview */
-function printLastLabels(){
-  if(!lastLabelPdf) return;
-  const url = URL.createObjectURL(lastLabelPdf.output('blob'));
+function printLastLabels(){ if(lastLabelPdf) printPdf(lastLabelPdf); }
+function printPdf(pdf){
+  const url = URL.createObjectURL(pdf.output('blob'));
   let f = $('printFrame');
   if(f) f.remove();
   f = document.createElement('iframe');
