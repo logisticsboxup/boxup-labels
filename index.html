@@ -1191,7 +1191,9 @@ const IL_IC = {
 function buildIntlLabelHTML(v, boxIndex){
   const total = v.totalpkg || 1;
   const dash = '<span class="empty-dash">—</span>';
-  const phone = v.phone ? ((v.phoneDial && v.phoneDial !== '91') ? '+' + v.phoneDial + ' ' + esc(v.phone) : esc(v.phone)) : dash;
+  const typed = String(v.phoneText || '').trim();
+  const phone = typed ? (/^\+/.test(typed) ? esc(typed) : '+' + esc(v.phoneDial || '') + ' ' + esc(typed.replace(/^0+(?=\d)/,'')))
+    : v.phone ? '+' + esc(v.phoneDial || '') + ' ' + esc(v.phone) : dash;
   const date = v.shipDate || new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
   const cityCountry = [v.city, v.country].filter(Boolean).join(', ');
   const addr = [v.address, v.landmark, v.state && v.state !== v.city ? v.state : ''].filter(Boolean).map(esc).join(', ');
@@ -2576,7 +2578,7 @@ function newBatchId(){ return 'B-' + Date.now().toString(36) + Math.random().toS
 /* the order exactly as printed, saved in the log so the PDF can be rebuilt later */
 function labelSnapshot(v){
   const keep = ['name','company','phone','phoneDial','alt','address','landmark','pincode','city','state','shiptype','courier',
-    'trackid','trkAllLabels','mode','orderid','totalpkg','hubcode','hubManual','shipDate','awbSeries','trackPer','intl','country','countryIso'];
+    'trackid','trkAllLabels','mode','orderid','totalpkg','hubcode','hubManual','shipDate','awbSeries','trackPer','intl','country','countryIso','phoneText'];
   const o = {}; keep.forEach(k=>{ if(v[k] !== undefined && v[k] !== '' && v[k] !== null) o[k] = v[k]; });
   return o;
 }
@@ -3656,6 +3658,7 @@ function intlCollect(){
   return {
     intl:true, country: c ? c[0] : '', countryIso: iso,
     name:$('i_name').value.trim(), company:$('i_company').value.trim(), phone:ph.number, phoneDial:ph.dial,
+    phoneText: $('i_phone').value.trim().replace(/\s+/g,' '),   // printed exactly as typed (with your spaces)
     alt:$('i_alt').value.trim(), address:$('i_address').value.trim(), landmark:$('i_landmark').value.trim(),
     city:$('i_city').value.trim(), state:$('i_state').value.trim(), pincode:$('i_postal').value.trim(),
     orderid:$('i_orderid').value.trim(), totalpkg:boxes, trackid:'', trkAllLabels:false,
@@ -3693,7 +3696,7 @@ function intlOpen(v){
     set('i_city',v.city); set('i_state',v.state); set('i_postal',v.pincode); set('i_orderid',v.orderid); set('i_totalpkg',v.totalpkg||1);
     if(v.countryIso) $('i_country').value = v.countryIso;
     if(v.phoneDial){ const c = COUNTRIES.find(x=>x[2]===String(v.phoneDial)); if(c){ $('i_cc').value = (typeof MAIN_COUNTRY!=='undefined' && MAIN_COUNTRY[v.phoneDial]) || c[1]; intlCcTouched = true; } }
-    set('i_phone', v.phone);
+    set('i_phone', v.phoneText || v.phone);
   }
   $('intlModal').hidden = false;
   intlRender(false);
