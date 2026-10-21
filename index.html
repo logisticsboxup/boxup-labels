@@ -533,6 +533,7 @@
   .blk3-left .company{font-weight:700;font-style:normal;font-size:11.2px;font-family:'Inter';}
   .blk3-right{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-left:0.22cm;gap:6px;}
   .ship-date-line{font-family:'Inter';font-size:9.5px;font-weight:600;text-align:center;color:#333;}
+  .blk12.intl12 .blk12-left{border-right:none;}
   .mode-value.intl{font-size:15px;line-height:1.12;letter-spacing:.02em;color:#111;}
   .intl-bg{position:fixed;inset:0;background:rgba(15,36,23,.55);z-index:265;display:flex;align-items:center;justify-content:center;padding:14px;}
   .intl-bg[hidden]{display:none;}
@@ -886,8 +887,6 @@
         <div class="intl-g">
           <div><label>Order ID <i>*</i></label><input type="text" id="i_orderid" autocomplete="off"></div>
           <div><label>Total boxes</label><input type="number" id="i_totalpkg" min="1" max="5000" step="1" value="1" autocomplete="off"></div>
-          <div class="s2"><label>Tracking ID (optional)</label><input type="text" id="i_trackid" autocomplete="off"></div>
-          <div class="s2"><label class="intl-cb"><input type="checkbox" id="i_trkAll"> Tracking ID on all labels</label></div>
         </div>
         <div class="intl-msg" id="intlMsg"></div>
       </div>
@@ -1154,7 +1153,7 @@ function buildLabelHTML(v, boxIndex, cat){
   const printDate = v.shipDate || new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
 
   return `
-    <div class="blk blk12">
+    <div class="blk blk12${v.intl ? ' intl12' : ''}">
       <div class="blk12-left">
         <div class="blk1-title">Ship To</div>
         <div class="kv"><span class="k">Name:</span><span class="v">${nameLine}</span></div>
@@ -1174,10 +1173,10 @@ function buildLabelHTML(v, boxIndex, cat){
         <div class="logo-mini"><img src="${LOGO_SRC}" alt="BoxUp"></div>
         <div class="courier-stack">
           ${v.intl ? '' : `<div class="courier-box">${v.courier ? esc(v.courier) : 'Courier Service Name'}</div>`}
-          <div class="tracking-box">
+          ${v.intl ? '' : `<div class="tracking-box">
             <div class="trk-label">Tracking ID</div>
             ${trkFor(v, boxIndex).id ? `<div class="trk-id">${esc(trkFor(v, boxIndex).id)}</div>` : ''}
-          </div>
+          </div>`}
           ${v.intl ? '' : `<div class="shiptype">Type:<b>${esc(v.shiptype)}</b></div>`}
         </div>
       </div>
@@ -1196,11 +1195,11 @@ function buildLabelHTML(v, boxIndex, cat){
         <div class="ship-date-line">Shipment Date: ${printDate}</div>
         <div class="mode-value${v.intl ? ' intl' : ''}">${esc(v.intl ? (v.country || 'International') : v.mode)}</div>
         <div class="orderid-box">Order #: <span>${esc(orderId)}</span></div>
-        <div class="barcode-wrap"><svg class="gen-barcode" data-code="${esc(orderId)}"></svg></div>
+        ${v.intl ? '' : `<div class="barcode-wrap"><svg class="gen-barcode" data-code="${esc(orderId)}"></svg></div>`}
       </div>
     </div>
 
-    ${hubFor(v) ? `<div class="blk blk4 has-hub">
+    ${hubFor(v) && !v.intl ? `<div class="blk blk4 has-hub">
       <div class="box-count-line"><span class="hub-badge">${esc(hubFor(v))}</span>Box <span class="n">${boxIndex}</span> of <span class="n">${total}</span></div>
       <div class="hub-sub">Destination: ${v.intl ? esc(v.country || '') + (v.city ? ' · ' + esc(v.city) : '') : esc(hubName(v)) + (v.pincode ? ' · PIN ' + esc(v.pincode) : '')}</div>
     </div>` : cat ? `<div class="blk blk4 has-cat">
@@ -1210,9 +1209,9 @@ function buildLabelHTML(v, boxIndex, cat){
       <div class="box-count-line">Box <span class="n">${boxIndex}</span> of <span class="n">${total}</span></div>
     </div>`}
 
-    <div class="blk blk5">
+    ${v.intl ? '' : `<div class="blk blk5">
       Goods once sold will only be taken back or exchanged as per the store's exchange/return policy. No Dangerous Good.
-    </div>
+    </div>`}
 
     <div class="blk blk6">
       THIS IS AN AUTO-GENERATED LABEL AND DOES NOT NEED SIGNATURE.
@@ -1234,7 +1233,8 @@ function autoFitShipTo(labelEl){
   const title = box.querySelector('.blk1-title');
   while(size >= minFont){
     kvEls.forEach(el=>{ el.style.fontSize = size+'px'; el.style.lineHeight = '1.16'; });
-    kEls.forEach(el=>{ el.style.minWidth = Math.max(40, Math.round(size*4.6))+'px'; });
+    const kf = box.parentNode && box.parentNode.classList.contains('intl12') ? 5.75 : 4.6;   // "Postal code:" is a longer label
+    kEls.forEach(el=>{ el.style.minWidth = Math.max(40, Math.round(size*kf))+'px'; });
     if(title) title.style.fontSize = Math.max(10, Math.round(size*0.62))+'px';
     if(box.scrollHeight <= availableH) break;
     size -= 0.4;
@@ -3537,7 +3537,7 @@ function intlCollect(){
     name:$('i_name').value.trim(), company:$('i_company').value.trim(), phone:ph.number, phoneDial:ph.dial,
     alt:$('i_alt').value.trim(), address:$('i_address').value.trim(), landmark:$('i_landmark').value.trim(),
     city:$('i_city').value.trim(), state:$('i_state').value.trim(), pincode:$('i_postal').value.trim(),
-    orderid:$('i_orderid').value.trim(), totalpkg:boxes, trackid:$('i_trackid').value.trim(), trkAllLabels:$('i_trkAll').checked,
+    orderid:$('i_orderid').value.trim(), totalpkg:boxes, trackid:'', trkAllLabels:false,
     courier:'International', shiptype:'Forward', mode:'International',
     hubcode: intlShort(iso), hubManual: !!iso, trackPer:null, cats:null
   };
@@ -3564,13 +3564,12 @@ function intlRender(showErr){
   return { v, p };
 }
 function intlOpen(v){
-  ['i_name','i_company','i_phone','i_alt','i_address','i_landmark','i_city','i_state','i_postal','i_orderid','i_trackid'].forEach(id=>$(id).value='');
-  $('i_totalpkg').value = 1; $('i_trkAll').checked = false; $('i_country').value = ''; $('i_cc').value = 'ARE'; intlCcTouched = false;
+  ['i_name','i_company','i_phone','i_alt','i_address','i_landmark','i_city','i_state','i_postal','i_orderid'].forEach(id=>$(id).value='');
+  $('i_totalpkg').value = 1; $('i_country').value = ''; $('i_cc').value = 'ARE'; intlCcTouched = false;
   if(v){   // from Edit from PDF / re-download data
     const set = (id,val)=>{ if(val!==undefined && val!==null) $(id).value = val; };
     set('i_name',v.name); set('i_company',v.company); set('i_alt',v.alt); set('i_address',v.address); set('i_landmark',v.landmark);
-    set('i_city',v.city); set('i_state',v.state); set('i_postal',v.pincode); set('i_orderid',v.orderid); set('i_totalpkg',v.totalpkg||1); set('i_trackid',v.trackid);
-    $('i_trkAll').checked = !!v.trkAllLabels;
+    set('i_city',v.city); set('i_state',v.state); set('i_postal',v.pincode); set('i_orderid',v.orderid); set('i_totalpkg',v.totalpkg||1);
     if(v.countryIso) $('i_country').value = v.countryIso;
     if(v.phoneDial){ const c = COUNTRIES.find(x=>x[2]===String(v.phoneDial)); if(c){ $('i_cc').value = (typeof MAIN_COUNTRY!=='undefined' && MAIN_COUNTRY[v.phoneDial]) || c[1]; intlCcTouched = true; } }
     set('i_phone', v.phone);
