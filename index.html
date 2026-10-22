@@ -370,6 +370,45 @@
   .sec-ft{display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid #eee;}
   .sec-ft button{border-radius:8px;padding:9px 16px;font:700 13.5px 'Inter',sans-serif;cursor:pointer;border:1px solid #d8d2c0;background:#fff;color:var(--forest);}
   .sec-ft .go{background:var(--forest);color:#fff;border:none;} .sec-ft .go:disabled{opacity:.45;cursor:not-allowed;}
+  /* ---------- REASSIGN COURIER ---------- */
+  .ra .sec-ft .go{background:#b8620a;}
+  .ra-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;}
+  .ra-chip{border:1px solid #d8d2c0;border-radius:16px;padding:6px 12px;font:600 12.5px 'Inter',sans-serif;background:#fff;color:#4b493f;cursor:pointer;}
+  .ra-chip.on{background:var(--forest);border-color:var(--forest);color:#fff;}
+  .ra-tools select,.ra-tools input{border:1px solid #d8d2c0;border-radius:7px;padding:7px 10px;font:12.5px 'Inter',sans-serif;background:#fff;}
+  #raModal .ra-tools select{width:auto !important;flex:0 0 auto;}
+  #raModal .ra-tools input{flex:1 1 200px;width:auto !important;min-width:180px;background:#faf7ef;}
+  .ra-sub[hidden]{display:none !important;}
+  .ra-list{border:1px solid #e4ded0;border-radius:8px;overflow:auto;min-height:120px;max-height:44vh;}
+  .ra-tbl{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .ra-tbl th{position:sticky;top:0;z-index:1;background:#F4F0E4;text-align:left;padding:7px 8px;font-size:10.5px;color:#4b493f;text-transform:uppercase;letter-spacing:.03em;}
+  .ra-tbl td{padding:7px 8px;border-bottom:1px solid #f0ece2;vertical-align:middle;}
+  .ra-tbl tr.on td{background:#F1F8F3;} .ra-tbl tr.off td{opacity:.5;}
+  .ra-tbl small{display:block;color:var(--muted);font-size:11px;}
+  .ra-tbl .cr{font-weight:700;} .ra-tbl .cr.sa{color:#1D5C96;}
+  .ra-tbl .awb{font-family:Consolas,monospace;font-weight:700;font-size:12px;word-break:break-all;}
+  .ra-tbl tr.on .awb.chg{text-decoration:line-through;color:#a33;}
+  .ra-tbl .tg{font-size:10px;font-weight:800;border-radius:5px;padding:1px 5px;margin-left:5px;background:#FFF1DC;color:#8a5a00;}
+  .ra-in{width:100%;min-width:150px;border:1.5px solid #2E7D32;border-radius:6px;padding:5px 8px;font:700 12px Consolas,monospace;background:#fff;}
+  .ra-in.auto{border-style:dashed;border-color:#1D5C96;color:#1D5C96;background:#f1f6fc;}
+  .ra-in.need{border-color:var(--danger);}
+  .ra-tbl .hint{font-size:10.5px;color:#1D5C96;font-weight:600;margin-top:2px;}
+  .ra-tbl .hint.first{color:#b8620a;}
+  .ra-opts{display:grid;grid-template-columns:1fr 1.25fr;gap:14px;background:#faf7ef;border:1px solid #ebe5d4;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:12.5px;}
+  .ra-opts b.h{display:block;font-size:11.5px;margin-bottom:6px;color:#4b493f;}
+  .ra-opts select,.ra-opts input[type=text],.ra-opts textarea{width:100%;border:1px solid #d8d2c0;border-radius:7px;padding:7px 10px;font:600 12.5px 'Inter',sans-serif;background:#fff;box-sizing:border-box;}
+  .ra-opts input[type=text]{margin-top:6px;}
+  .ra-opts textarea{font:600 12px Consolas,monospace;height:70px;margin-top:4px;}
+  .ra-rd{display:flex;gap:7px;align-items:flex-start;margin:4px 0;cursor:pointer;line-height:1.35;}
+  .ra-rd input{margin-top:2px;} .ra-rd.dis{opacity:.45;cursor:not-allowed;}
+  .ra-rd.ser{background:#fff3e3;border:1.5px solid #e3a050;border-radius:7px;padding:6px 8px;}
+  .ra-sub{margin:4px 0 6px 22px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;}
+  .ra-sub input[type=text]{width:170px;margin:0;font-family:Consolas,monospace;font-weight:700;}
+  .ra-chk{display:flex;gap:7px;align-items:flex-start;margin-top:6px;cursor:pointer;color:#4b493f;font-weight:600;}
+  .ra-sum{margin-top:10px;font-size:12.5px;background:#eef6ef;border:1px solid #cfe5d2;border-radius:8px;padding:8px 11px;color:var(--forest);}
+  .ra-sum.bad{background:#fff1f0;border-color:#f3c4bf;color:var(--danger);}
+  .ra-sum small{color:#4b493f;font-weight:400;}
+  @media (max-width:760px){ .ra-opts{grid-template-columns:1fr;} }
   .mf-foot{position:absolute;bottom:22px;left:38px;right:38px;font-size:9.5px;color:#7A776C;display:flex;justify-content:space-between;border-top:1px solid #e4ded0;padding-top:6px;}
 
   /* ---------- TOP BAR: i help + Log Sheet ---------- */
@@ -702,8 +741,8 @@
       <div class="qa-wrap">
         <button type="button" class="qa-btn" id="qaBtn" title="Quick access" aria-expanded="false" aria-controls="qaPanel"><svg viewBox="0 0 24 24" width="22" height="22" fill="#16311F"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg></button>
         <div class="qa-panel" id="qaPanel" hidden role="menu">
-          <div class="qa-hd"><b>Quick access</b><span>7 apps</span></div>
-          <div class="qa-grid"><button type="button" class="qa-tile" id="qaUpload"><span class="qa-ic" style="background:linear-gradient(145deg,#1a9b6c,#0d6b49)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg></span><span class="qa-tx">Upload sheet</span></button><button type="button" class="qa-tile" id="qaTemplate"><span class="qa-ic" style="background:linear-gradient(145deg,#3f8f5a,#22643a)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 12v6"/><path d="M9 15l3 3 3-3"/></svg></span><span class="qa-tx">Template</span></button><button type="button" class="qa-tile" id="qaPdf"><span class="qa-ic" style="background:linear-gradient(145deg,#2f5240,#16311F)"><b style="color:#fff;font:800 15px Inter,sans-serif;letter-spacing:.02em">PDF</b></span><span class="qa-tx">Edit from PDF</span></button><button type="button" class="qa-tile" id="qaAssign"><span class="qa-ic" style="background:linear-gradient(145deg,#2f77b8,#1D5C96)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></span><span class="qa-tx">Assign Courier</span></button><button type="button" class="qa-tile" id="qaSecurity"><span class="qa-ic" style="background:linear-gradient(145deg,#a8701f,#7A4E12)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg></span><span class="qa-tx">Security Record</span></button><button type="button" class="qa-tile" id="qaSheet"><span class="qa-ic" style="background:linear-gradient(145deg,#2fae6a,#188038)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M5 9h14M5 14h14M10 9v11"/></svg></span><span class="qa-tx">Log Sheet</span></button><button type="button" class="qa-tile" id="qaIntl"><span class="qa-ic" style="background:linear-gradient(145deg,#2f5f9e,#1D3F6E)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg></span><span class="qa-tx">International</span></button></div>
+          <div class="qa-hd"><b>Quick access</b><span>8 apps</span></div>
+          <div class="qa-grid"><button type="button" class="qa-tile" id="qaUpload"><span class="qa-ic" style="background:linear-gradient(145deg,#1a9b6c,#0d6b49)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg></span><span class="qa-tx">Upload sheet</span></button><button type="button" class="qa-tile" id="qaTemplate"><span class="qa-ic" style="background:linear-gradient(145deg,#3f8f5a,#22643a)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 12v6"/><path d="M9 15l3 3 3-3"/></svg></span><span class="qa-tx">Template</span></button><button type="button" class="qa-tile" id="qaPdf"><span class="qa-ic" style="background:linear-gradient(145deg,#2f5240,#16311F)"><b style="color:#fff;font:800 15px Inter,sans-serif;letter-spacing:.02em">PDF</b></span><span class="qa-tx">Edit from PDF</span></button><button type="button" class="qa-tile" id="qaAssign"><span class="qa-ic" style="background:linear-gradient(145deg,#2f77b8,#1D5C96)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></span><span class="qa-tx">Assign Courier</span></button><button type="button" class="qa-tile" id="qaSecurity"><span class="qa-ic" style="background:linear-gradient(145deg,#a8701f,#7A4E12)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg></span><span class="qa-tx">Security Record</span></button><button type="button" class="qa-tile" id="qaSheet"><span class="qa-ic" style="background:linear-gradient(145deg,#2fae6a,#188038)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M5 9h14M5 14h14M10 9v11"/></svg></span><span class="qa-tx">Log Sheet</span></button><button type="button" class="qa-tile" id="qaIntl"><span class="qa-ic" style="background:linear-gradient(145deg,#2f5f9e,#1D3F6E)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg></span><span class="qa-tx">International</span></button><button type="button" class="qa-tile" id="qaReassign"><span class="qa-ic" style="background:linear-gradient(145deg,#d9822b,#a8550c)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></span><span class="qa-tx">Reassign Courier</span></button></div>
         </div>
       </div>
       <div class="bulk-inline">
@@ -893,6 +932,46 @@
       <div class="sec-sum" id="asgSum"></div>
     </div>
     <div class="sec-ft"><button type="button" id="asgCancel">Cancel</button><button type="button" class="go" id="asgGo" disabled>&#11015; Assign &amp; Reprint</button></div>
+  </div>
+</div>
+
+<div class="sec-bg" id="raModal" hidden>
+  <div class="sec ra" role="dialog" aria-modal="true" aria-labelledby="raTitle" style="width:940px">
+    <div class="sec-hd"><h3 id="raTitle">&#8644; Reassign Courier &amp; Tracking ID</h3><div>Orders that already have a courier. Tick them, choose the change, add the new tracking ID (the rest can fill as a series), and the tool updates the Label Log and downloads the new labels.</div></div>
+    <div class="sec-bd">
+      <div class="ra-tools">
+        <button type="button" class="ra-chip on" data-f="sa" id="raChipSa">Shree Anjani</button>
+        <button type="button" class="ra-chip" data-f="all" id="raChipAll">All couriers</button>
+        <select id="raDays" title="Printed in"><option value="1">Today</option><option value="7" selected>Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="0">All time</option></select>
+        <input type="search" id="raSearch" placeholder="&#128269; Search order ID, name, company, city or AWB" autocomplete="off">
+      </div>
+      <div class="ra-list" id="raList"><div class="sec-msg">Loading…</div></div>
+      <div class="ra-opts">
+        <div>
+          <b class="h">1. Change courier to</b>
+          <select id="raCourier">
+            <option value="keep">Keep same courier (change tracking ID only)</option>
+            <option value="sa">Shree Anjani</option>
+            <option value="other" selected>Other courier (type name)</option>
+          </select>
+          <input type="text" id="raOther" list="raCourierList" placeholder="Courier name, for example DTDC">
+          <datalist id="raCourierList"><option value="DTDC"><option value="Blue Dart"><option value="Delhivery"><option value="Professional Couriers"><option value="Trackon"><option value="DHL"><option value="FedEx"><option value="India Post"><option value="Porter"></datalist>
+        </div>
+        <div>
+          <b class="h">2. New tracking ID</b>
+          <label class="ra-rd ser"><input type="radio" name="raMode" value="series" checked><span><b style="color:#7a4500">Auto series</b> &nbsp;type the first ID, the next orders fill +1 in order</span></label>
+          <div class="ra-sub" id="raSeriesBox"><span>First ID</span><input type="text" id="raFirst" placeholder="e.g. D58219034" autocomplete="off" spellcheck="false"></div>
+          <label class="ra-rd"><input type="radio" name="raMode" value="type"><span>Type the tracking ID for each order (in the list)</span></label>
+          <label class="ra-rd"><input type="radio" name="raMode" value="paste"><span>Paste a list of tracking IDs (one per line, in list order)</span></label>
+          <div class="ra-sub" id="raPasteBox" hidden><textarea id="raPaste" placeholder="One tracking ID per line" spellcheck="false"></textarea></div>
+          <label class="ra-rd" id="raSaAutoWrap"><input type="radio" name="raMode" value="saauto"><span>Give new Shree Anjani AWBs automatically</span></label>
+          <label class="ra-chk"><input type="checkbox" id="raPerBox" checked><span>Separate ID for each box (multi-box orders)</span></label>
+          <label class="ra-chk" id="raFreeWrap"><input type="checkbox" id="raFree"><span>Free the old Shree Anjani AWBs so they can be used again (only if those labels were never sent out)</span></label>
+        </div>
+      </div>
+      <div class="ra-sum" id="raSum"></div>
+    </div>
+    <div class="sec-ft"><button type="button" id="raCancel">Cancel</button><button type="button" class="go" id="raGo" disabled>&#8644; Reassign &amp; Reprint</button></div>
   </div>
 </div>
 
@@ -1596,6 +1675,7 @@ async function downloadLabelPdf(){
       saResult = await sendToSheet([v], 'Single label', fileName, batchId);
       if(!saResult.ok){ alert('Could not get a Shree Anjani AWB:\n' + saResult.error + '\n\nNothing was printed.'); return; }
       const got = saResult.orders[0];
+      if(got.rejected){ alert(got.error + '.\n\nNothing was printed. Check the AWB, or leave Tracking ID empty to get the next free Shree Anjani AWB.'); $('logStatus').innerHTML = '<span class="bad">' + esc(got.error) + '. Nothing was printed.</span>'; return; }
       v.trackid = got.awb; v.tracklink = got.link;
       v.trackPer = got.awbs && got.awbs.length > 1 ? got.awbs.slice() : null;
       $('f_trackid').value = got.awb;
@@ -1836,6 +1916,12 @@ async function handleBulkFile(file){
       const res = await sendToSheet(good, 'Bulk sheet: ' + file.name, fileName, batchId);
       if(res.ok){
         saResult = res;
+        // Shree Anjani AWBs typed in the sheet that are not in the Shree Anjani tab: those orders are not printed
+        for(let i = res.orders.length - 1; i >= 0; i--){
+          const r = res.orders[i];
+          if(r && r.rejected){ bad.unshift(`Row ${good[i]._row || ''} (${esc(good[i].orderid||'')}): ${esc(r.error)}, not printed`); good.splice(i,1); res.orders.splice(i,1); }
+        }
+        if(!good.length){ status.innerHTML = '<span class="bad">Nothing was printed. These Shree Anjani AWBs are not in the Shree Anjani tab:</span><ul>' + bad.map(b=>'<li>'+b+'</li>').join('') + '</ul>'; return; }
         res.orders.forEach((r,i)=>{
           if(r.courier) good[i].courier = r.courier;
           if(isSA(good[i].courier)){ good[i].trackid = r.awb; good[i].tracklink = r.link; good[i].trackPer = r.awbs && r.awbs.length > 1 ? r.awbs.slice() : null; }
@@ -3218,6 +3304,262 @@ $('asgGo').addEventListener('click', async ()=>{
   }
 });
 
+/* ---------- Reassign Courier: change the courier and / or tracking ID of printed orders, then reprint ---------- */
+var raAll = [], raSel = new Set(), raEdit = {}, raFilter = 'sa', raBusy = false;
+function raKey(o){ return String(o.orderid).toLowerCase(); }
+function raOpen(){
+  $('raModal').hidden = false; $('raSearch').value = '';
+  raSel = new Set(); raEdit = {}; $('raFirst').value = ''; $('raPaste').value = ''; $('raOther').value = '';
+  raLoad();
+}
+function raClose(){ if(!raBusy) $('raModal').hidden = true; }
+function raLoad(){
+  raAll = [];
+  $('raList').innerHTML = '<div class="sec-msg">Loading printed orders from the Label Log…</div>'; raSummary();
+  if(!logOn()){ $('raList').innerHTML = '<div class="sec-msg">The Google Sheet link is not set in this tool.</div>'; return; }
+  const days = $('raDays').value;
+  fetch(LOG_URL + (LOG_URL.includes('?') ? '&' : '?') + 'action=assigned&days=' + days + '&t=' + Date.now()).then(r=>r.json()).then(d=>{
+    if(!d || !d.ok) throw new Error((d && d.error) || 'bad answer');
+    raAll = d.list || []; raRender();
+  }).catch(err=>{
+    console.warn(err);
+    $('raList').innerHTML = '<div class="sec-msg">Could not load the orders. Check the internet connection and make sure the Google Sheet script is up to date.</div>';
+  });
+}
+function raVisible(){
+  const q = $('raSearch').value.trim().toLowerCase();
+  return raAll.filter(o=> (raFilter === 'all' || isSA(o.courier)) &&
+    (!q || [o.orderid, o.name, o.company, o.city, o.courier, o.trackid].some(x=>String(x||'').toLowerCase().includes(q))));
+}
+function raPicked(){ return raAll.filter(o=>o.label && raSel.has(raKey(o))); }
+function raMode(){ const r = document.querySelector('input[name=raMode]:checked'); return r ? r.value : 'series'; }
+function raBoxes(o){ return Math.min(5000, Math.max(1, parseInt(o.boxes,10) || parseInt(o.label && o.label.totalpkg,10) || 1)); }
+function raNewCourier(o){
+  const c = $('raCourier').value;
+  return c === 'keep' ? (o.courier || '') : c === 'sa' ? SA_NAME : $('raOther').value.trim();
+}
+/* next number in a series: the last group of digits goes up by 1, zeros at the front are kept */
+function raNext(id){
+  const m = String(id).match(/^(.*?)(\d+)(\D*)$/);
+  if(!m) return '';
+  const n = (BigInt(m[2]) + 1n).toString();
+  return m[1] + (n.length < m[2].length ? '0'.repeat(m[2].length - n.length) + n : n) + m[3];
+}
+function raSplit(t){ return String(t||'').split(/[\s,;]+/).map(x=>x.trim()).filter(Boolean); }
+/* new tracking IDs of every ticked order: { key: { ids:[...], auto:bool, typed:bool } } */
+function raPlan(){
+  const mode = raMode(), perBox = $('raPerBox').checked, plan = {};
+  const picked = raVisibleOrder(raPicked());
+  if(mode === 'saauto'){ picked.forEach(o=>plan[raKey(o)] = { ids:[], sa:true }); return plan; }
+  let cur = mode === 'series' ? $('raFirst').value.trim() : '';
+  const pasted = mode === 'paste' ? raSplit($('raPaste').value) : [];
+  let pi = 0, broke = false;
+  picked.forEach((o, idx)=>{
+    const k = raKey(o), need = perBox ? raBoxes(o) : 1;
+    if(raEdit[k] !== undefined){
+      const t = raSplit(raEdit[k]).slice(0, need);
+      plan[k] = { ids: t, typed:true };
+      // series: the next orders carry on from the ID typed here
+      if(mode === 'series' && t.length){ cur = raNext(t[t.length-1]); broke = !cur; }
+      return;
+    }
+    if(mode === 'type'){ plan[k] = { ids: [] }; return; }
+    const ids = [];
+    for(let i=0;i<need;i++){
+      if(mode === 'series'){
+        if(!cur || broke){ break; }
+        ids.push(cur);
+        const nx = raNext(cur); if(!nx){ broke = true; } cur = nx;
+      } else if(pi < pasted.length) ids.push(pasted[pi++]);
+    }
+    plan[k] = { ids, auto: true, first: idx === 0 && mode === 'series' };
+  });
+  return plan;
+}
+/* ticked orders in the order they are shown in the list */
+function raVisibleOrder(list){
+  const order = raAll.map(raKey);
+  return list.slice().sort((a,b)=>order.indexOf(raKey(a)) - order.indexOf(raKey(b)));
+}
+function raRender(){
+  const list = raVisible(), plan = raPlan(), perBox = $('raPerBox').checked, mode = raMode();
+  $('raChipSa').textContent = `Shree Anjani (${raAll.filter(o=>isSA(o.courier)).length})`;
+  $('raChipAll').textContent = `All couriers (${raAll.length})`;
+  if(!list.length){
+    $('raList').innerHTML = `<div class="sec-msg">${raAll.length ? 'Nothing matches. Try All couriers, a longer date range or another search.' : 'No printed orders with a courier in this date range.'}</div>`;
+    raSummary(plan); return;
+  }
+  const can = list.filter(o=>o.label), all = can.length && can.every(o=>raSel.has(raKey(o)));
+  let html = `<table class="ra-tbl"><thead><tr><th style="width:24px"><input type="checkbox" id="raAllCb" title="Select all shown" ${all?'checked':''}></th><th>Order</th><th>Customer</th><th>Now</th><th>Boxes</th><th style="width:230px">New tracking ID</th></tr></thead><tbody>`;
+  list.forEach(o=>{
+    const k = raKey(o), ok = !!o.label, on = raSel.has(k), sa = isSA(o.courier), b = raBoxes(o);
+    let cell = '<small>tick to change</small>';
+    if(!ok) cell = '<small>no saved label, reprint it once first</small>';
+    else if(on){
+      const p = plan[k] || { ids: [] };
+      if(mode === 'saauto' && !p.typed) cell = `<input class="ra-in auto" value="Next free Shree Anjani AWB${perBox && b > 1 ? 's (' + b + ')' : ''}" disabled>`;
+      else {
+        const need = perBox ? b : 1, val = p.ids.join(', '), short = p.ids.length === need;
+        const cls = p.typed || mode === 'type' ? '' : ' auto';
+        let hint = '';
+        if(p.first && !p.typed) hint = '<div class="hint first">first ID (typed below)</div>';
+        else if(p.typed) hint = '<div class="hint" style="color:#2E7D32">typed</div>';
+        else if(p.auto && p.ids.length) hint = '<div class="hint">auto</div>';
+        if(need > 1) hint += `<div class="hint">${short ? (perBox ? 'one per box' : '') : (p.ids.length + ' of ' + need + ' IDs')}</div>`;
+        else if(!perBox && b > 1) hint += '<div class="hint">same ID on all ' + b + ' boxes</div>';
+        cell = `<input class="ra-in${cls}${short ? '' : ' need'}" data-ed="${esc(k)}" value="${esc(val)}" placeholder="${need > 1 ? need + ' IDs, comma between' : 'Type tracking ID'}" spellcheck="false">${hint}`;
+      }
+    }
+    const disp = String(o.dispatch||'');
+    html += `<tr class="${on?'on':''}${ok?'':' off'}"><td><input type="checkbox" data-id="${esc(k)}" ${on?'checked':''} ${ok?'':'disabled'}></td>
+      <td><b>${esc(o.orderid)}</b>${/^dispatched/i.test(disp) ? '<span class="tg">Dispatched</span>' : ''}<small>${esc(String(o.printed||'').split(' ')[0])}</small></td>
+      <td>${esc(o.name||'')}<small>${esc([o.company, o.city].filter(Boolean).join(' · '))}</small></td>
+      <td><span class="cr${sa?' sa':''}">${esc(o.courier||'')}</span><div class="awb${on ? ' chg' : ''}">${esc(o.trackid||'')}</div></td>
+      <td>${b}</td><td>${cell}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  const sc = $('raList').scrollTop, ae = document.activeElement, focusKey = ae && ae.dataset ? ae.dataset.ed : null, caret = focusKey ? ae.selectionStart : 0;
+  $('raList').innerHTML = html; $('raList').scrollTop = sc;
+  if(focusKey){ const el = $('raList').querySelector(`[data-ed="${CSS.escape(focusKey)}"]`); if(el){ el.focus(); try{ el.setSelectionRange(caret, caret); }catch(e){} } }
+  raSummary(plan);
+}
+function raSummary(plan){
+  plan = plan || raPlan();
+  const p = raVisibleOrder(raPicked()), mode = raMode(), perBox = $('raPerBox').checked;
+  const c = $('raCourier').value;
+  $('raOther').hidden = c !== 'other';
+  $('raSeriesBox').style.display = mode === 'series' ? '' : 'none';
+  $('raPasteBox').hidden = mode !== 'paste';
+  // Shree Anjani automatic AWBs only when every ticked order ends up with Shree Anjani
+  const allSa = p.length ? p.every(o=>isSA(raNewCourier(o))) : (c === 'sa' || (c === 'keep' && raFilter === 'sa'));
+  const saRadio = document.querySelector('input[name=raMode][value=saauto]');
+  saRadio.disabled = !allSa; $('raSaAutoWrap').classList.toggle('dis', !allSa);
+  if(!allSa && saRadio.checked){ document.querySelector('input[name=raMode][value=series]').checked = true; return raRender(); }
+  const anyOldSa = p.some(o=>isSA(o.courier));
+  $('raFreeWrap').style.display = anyOldSa ? '' : 'none';
+  const sum = $('raSum'); sum.classList.remove('bad');
+  if(!p.length){ sum.innerHTML = '<small>Tick the orders to change (the box at the top ticks all shown).</small>'; $('raGo').disabled = true; return; }
+  const labels = p.reduce((a,o)=>a + raBoxes(o), 0);
+  const froms = [...new Set(p.map(o=>o.courier||'none'))].join(', ');
+  const tos = [...new Set(p.map(raNewCourier))].filter(Boolean).join(', ');
+  let problems = [], ids = [];
+  if(c === 'other' && !$('raOther').value.trim()) problems.push('type the new courier name');
+  if(mode !== 'saauto'){
+    let missing = 0;
+    p.forEach(o=>{ const q = plan[raKey(o)] || {ids:[]}; const need = perBox ? raBoxes(o) : 1; if(q.ids.length < need) missing++; ids = ids.concat(q.ids); });
+    if(missing) problems.push(mode === 'series' && !$('raFirst').value.trim() ? 'type the first tracking ID' : `${missing} order${missing>1?'s':''} still need${missing>1?'':'s'} a tracking ID`);
+    if(mode === 'series' && $('raFirst').value.trim() && !/\d/.test($('raFirst').value)) problems.push('the first ID needs a number at the end to make a series');
+    const dup = ids.filter((x,i)=>ids.indexOf(x) !== i);
+    if(dup.length) problems.push('the same tracking ID is used twice: ' + esc([...new Set(dup)].slice(0,3).join(', ')));
+  }
+  const range = ids.length ? ` · ${esc(ids[0])}${ids.length > 1 ? ' → ' + esc(ids[ids.length-1]) : ''} (${ids.length} ID${ids.length>1?'s':''})` : (mode === 'saauto' ? ' · new Shree Anjani AWBs' : '');
+  sum.innerHTML = `<b>${p.length} order${p.length>1?'s':''} · ${labels} label${labels>1?'s':''} · ${esc(froms)} → ${esc(tos || '?')}${range}</b><br>` +
+    (problems.length ? `<span style="color:var(--danger);font-weight:600">To do: ${problems.join(' · ')}</span>` :
+     '<small>Each order gets a new Label Log row with the new courier and tracking ID; the old courier and tracking ID are written in its Source column. New labels download as one PDF.</small>');
+  if(problems.length) sum.classList.add('bad');
+  $('raGo').disabled = raBusy || problems.length > 0;
+}
+$('raCancel').addEventListener('click', raClose);
+$('raModal').addEventListener('click', e=>{ if(e.target === $('raModal')) raClose(); });
+$('raModal').addEventListener('keydown', e=>{ if(e.key === 'Escape') raClose(); });
+$('raSearch').addEventListener('input', raRender);
+$('raDays').addEventListener('change', ()=>{ raSel = new Set(); raEdit = {}; raLoad(); });
+[$('raChipSa'), $('raChipAll')].forEach(b=>b.addEventListener('click', ()=>{
+  raFilter = b.dataset.f; $('raChipSa').classList.toggle('on', raFilter === 'sa'); $('raChipAll').classList.toggle('on', raFilter === 'all'); raRender();
+}));
+['raCourier','raPerBox','raFree'].forEach(id=>$(id).addEventListener('change', raRender));
+document.querySelectorAll('input[name=raMode]').forEach(r=>r.addEventListener('change', ()=>{ raEdit = {}; raRender(); if(raMode()==='series') $('raFirst').focus(); }));
+['raOther','raFirst','raPaste'].forEach(id=>$(id).addEventListener('input', raRender));
+$('raList').addEventListener('change', e=>{
+  const t = e.target;
+  if(t.id === 'raAllCb'){ raVisible().filter(o=>o.label).forEach(o=>{ t.checked ? raSel.add(raKey(o)) : raSel.delete(raKey(o)); }); raRender(); }
+  else if(t.dataset.id){ t.checked ? raSel.add(t.dataset.id) : (raSel.delete(t.dataset.id), delete raEdit[t.dataset.id]); raRender(); }
+});
+$('raList').addEventListener('input', e=>{
+  const t = e.target; if(!t.dataset.ed) return;
+  if(t.value.trim()) raEdit[t.dataset.ed] = t.value; else delete raEdit[t.dataset.ed];
+  raRender();
+});
+
+$('raGo').addEventListener('click', async ()=>{
+  if(!pdfToolsReady()) return;
+  const picked = raVisibleOrder(raPicked());
+  if(!picked.length) return;
+  const mode = raMode(), perBox = $('raPerBox').checked, plan = raPlan();
+  const btn = $('raGo'), label = btn.innerHTML; btn.disabled = true; raBusy = true;
+  try{
+    const stamp = todayLabelDate().replace(/\s+/g,'-');
+    const orders = picked.map(o=>{
+      const v = Object.assign({}, o.label);
+      const boxes = raBoxes(o);
+      v.totalpkg = boxes; v.courier = raNewCourier(o); v.shipDate = todayLabelDate();
+      v.tracklink = ''; v.trackPer = null; v.awbSeries = false; v.trackAuto = false;
+      const q = plan[raKey(o)] || { ids: [] };
+      if(mode === 'saauto' && !q.typed){ v.trackid = ''; v.trackAuto = true; v.awbSeries = perBox && boxes > 1; }
+      else if(q.ids.length > 1){ v.trackPer = q.ids.slice(0, boxes); v.trackid = q.ids[0]; v.awbSeries = true; }
+      else { v.trackid = q.ids[0] || ''; v.trkAllLabels = true; }
+      return v;
+    });
+    const fileName = orders.length === 1
+      ? `${(orders[0].orderid||'ORDER').replace(/[^a-zA-Z0-9-_]/g,'')} ${(orders[0].name||'Label').replace(/[^a-zA-Z0-9 '\-]/g,'').trim().replace(/\s+/g,' ')}.pdf`
+      : `BoxUp Labels ${stamp} Courier reassigned (${orders.length} orders).pdf`;
+    const source = 'Courier reassigned ' + stamp;
+    const batchId = newBatchId();
+    const payload = sheetPayload(orders, source, fileName, batchId);
+    payload.bulk = false;
+    payload.orders.forEach((po,i)=>{ const o = picked[i]; po.note = 'was ' + (o.courier || 'no courier') + (o.trackid ? ' ' + o.trackid : ''); });
+    if($('raFree').checked && $('raFreeWrap').style.display !== 'none'){
+      payload.release = [];
+      picked.forEach(o=>{ if(isSA(o.courier)) raSplit(o.trackid).forEach(a=>payload.release.push({ awb: a, order: o.orderid })); });
+    }
+    btn.textContent = 'Saving to the Label Log…';
+    let res;
+    try{
+      const r = await fetch(LOG_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+      res = await r.json();
+    }catch(err){ res = { ok:false, error:'Could not reach the Google Sheet. Check the internet connection and try again.' }; }
+    if(!res || !res.ok){ $('raSum').classList.add('bad'); $('raSum').innerHTML = `<span style="font-weight:600">Nothing was changed: ${esc((res && res.error) || 'the sheet did not answer.')}</span>`; return; }
+    // Shree Anjani AWBs typed here that are not in the Shree Anjani tab: those orders are not changed or printed
+    const rejected = [];
+    for(let i = (res.orders||[]).length - 1; i >= 0; i--){
+      if(res.orders[i] && res.orders[i].rejected){ rejected.unshift(orders[i].orderid + ': ' + res.orders[i].error); orders.splice(i,1); res.orders.splice(i,1); }
+    }
+    if(!orders.length){ $('raSum').classList.add('bad'); $('raSum').innerHTML = `<span style="font-weight:600">Nothing was printed or changed. Not in the Shree Anjani tab: ${esc(rejected.join(' · '))}</span>`; return; }
+    const saUsed = [];
+    (res.orders || []).forEach((r,i)=>{
+      const v = orders[i]; if(!r) return;
+      if(isSA(r.courier || v.courier)){
+        v.courier = SA_NAME;
+        if(r.awbs && r.awbs.length > 1){ v.trackPer = r.awbs.slice(); v.trackid = r.awbs[0]; saUsed.push(...r.awbs); }
+        else if(r.awb){ v.trackid = r.awb; v.trackPer = null; v.trkAllLabels = true; saUsed.push(r.awb); }
+        v.tracklink = r.link || '';
+      }
+    });
+    if(saUsed.length){ markAwbUsed(saUsed); }
+    refreshSaList();
+    const entries = [];
+    orders.forEach(v=>labelEntries(v).forEach(e=>entries.push(e)));
+    const pdf = await buildLabelsPdf(entries, (n,t)=>{ btn.textContent = `Building PDF… (${n}/${t})`; });
+    pdf.save(fileName); lastLabelPdf = pdf;
+    raBusy = false; raClose();
+    const saItems = orders.map((v,i)=>({ v, r: res.orders[i] })).filter(x=>isSA(x.v.courier) && x.r);
+    if(saItems.length){
+      const xlsName = `BoxUp Tracking Links ${stamp} Courier reassigned (${saItems.length} orders).xlsx`;
+      downloadTrackingExcel(saItems, xlsName);
+      showSaBulkModal(saItems, xlsName, { batchId, source: 'Courier reassigned', date: todayLabelDate() });
+    }
+    const freed = res.released ? ` ${res.released} old Shree Anjani AWB${res.released>1?'s are':' is'} free again.` : '';
+    $('logStatus').innerHTML = `<span class="ok">${orders.length} order${orders.length>1?'s':''} reassigned and reprinted. The Label Log is updated.${freed}</span>` +
+      (rejected.length ? `<br><span class="bad">Not printed (AWB not in the Shree Anjani tab): ${esc(rejected.join(' · '))}</span>` : '');
+    if(rejected.length) alert('Not printed, the AWB is not in the Shree Anjani tab:\n' + rejected.join('\n'));
+  }catch(err){
+    console.error(err);
+    $('raSum').classList.add('bad'); $('raSum').innerHTML = `<span style="font-weight:600">${esc(err.message || 'Could not reassign and reprint.')}</span>`;
+  }finally{
+    raBusy = false; btn.innerHTML = label; if(!$('raModal').hidden) raSummary();
+  }
+});
+
 /* ---------- pop-up with the tracking link(s) ---------- */
 function copyText(text){
   if(navigator.clipboard && window.isSecureContext){
@@ -3748,6 +4090,7 @@ $('intlGo').addEventListener('click', async ()=>{
   go('qaAssign', () => $('asgBtn').click());
   go('qaSecurity', () => $('secBtn').click());
   go('qaIntl', () => intlOpen());
+  go('qaReassign', () => raOpen());
   go('qaSheet', () => { const a = $('logSheetBtn'); if(a && a.href) window.open(a.href, '_blank', 'noopener'); });
 })();
 
