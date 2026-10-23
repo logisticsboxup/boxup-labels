@@ -408,7 +408,15 @@
   .ra-sum{margin-top:10px;font-size:12.5px;background:#eef6ef;border:1px solid #cfe5d2;border-radius:8px;padding:8px 11px;color:var(--forest);}
   .ra-sum.bad{background:#fff1f0;border-color:#f3c4bf;color:var(--danger);}
   .ra-sum small{color:#4b493f;font-weight:400;}
-  @media (max-width:760px){ .ra-opts{grid-template-columns:1fr;} }
+  /* big pop-up: order list on the left, actions on the right */
+  #raModal .sec.ra{width:1400px;max-width:97vw;height:93vh;max-height:93vh;}
+  .ra-main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:14px;}
+  #raModal .ra-list{max-height:none;height:100%;min-height:0;}
+  .ra-side{display:flex;flex-direction:column;gap:10px;min-height:0;overflow:auto;}
+  .ra-side .ra-opts{grid-template-columns:1fr;margin-top:0;gap:16px;}
+  .ra-side .ra-sum{margin-top:0;}
+  .ra-tbl{font-size:13px;} .ra-tbl td{padding:9px 10px;}
+  @media (max-width:900px){ .ra-main{grid-template-columns:1fr;grid-template-rows:minmax(260px,1fr) auto;} #raModal .sec.ra{height:auto;} }
   .mf-foot{position:absolute;bottom:22px;left:38px;right:38px;font-size:9.5px;color:#7A776C;display:flex;justify-content:space-between;border-top:1px solid #e4ded0;padding-top:6px;}
 
   /* ---------- TOP BAR: i help + Log Sheet ---------- */
@@ -936,7 +944,7 @@
 </div>
 
 <div class="sec-bg" id="raModal" hidden>
-  <div class="sec ra" role="dialog" aria-modal="true" aria-labelledby="raTitle" style="width:940px">
+  <div class="sec ra" role="dialog" aria-modal="true" aria-labelledby="raTitle">
     <div class="sec-hd"><h3 id="raTitle">&#8644; Reassign Courier &amp; Tracking ID</h3><div>Orders that already have a courier. Tick them, choose the change, add the new tracking ID (the rest can fill as a series), and the tool updates the Label Log and downloads the new labels.</div></div>
     <div class="sec-bd">
       <div class="ra-tools">
@@ -945,7 +953,9 @@
         <select id="raDays" title="Printed in"><option value="1">Today</option><option value="7" selected>Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="0">All time</option></select>
         <input type="search" id="raSearch" placeholder="&#128269; Search order ID, name, company, city or AWB" autocomplete="off">
       </div>
+      <div class="ra-main">
       <div class="ra-list" id="raList"><div class="sec-msg">Loading…</div></div>
+      <div class="ra-side">
       <div class="ra-opts">
         <div>
           <b class="h">1. Change courier to</b>
@@ -970,6 +980,8 @@
         </div>
       </div>
       <div class="ra-sum" id="raSum"></div>
+      </div>
+      </div>
     </div>
     <div class="sec-ft"><button type="button" id="raCancel">Cancel</button><button type="button" class="go" id="raGo" disabled>&#8644; Reassign &amp; Reprint</button></div>
   </div>
