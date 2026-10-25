@@ -673,6 +673,39 @@
   .label:has(.fest-band) .blk12{height:6.4cm;}
   .label:has(.fest-band) .blk3{height:4.04cm;}
   .label:has(.fest-band) .blk4{height:1.8cm;}
+  /* ---------- LABEL SETTINGS: highlighted note with a time period ---------- */
+  .ls-bg{position:fixed;inset:0;background:rgba(15,36,23,.55);z-index:270;display:flex;align-items:center;justify-content:center;padding:18px;}
+  .ls-bg[hidden]{display:none;}
+  .ls{background:#fff;border-radius:14px;width:600px;max-width:100%;max-height:94vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.35);font-family:'Inter',sans-serif;overflow:hidden;}
+  .ls-hd{padding:16px 22px 12px;border-bottom:1px solid #eee;} .ls-hd h3{margin:0 0 3px;font:700 19px 'Playfair Display',serif;color:var(--forest);} .ls-hd div{font-size:12.5px;color:var(--muted);}
+  .ls-bd{padding:14px 22px;overflow:auto;font-size:13px;}
+  .ls-card{border:1px solid #e4ded0;border-radius:12px;padding:14px;}
+  .ls-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .ls-top b{font-size:14.5px;color:var(--forest);} .ls-top small{display:block;color:var(--muted);font-size:12px;margin-top:2px;}
+  .ls-sw{position:relative;width:46px;height:26px;flex:none;} .ls-sw input{opacity:0;width:0;height:0;}
+  .ls-sw span{position:absolute;inset:0;background:#cfcabb;border-radius:20px;cursor:pointer;transition:.15s;}
+  .ls-sw span:before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
+  .ls-sw input:checked + span{background:var(--forest);} .ls-sw input:checked + span:before{transform:translateX(20px);}
+  .ls-lb{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:14px 0 6px;}
+  .ls input[type=text],.ls input[type=date]{width:100%;box-sizing:border-box;border:1px solid #d8d2c0;border-radius:8px;padding:9px 11px;font:600 13.5px 'Inter',sans-serif;color:#161512;background:#fff;}
+  .ls input#lsText{text-transform:uppercase;font-size:15px;letter-spacing:.04em;}
+  .ls-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;}
+  .ls-chip{border:1px solid #d8d2c0;background:#faf7ef;border-radius:16px;padding:5px 11px;font:600 12px 'Inter',sans-serif;color:#4b493f;cursor:pointer;}
+  .ls-chip:hover{border-color:var(--forest);color:var(--forest);}
+  .ls-dates{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .ls-dates small{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px;font-weight:600;}
+  .ls-prev{margin-top:14px;border:1.5px solid #161512;border-radius:6px;overflow:hidden;}
+  .ls-prev .pb{height:64px;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'BoxupFest','Arial Black',sans-serif;font-weight:900;font-size:34px;letter-spacing:1.2px;white-space:nowrap;padding:0 10px;overflow:hidden;}
+  .ls-prev .pf{font-size:9px;text-align:center;padding:4px;color:#333;border-top:1.5px solid #161512;}
+  .ls-prev.off .pb{background:#f3f0e6;color:#9a968a;font:600 12px 'Inter',sans-serif;letter-spacing:0;}
+  .ls-st{margin-top:10px;border-radius:8px;padding:8px 11px;font-size:12.5px;font-weight:600;}
+  .ls-st.on{background:#e8f4ea;color:#1c6b33;} .ls-st.wait{background:#fff6e5;color:#8a5a00;} .ls-st.off{background:#f3f0e6;color:#6b685c;}
+  .ls-note{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.45;}
+  .ls-ft{display:flex;justify-content:flex-end;gap:10px;padding:12px 22px;border-top:1px solid #eee;}
+  .ls-ft button{border-radius:8px;padding:9px 18px;font:700 13.5px 'Inter',sans-serif;cursor:pointer;border:1px solid #d8d2c0;background:#fff;color:var(--forest);}
+  .ls-ft .go{background:var(--forest);color:#fff;border:none;}
+  .ls-card.dis .ls-body{opacity:.55;}
+
   .blk6{height:0.6cm;padding:0.08cm 0.24cm;font-family:'Inter';font-size:8.4px;letter-spacing:.02em;text-align:center;color:#333;display:flex;align-items:center;justify-content:center;}
 
   .empty-dash{color:#c7c3b5;}
@@ -754,8 +787,8 @@
       <div class="qa-wrap">
         <button type="button" class="qa-btn" id="qaBtn" title="Quick access" aria-expanded="false" aria-controls="qaPanel"><svg viewBox="0 0 24 24" width="22" height="22" fill="#16311F"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg></button>
         <div class="qa-panel" id="qaPanel" hidden role="menu">
-          <div class="qa-hd"><b>Quick access</b><span>8 apps</span></div>
-          <div class="qa-grid"><button type="button" class="qa-tile" id="qaUpload"><span class="qa-ic" style="background:linear-gradient(145deg,#1a9b6c,#0d6b49)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg></span><span class="qa-tx">Upload sheet</span></button><button type="button" class="qa-tile" id="qaTemplate"><span class="qa-ic" style="background:linear-gradient(145deg,#3f8f5a,#22643a)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 12v6"/><path d="M9 15l3 3 3-3"/></svg></span><span class="qa-tx">Template</span></button><button type="button" class="qa-tile" id="qaPdf"><span class="qa-ic" style="background:linear-gradient(145deg,#2f5240,#16311F)"><b style="color:#fff;font:800 15px Inter,sans-serif;letter-spacing:.02em">PDF</b></span><span class="qa-tx">Edit from PDF</span></button><button type="button" class="qa-tile" id="qaAssign"><span class="qa-ic" style="background:linear-gradient(145deg,#2f77b8,#1D5C96)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></span><span class="qa-tx">Assign Courier</span></button><button type="button" class="qa-tile" id="qaSecurity"><span class="qa-ic" style="background:linear-gradient(145deg,#a8701f,#7A4E12)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg></span><span class="qa-tx">Security Record</span></button><button type="button" class="qa-tile" id="qaSheet"><span class="qa-ic" style="background:linear-gradient(145deg,#2fae6a,#188038)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M5 9h14M5 14h14M10 9v11"/></svg></span><span class="qa-tx">Log Sheet</span></button><button type="button" class="qa-tile" id="qaIntl"><span class="qa-ic" style="background:linear-gradient(145deg,#2f5f9e,#1D3F6E)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg></span><span class="qa-tx">International</span></button><button type="button" class="qa-tile" id="qaReassign"><span class="qa-ic" style="background:linear-gradient(145deg,#d9822b,#a8550c)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></span><span class="qa-tx">Reassign Courier</span></button></div>
+          <div class="qa-hd"><b>Quick access</b><span>10 apps</span></div>
+          <div class="qa-grid"><button type="button" class="qa-tile" id="qaUpload"><span class="qa-ic" style="background:linear-gradient(145deg,#1a9b6c,#0d6b49)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg></span><span class="qa-tx">Upload sheet</span></button><button type="button" class="qa-tile" id="qaTemplate"><span class="qa-ic" style="background:linear-gradient(145deg,#3f8f5a,#22643a)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 12v6"/><path d="M9 15l3 3 3-3"/></svg></span><span class="qa-tx">Template</span></button><button type="button" class="qa-tile" id="qaPdf"><span class="qa-ic" style="background:linear-gradient(145deg,#2f5240,#16311F)"><b style="color:#fff;font:800 15px Inter,sans-serif;letter-spacing:.02em">PDF</b></span><span class="qa-tx">Edit from PDF</span></button><button type="button" class="qa-tile" id="qaAssign"><span class="qa-ic" style="background:linear-gradient(145deg,#2f77b8,#1D5C96)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></span><span class="qa-tx">Assign Courier</span></button><button type="button" class="qa-tile" id="qaSecurity"><span class="qa-ic" style="background:linear-gradient(145deg,#a8701f,#7A4E12)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg></span><span class="qa-tx">Security Record</span></button><button type="button" class="qa-tile" id="qaSheet"><span class="qa-ic" style="background:linear-gradient(145deg,#2fae6a,#188038)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M5 9h14M5 14h14M10 9v11"/></svg></span><span class="qa-tx">Log Sheet</span></button><button type="button" class="qa-tile" id="qaIntl"><span class="qa-ic" style="background:linear-gradient(145deg,#2f5f9e,#1D3F6E)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg></span><span class="qa-tx">International</span></button><button type="button" class="qa-tile" id="qaReassign"><span class="qa-ic" style="background:linear-gradient(145deg,#d9822b,#a8550c)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></span><span class="qa-tx">Reassign Courier</span></button><button type="button" class="qa-tile" id="qaLabelSet"><span class="qa-ic" style="background:linear-gradient(145deg,#4a4a4a,#1c1c1c)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10"/><path d="M18 7h2"/><circle cx="16" cy="7" r="2"/><path d="M4 17h4"/><path d="M12 17h8"/><circle cx="10" cy="17" r="2"/></svg></span><span class="qa-tx">Label Settings</span></button><button type="button" class="qa-tile" id="qaSales" title="Open the Order Tracker in a new tab"><span class="qa-ic" style="background:linear-gradient(145deg,#2a9d8f,#17675e)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M5 16l4-5 4 3 6-8"/><path d="M15 6h4v4"/></svg></span><span class="qa-tx">Order Tracker</span></button></div>
         </div>
       </div>
       <div class="bulk-inline">
@@ -945,6 +978,31 @@
       <div class="sec-sum" id="asgSum"></div>
     </div>
     <div class="sec-ft"><button type="button" id="asgCancel">Cancel</button><button type="button" class="go" id="asgGo" disabled>&#11015; Assign &amp; Reprint</button></div>
+  </div>
+</div>
+
+<div class="ls-bg" id="lsModal" hidden>
+  <div class="ls" role="dialog" aria-modal="true" aria-labelledby="lsTitle">
+    <div class="ls-hd"><h3 id="lsTitle">&#9881; Label Settings</h3><div>Default settings for every label printed on this computer.</div></div>
+    <div class="ls-bd">
+      <div class="ls-card" id="lsCard">
+        <div class="ls-top"><div><b>Highlighted note</b><small>A bold black band at the bottom of every label, for a set time period.</small></div>
+          <label class="ls-sw" title="On / Off"><input type="checkbox" id="lsOn"><span></span></label></div>
+        <div class="ls-body">
+          <div class="ls-lb">Note text</div>
+          <input type="text" id="lsText" maxlength="28" placeholder="e.g. DIWALI GIFT" autocomplete="off" spellcheck="false">
+          <div class="ls-chips" id="lsChips"><button type="button" class="ls-chip">DIWALI GIFT</button><button type="button" class="ls-chip">FESTIVE GIFT</button><button type="button" class="ls-chip">NEW YEAR GIFT</button><button type="button" class="ls-chip">FRAGILE</button><button type="button" class="ls-chip">HANDLE WITH CARE</button></div>
+          <div class="ls-lb">Time period</div>
+          <div class="ls-dates"><div><small>Show from</small><input type="date" id="lsFrom"></div><div><small>Until (leave empty = until turned off)</small><input type="date" id="lsTo"></div></div>
+          <div class="ls-chips" id="lsQuick"><button type="button" class="ls-chip" data-d="0">Today only</button><button type="button" class="ls-chip" data-d="6">Next 7 days</button><button type="button" class="ls-chip" data-d="14">Next 15 days</button><button type="button" class="ls-chip" data-d="29">Next 30 days</button><button type="button" class="ls-chip" data-d="-1">No end date</button></div>
+          <div class="ls-lb">Preview (bottom of the label)</div>
+          <div class="ls-prev" id="lsPrev"><div class="pb" id="lsPrevBand"></div><div class="pf">THIS IS AN AUTO-GENERATED LABEL AND DOES NOT NEED SIGNATURE.</div></div>
+        </div>
+        <div class="ls-st" id="lsState"></div>
+      </div>
+      <div class="ls-note">Outside the time period, labels print normally with the return-policy line. International labels never show the note. Saved on this computer; set it on each PC that prints labels.</div>
+    </div>
+    <div class="ls-ft"><button type="button" id="lsCancel">Cancel</button><button type="button" class="go" id="lsSave">Save</button></div>
   </div>
 </div>
 
@@ -3346,6 +3404,60 @@ $('asgGo').addEventListener('click', async ()=>{
   }
 });
 
+/* ---------- Label Settings: highlighted note (festival band) with a time period ---------- */
+/* stored in the same place the Logistics Hub uses: localStorage 'boxup.labelDetails' -> fest {on, text, from, to} */
+function lsDay(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function lsNice(s){ if(!s) return ''; const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+function lsOpen(){
+  const d = hubLabelDetails() || {}, f = d.fest || {};
+  $('lsOn').checked = f.on === undefined ? true : !!f.on; $('lsText').value = f.text || ''; $('lsFrom').value = f.from || lsDay(new Date()); $('lsTo').value = f.to || '';
+  $('lsModal').hidden = false; lsRefresh(); setTimeout(()=>$('lsText').focus(), 50);
+}
+function lsClose(){ $('lsModal').hidden = true; }
+function lsRefresh(){
+  const on = $('lsOn').checked, txt = $('lsText').value.trim().toUpperCase(), from = $('lsFrom').value, to = $('lsTo').value, today = lsDay(new Date());
+  $('lsCard').classList.toggle('dis', !on);
+  const band = $('lsPrevBand');
+  $('lsPrev').classList.toggle('off', !(on && txt));
+  band.textContent = on && txt ? txt : 'Off: labels show the normal return-policy line here';
+  if(on && txt){ let fs = 34; band.style.fontSize = fs + 'px'; while(fs > 12 && band.scrollWidth > band.clientWidth){ fs--; band.style.fontSize = fs + 'px'; } } else band.style.fontSize = '';
+  const st = $('lsState'); let cls = 'off', msg = 'Off. Labels print normally.';
+  if(on && !txt){ cls = 'wait'; msg = 'Type the note text.'; }
+  else if(on && to && from && to < from){ cls = 'wait'; msg = '"Until" is before "Show from". Fix the dates.'; }
+  else if(on){
+    const span = (from ? 'from ' + lsNice(from) : '') + (to ? ' until ' + lsNice(to) : ' with no end date');
+    if(to && today > to){ cls = 'off'; msg = 'Ended on ' + lsNice(to) + '. Labels print normally.'; }
+    else if(from && today < from){ cls = 'wait'; msg = 'Scheduled: "' + txt + '" starts on ' + lsNice(from) + (to ? ' and ends ' + lsNice(to) : '') + '.'; }
+    else { cls = 'on'; msg = '✓ Showing "' + txt + '" on labels now, ' + span.trim() + '.'; }
+  }
+  st.className = 'ls-st ' + cls; st.textContent = msg;
+  $('lsSave').disabled = on && (!txt || (to && from && to < from));
+}
+$('lsCancel').addEventListener('click', lsClose);
+$('lsModal').addEventListener('click', e=>{ if(e.target === $('lsModal')) lsClose(); });
+$('lsModal').addEventListener('keydown', e=>{ if(e.key === 'Escape') lsClose(); });
+['lsOn','lsText','lsFrom','lsTo'].forEach(id=>{ $(id).addEventListener('input', lsRefresh); $(id).addEventListener('change', lsRefresh); });
+['lsText','lsFrom','lsTo'].forEach(id=>$(id).addEventListener('input', ()=>{ if(!$('lsOn').checked){ $('lsOn').checked = true; lsRefresh(); } }));
+$('lsChips').addEventListener('click', e=>{ const b = e.target.closest('.ls-chip'); if(!b) return; $('lsText').value = b.textContent; $('lsOn').checked = true; lsRefresh(); });
+$('lsQuick').addEventListener('click', e=>{
+  const b = e.target.closest('.ls-chip'); if(!b) return;
+  const n = +b.dataset.d, t = new Date();
+  if(!$('lsFrom').value || n >= 0) $('lsFrom').value = lsDay(t);
+  if(n < 0) $('lsTo').value = ''; else { const e2 = new Date(t); e2.setDate(e2.getDate() + n); $('lsTo').value = lsDay(e2); }
+  $('lsOn').checked = true; lsRefresh();
+});
+$('lsSave').addEventListener('click', ()=>{
+  const d = hubLabelDetails() || {};
+  d.fest = { on: $('lsOn').checked, text: $('lsText').value.trim().toUpperCase(), from: $('lsFrom').value, to: $('lsTo').value };
+  try{ localStorage.setItem('boxup.labelDetails', JSON.stringify(d)); }catch(e){ alert('Could not save the setting on this computer.'); return; }
+  lsClose();
+  try{ render(); }catch(e){}
+  const f = hubFestText();
+  $('logStatus').innerHTML = f ? `<span class="ok">Highlighted note "${esc(f)}" is on. It prints on every label${d.fest.to ? ' until ' + esc(lsNice(d.fest.to)) : ''}.</span>`
+    : (d.fest.on ? `<span class="ok">Highlighted note saved. It starts on ${esc(lsNice(d.fest.from))}.</span>` : '<span class="ok">Highlighted note is off.</span>');
+});
+window.openLabelSettings = lsOpen;   // used by the desktop app menu: File > Label settings
+
 /* ---------- Reassign Courier: change the courier and / or tracking ID of printed orders, then reprint ---------- */
 var raAll = [], raSel = new Set(), raEdit = {}, raFilter = 'sa', raBusy = false;
 function raKey(o){ return String(o.orderid).toLowerCase(); }
@@ -4132,6 +4244,8 @@ $('intlGo').addEventListener('click', async ()=>{
   go('qaAssign', () => $('asgBtn').click());
   go('qaSecurity', () => $('secBtn').click());
   go('qaIntl', () => intlOpen());
+  go('qaLabelSet', () => lsOpen());
+  go('qaSales', () => window.open('https://logisticsboxup.github.io/boxup-sales/', '_blank', 'noopener'));
   go('qaReassign', () => raOpen());
   go('qaSheet', () => { const a = $('logSheetBtn'); if(a && a.href) window.open(a.href, '_blank', 'noopener'); });
 })();
