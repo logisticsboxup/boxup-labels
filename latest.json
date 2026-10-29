@@ -1,0 +1,34 @@
+{
+  "app": "1.1.0",
+  "date": "29 Oct 2026",
+  "core": {
+    "version": "1.1.0",
+    "files": [
+      {
+        "path": "main.js",
+        "sha256": "2fb15b3146b1717b7dd6ffad64c4feee2b34f1ee8392466303fea9a6c209573f"
+      },
+      {
+        "path": "preload.js",
+        "sha256": "376728d95f1d99288c5c0f82dbfa0bba3bbd07ff9ef5d5546a9a9f57f8489f52"
+      }
+    ]
+  },
+  "setup": {
+    "url": "https://github.com/logisticsboxup/boxup-labels/releases/latest"
+  },
+  "notes": [
+    {
+      "title": "Check for update in the File menu",
+      "text": "File > Check for update (Ctrl+U) looks at GitHub and brings down the newest label tool straight away."
+    },
+    {
+      "title": "The old template no longer comes back",
+      "text": "The app now keeps the newest copy of the tool, not the last one it happened to download."
+    },
+    {
+      "title": "About shows both versions",
+      "text": "Help > About BoxUp Labels lists what is installed here and what is on GitHub right now, and says whether they match."
+    }
+  ]
+}
