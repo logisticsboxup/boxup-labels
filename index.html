@@ -674,6 +674,50 @@
   .label:has(.fest-band) .blk3{height:4.04cm;}
   .label:has(.fest-band) .blk4{height:1.8cm;}
   /* ---------- LABEL SETTINGS: highlighted note with a time period ---------- */
+  /* ---------- MANAGE ORDERS ---------- */
+  #moModal .sec.ra,#meModal .sec.ra{width:1440px;max-width:97vw;height:93vh;max-height:93vh;}
+  #mcModal .sec{width:560px;}
+  .mo-list{flex:1;min-height:0;border:1px solid #e4ded0;border-radius:8px;overflow:auto;}
+  .mo-tbl td .acts{white-space:nowrap;}
+  .mo-b{border-radius:6px;padding:4px 9px;font:700 11.5px 'Inter',sans-serif;cursor:pointer;margin-right:4px;border:1px solid;}
+  .mo-b.ed{background:#eef4fb;color:#1D5C96;border-color:#b9cfe6;} .mo-b.cn{background:#fff6e5;color:#8a5a00;border-color:#f0d39b;}
+  .mo-b.dl{background:#fff1f0;color:#b3261e;border-color:#f3c4bf;} .mo-b.rs{background:#eef4fb;color:#1D5C96;border-color:#b9cfe6;}
+  .mo-b:disabled{opacity:.35;cursor:not-allowed;}
+  .mo-st{font-size:10.5px;font-weight:800;border-radius:10px;padding:2px 8px;white-space:nowrap;}
+  .mo-st.rd{background:#fdf0cf;color:#7a5600;} .mo-st.dp{background:#e2efe6;color:#1c6b33;} .mo-st.cx{background:#fde2e0;color:#b3261e;}
+  .mo-tbl tr.cx td.st-x{color:#aaa;text-decoration:line-through;}
+  .mo-bar{display:flex;align-items:center;gap:10px;background:#16311F;color:#fff;border-radius:10px;padding:10px 14px;margin-top:10px;font-size:13px;}
+  .mo-bar[hidden]{display:none;} .mo-bar .sp{flex:1;}
+  .mo-bar button{border-radius:7px;padding:7px 13px;font:700 12.5px 'Inter',sans-serif;cursor:pointer;border:none;}
+  .mo-bar .e{background:#fff;color:#1D5C96;} .mo-bar .c{background:#f4c26b;color:#5a3a00;} .mo-bar .d{background:#e35b4f;color:#fff;} .mo-bar .x{background:transparent;border:1px solid #6d8a77;color:#cfe3d6;}
+  .me-all{display:grid;grid-template-columns:repeat(5,1fr) 1.5fr;gap:10px;background:#FFF3E3;border:1.5px solid #e3a050;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12.5px;}
+  .me-all .t{grid-column:1/-1;font-weight:700;color:#7a4500;}
+  .me-all[hidden]{display:none !important;}
+  .me-all input[type=radio],.me-awb input[type=radio]{width:auto;flex:none;margin:2px 0 0;}
+  .me-all .me-rd{align-items:flex-start;line-height:1.3;}
+  .me-all .me-rd small{display:block;color:var(--muted);font-size:11px;font-weight:400;}
+  #moModal .ra-tools select{width:auto !important;flex:0 0 auto;}
+  #moModal .ra-tools input{flex:1 1 220px;width:auto !important;min-width:180px;background:#faf7ef;}
+  .me-tbl select{min-width:130px;border:1px solid #d8d2c0;border-radius:6px;padding:5px 6px;font:600 12px 'Inter',sans-serif;background:#fff;}
+  .me-tbl select.chg{border:1.5px solid #e3a050;background:#fffaf2;}
+  .me-all input,.me-all select,.me-form input,.me-form select{width:100%;box-sizing:border-box;border:1px solid #d8d2c0;border-radius:7px;padding:7px 9px;font:600 12.5px 'Inter',sans-serif;background:#fff;}
+  .me-lb{font-size:10.5px;font-weight:700;color:#4b493f;text-transform:uppercase;letter-spacing:.05em;margin:0 0 4px;}
+  .me-rd{display:flex;gap:7px;align-items:center;margin:3px 0;font-size:12.5px;cursor:pointer;}
+  .me-tbl input{width:100%;box-sizing:border-box;border:1px solid #d8d2c0;border-radius:6px;padding:5px 7px;font:600 12px 'Inter',sans-serif;background:#fff;min-width:60px;}
+  .me-tbl input.chg,.me-form input.chg,.me-form select.chg{border:1.5px solid #e3a050;background:#fffaf2;}
+  .me-tbl input.bad{border-color:var(--danger);}
+  .me-wrap{flex:1;min-height:0;overflow:auto;}
+  .me-form{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 12px;font-size:12.5px;}
+  .me-form .w2{grid-column:span 2;} .me-form .w4{grid-column:span 4;}
+  .me-awb{border:1px solid #e4ded0;border-radius:10px;padding:10px 12px;margin-top:12px;}
+  .me-awb .me-rd{padding:6px 8px;border:1.5px solid #e4ded0;border-radius:8px;margin:5px 0;}
+  .me-awb .me-rd.on{border-color:#e3a050;background:#FFF3E3;}
+  .me-awb .me-rd.dis{opacity:.45;cursor:not-allowed;}
+  .me-awb small{display:block;color:var(--muted);font-size:11.5px;font-weight:400;}
+  .me-foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:12.5px;}
+  .me-foot input[type=text]{border:1px solid #d8d2c0;border-radius:7px;padding:7px 9px;font:13px 'Inter',sans-serif;width:260px;}
+  .mc-list{max-height:180px;overflow:auto;border:1px solid #eee;border-radius:8px;padding:6px 10px;font-size:12.5px;margin-bottom:10px;line-height:1.6;}
+  .mc-in{width:100%;box-sizing:border-box;border:1px solid #d8d2c0;border-radius:7px;padding:8px 10px;font:13px 'Inter',sans-serif;}
   .ls-bg{position:fixed;inset:0;background:rgba(15,36,23,.55);z-index:270;display:flex;align-items:center;justify-content:center;padding:18px;}
   .ls-bg[hidden]{display:none;}
   .ls{background:#fff;border-radius:14px;width:600px;max-width:100%;max-height:94vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.35);font-family:'Inter',sans-serif;overflow:hidden;}
@@ -787,8 +831,8 @@
       <div class="qa-wrap">
         <button type="button" class="qa-btn" id="qaBtn" title="Quick access" aria-expanded="false" aria-controls="qaPanel"><svg viewBox="0 0 24 24" width="22" height="22" fill="#16311F"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg></button>
         <div class="qa-panel" id="qaPanel" hidden role="menu">
-          <div class="qa-hd"><b>Quick access</b><span>10 apps</span></div>
-          <div class="qa-grid"><button type="button" class="qa-tile" id="qaUpload"><span class="qa-ic" style="background:linear-gradient(145deg,#1a9b6c,#0d6b49)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg></span><span class="qa-tx">Upload sheet</span></button><button type="button" class="qa-tile" id="qaTemplate"><span class="qa-ic" style="background:linear-gradient(145deg,#3f8f5a,#22643a)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 12v6"/><path d="M9 15l3 3 3-3"/></svg></span><span class="qa-tx">Template</span></button><button type="button" class="qa-tile" id="qaPdf"><span class="qa-ic" style="background:linear-gradient(145deg,#2f5240,#16311F)"><b style="color:#fff;font:800 15px Inter,sans-serif;letter-spacing:.02em">PDF</b></span><span class="qa-tx">Edit from PDF</span></button><button type="button" class="qa-tile" id="qaAssign"><span class="qa-ic" style="background:linear-gradient(145deg,#2f77b8,#1D5C96)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></span><span class="qa-tx">Assign Courier</span></button><button type="button" class="qa-tile" id="qaSecurity"><span class="qa-ic" style="background:linear-gradient(145deg,#a8701f,#7A4E12)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg></span><span class="qa-tx">Security Record</span></button><button type="button" class="qa-tile" id="qaSheet"><span class="qa-ic" style="background:linear-gradient(145deg,#2fae6a,#188038)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M5 9h14M5 14h14M10 9v11"/></svg></span><span class="qa-tx">Log Sheet</span></button><button type="button" class="qa-tile" id="qaIntl"><span class="qa-ic" style="background:linear-gradient(145deg,#2f5f9e,#1D3F6E)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg></span><span class="qa-tx">International</span></button><button type="button" class="qa-tile" id="qaReassign"><span class="qa-ic" style="background:linear-gradient(145deg,#d9822b,#a8550c)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></span><span class="qa-tx">Reassign Courier</span></button><button type="button" class="qa-tile" id="qaLabelSet"><span class="qa-ic" style="background:linear-gradient(145deg,#4a4a4a,#1c1c1c)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10"/><path d="M18 7h2"/><circle cx="16" cy="7" r="2"/><path d="M4 17h4"/><path d="M12 17h8"/><circle cx="10" cy="17" r="2"/></svg></span><span class="qa-tx">Label Settings</span></button><button type="button" class="qa-tile" id="qaSales" title="Open the Order Tracker in a new tab"><span class="qa-ic" style="background:linear-gradient(145deg,#2a9d8f,#17675e)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M5 16l4-5 4 3 6-8"/><path d="M15 6h4v4"/></svg></span><span class="qa-tx">Order Tracker</span></button></div>
+          <div class="qa-hd"><b>Quick access</b><span>11 apps</span></div>
+          <div class="qa-grid"><button type="button" class="qa-tile" id="qaUpload"><span class="qa-ic" style="background:linear-gradient(145deg,#1a9b6c,#0d6b49)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg></span><span class="qa-tx">Upload sheet</span></button><button type="button" class="qa-tile" id="qaTemplate"><span class="qa-ic" style="background:linear-gradient(145deg,#3f8f5a,#22643a)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 12v6"/><path d="M9 15l3 3 3-3"/></svg></span><span class="qa-tx">Template</span></button><button type="button" class="qa-tile" id="qaPdf"><span class="qa-ic" style="background:linear-gradient(145deg,#2f5240,#16311F)"><b style="color:#fff;font:800 15px Inter,sans-serif;letter-spacing:.02em">PDF</b></span><span class="qa-tx">Edit from PDF</span></button><button type="button" class="qa-tile" id="qaAssign"><span class="qa-ic" style="background:linear-gradient(145deg,#2f77b8,#1D5C96)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></span><span class="qa-tx">Assign Courier</span></button><button type="button" class="qa-tile" id="qaSecurity"><span class="qa-ic" style="background:linear-gradient(145deg,#a8701f,#7A4E12)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg></span><span class="qa-tx">Security Record</span></button><button type="button" class="qa-tile" id="qaSheet"><span class="qa-ic" style="background:linear-gradient(145deg,#2fae6a,#188038)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M5 9h14M5 14h14M10 9v11"/></svg></span><span class="qa-tx">Log Sheet</span></button><button type="button" class="qa-tile" id="qaIntl"><span class="qa-ic" style="background:linear-gradient(145deg,#2f5f9e,#1D3F6E)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg></span><span class="qa-tx">International</span></button><button type="button" class="qa-tile" id="qaReassign"><span class="qa-ic" style="background:linear-gradient(145deg,#d9822b,#a8550c)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14"/><path d="M14 4l4 4-4 4"/><path d="M20 16H6"/><path d="M10 12l-4 4 4 4"/></svg></span><span class="qa-tx">Reassign Courier</span></button><button type="button" class="qa-tile" id="qaLabelSet"><span class="qa-ic" style="background:linear-gradient(145deg,#4a4a4a,#1c1c1c)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10"/><path d="M18 7h2"/><circle cx="16" cy="7" r="2"/><path d="M4 17h4"/><path d="M12 17h8"/><circle cx="10" cy="17" r="2"/></svg></span><span class="qa-tx">Label Settings</span></button><button type="button" class="qa-tile" id="qaSales" title="Open the Order Tracker in a new tab"><span class="qa-ic" style="background:linear-gradient(145deg,#2a9d8f,#17675e)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M5 16l4-5 4 3 6-8"/><path d="M15 6h4v4"/></svg></span><span class="qa-tx">Order Tracker</span></button><button type="button" class="qa-tile" id="qaManage"><span class="qa-ic" style="background:linear-gradient(145deg,#c0392b,#7d1f16)"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/></svg></span><span class="qa-tx">Manage Orders</span></button></div>
         </div>
       </div>
       <div class="bulk-inline">
@@ -981,6 +1025,70 @@
       <div class="sec-sum" id="asgSum"></div>
     </div>
     <div class="sec-ft"><button type="button" id="asgCancel">Cancel</button><button type="button" class="go" id="asgGo" disabled>&#11015; Assign &amp; Reprint</button></div>
+  </div>
+</div>
+
+<div class="sec-bg" id="moModal" hidden>
+  <div class="sec ra" role="dialog" aria-modal="true" aria-labelledby="moTitle">
+    <div class="sec-hd"><h3 id="moTitle">&#9998; Manage Orders</h3><div>Buttons on a row change only that order. Tick boxes select many orders and show the bulk bar at the bottom. Every change is recorded in the Label Log.</div></div>
+    <div class="sec-bd">
+      <div class="ra-tools">
+        <button type="button" class="ra-chip on" data-f="active">Active</button>
+        <button type="button" class="ra-chip" data-f="cancelled">Cancelled</button>
+        <button type="button" class="ra-chip" data-f="all">All</button>
+        <select id="moSender" title="Sender Company"><option value="">Sender: All</option></select>
+        <select id="moDays" title="Printed in"><option value="1">Today</option><option value="7" selected>Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="0">All time</option></select>
+        <input type="search" id="moSearch" placeholder="&#128269; Order ID, recipient, sender company, city or AWB" autocomplete="off">
+      </div>
+      <div class="mo-list" id="moList"><div class="sec-msg">Loading…</div></div>
+      <div class="mo-bar" id="moBar" hidden><b id="moBarTxt"></b><span class="sp"></span>
+        <button type="button" class="e" id="moBulkEdit">&#9998; Bulk update details</button>
+        <button type="button" class="c" id="moBulkCancel">&#8856; Cancel selected</button>
+        <button type="button" class="d" id="moBulkDelete">&#128465; Delete selected</button>
+        <button type="button" class="x" id="moBulkClear">Clear</button></div>
+      <div class="sec-msg" id="moMsg" style="padding:6px 0 0;text-align:left"></div>
+    </div>
+    <div class="sec-ft"><button type="button" id="moClose">Close</button></div>
+  </div>
+</div>
+
+<div class="sec-bg" id="meModal" hidden>
+  <div class="sec ra" role="dialog" aria-modal="true" aria-labelledby="meTitle">
+    <div class="sec-hd"><h3 id="meTitle">&#9998; Edit &amp; reprint</h3><div id="meSub">Change any detail. The old line in the Label Log is struck through and a new line is added. The labels download again.</div></div>
+    <div class="sec-bd" style="display:flex;flex-direction:column;min-height:0">
+      <div class="me-all" id="meAll" hidden>
+        <div class="t">Apply to all selected orders (leave blank = keep each order's own value)</div>
+        <div><div class="me-lb">Sender Company</div><input type="text" id="meAllSender" list="senderList" placeholder="keep"></div>
+        <div><div class="me-lb">Courier</div><input type="text" id="meAllCourier" list="meCourierList" placeholder="keep"></div>
+        <div><div class="me-lb">Mode of shipping</div><select id="meAllMode"><option value="">keep</option><option>Air Shipping</option><option>Surface Shipping</option><option>Express Ground</option></select></div>
+        <div><div class="me-lb">Shipment type</div><select id="meAllType"><option value="">keep</option><option>Forward</option><option>Reverse</option></select></div>
+        <div><div class="me-lb">Total boxes</div><input type="number" id="meAllBoxes" min="1" max="5000" placeholder="keep"></div>
+        <div id="meAllAwb"></div>
+      </div>
+      <datalist id="meCourierList"><option value="Shree Anjani"><option value="DTDC"><option value="Blue Dart"><option value="Delhivery"><option value="Professional Couriers"><option value="Trackon"><option value="DHL"><option value="India Post"></datalist>
+      <div class="me-wrap" id="meBody"></div>
+      <div class="me-foot">
+        <label class="ra-chk" id="mePerBoxWrap"><input type="checkbox" id="mePerBox" checked><span>Separate tracking ID for each box (multi-box orders)</span></label>
+        <label class="ra-chk" id="meFreeWrap"><input type="checkbox" id="meFree"><span>Free the old Shree Anjani AWBs (only if those labels were never used)</span></label>
+        <span>Reason (optional): <input type="text" id="meReason" placeholder="e.g. Customer changed address"></span>
+      </div>
+      <div class="ra-sum" id="meSum"></div>
+    </div>
+    <div class="sec-ft"><button type="button" id="meBack">Back</button><button type="button" class="go" id="meGo">&#9998; Save &amp; reprint</button></div>
+  </div>
+</div>
+
+<div class="sec-bg" id="mcModal" hidden>
+  <div class="sec" role="dialog" aria-modal="true" aria-labelledby="mcTitle">
+    <div class="sec-hd"><h3 id="mcTitle"></h3><div id="mcSub"></div></div>
+    <div class="sec-bd">
+      <div class="mc-list" id="mcList"></div>
+      <div class="me-lb">Reason</div><input type="text" class="mc-in" id="mcReason" placeholder="e.g. Customer cancelled">
+      <label class="ra-chk" id="mcFreeWrap" style="margin-top:10px"><input type="checkbox" id="mcFree"><span>Free their Shree Anjani AWBs so they can be used again (only if those labels were never used)</span></label>
+      <div id="mcDelWrap" style="margin-top:12px"><div class="me-lb">Type DELETE to confirm</div><input type="text" class="mc-in" id="mcDel" placeholder="DELETE" autocomplete="off"></div>
+      <div class="ra-sum" id="mcSum" style="margin-top:10px"></div>
+    </div>
+    <div class="sec-ft"><button type="button" id="mcBack">Back</button><button type="button" class="go" id="mcGo" style="background:#b3261e"></button></div>
   </div>
 </div>
 
@@ -3482,7 +3590,374 @@ function rememberSenders(list){
 function fillSenderList(){ const dl = $('senderList'); if(dl) dl.innerHTML = senderList().map(x=>`<option value="${esc(x)}">`).join(''); }
 fillSenderList();   // used by the desktop app menu: File > Label settings
 
-/* ---------- Reassign Courier: change the courier and / or tracking ID of printed orders, then reprint ---------- */
+/* ================= MANAGE ORDERS: edit & reprint, cancel, restore, delete (one order or many) ================= */
+var MO = { all: [], sel: new Set(), f: 'active', busy: false };
+const moKey = o => String(o.orderid).toLowerCase();
+const moCancelled = o => /^cancel/i.test(o.ostatus || '');
+const moDispatched = o => /^(dispatched|partly)/i.test(o.dispatch || '');
+const moTrk = lab => { if(!lab) return []; if(lab.trackPer && lab.trackPer.length) return lab.trackPer.map(t => typeof t === 'object' ? (t.id || '') : String(t)).filter(Boolean); return raSplit(lab.trackid || ''); };
+function moOpen(){
+  $('moModal').hidden = false; MO.sel = new Set(); $('moSearch').value = ''; $('moMsg').textContent = '';
+  moLoad();
+}
+function moClose(){ if(!MO.busy) $('moModal').hidden = true; }
+function moLoad(){
+  MO.all = []; $('moList').innerHTML = '<div class="sec-msg">Loading printed orders from the Label Log…</div>'; moBar();
+  if(!logOn()){ $('moList').innerHTML = '<div class="sec-msg">The Google Sheet link is not set in this tool.</div>'; return; }
+  fetch(LOG_URL + (LOG_URL.includes('?') ? '&' : '?') + 'action=manage&days=' + $('moDays').value + '&t=' + Date.now()).then(r => r.json()).then(d => {
+    if(!d || !d.ok) throw new Error((d && d.error) || 'bad answer');
+    MO.all = d.list || [];
+    const keep = new Set(MO.all.map(moKey)); MO.sel.forEach(k => { if(!keep.has(k)) MO.sel.delete(k); });
+    const cur = $('moSender').value, senders = [...new Set(MO.all.map(o => o.sender).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+    $('moSender').innerHTML = '<option value="">Sender: All</option>' + senders.map(x => `<option>${esc(x)}</option>`).join('');
+    $('moSender').value = senders.includes(cur) ? cur : '';
+    moRender();
+  }).catch(err => {
+    console.warn(err);
+    $('moList').innerHTML = '<div class="sec-msg">Could not load the orders. Check the internet connection and make sure the Google Sheet script is up to date.</div>';
+  });
+}
+function moVisible(){
+  const q = $('moSearch').value.trim().toLowerCase(), snd = $('moSender').value;
+  return MO.all.filter(o => (MO.f === 'all' || (MO.f === 'cancelled') === moCancelled(o)) && (!snd || o.sender === snd) &&
+    (!q || [o.orderid, o.name, o.sender, o.company, o.city, o.courier, o.trackid].some(x => String(x || '').toLowerCase().includes(q))));
+}
+function moRender(){
+  const list = moVisible();
+  if(!list.length){ $('moList').innerHTML = `<div class="sec-msg">${MO.all.length ? 'Nothing matches. Try another filter, a longer date range or All.' : 'No printed orders in this date range.'}</div>`; moBar(); return; }
+  const all = list.every(o => MO.sel.has(moKey(o)));
+  let h = `<table class="ra-tbl mo-tbl"><thead><tr><th style="width:24px"><input type="checkbox" id="moAllCb" title="Select all shown" ${all ? 'checked' : ''}></th><th>Order</th><th>Recipient</th><th>Courier / AWB</th><th>Status</th><th>Actions (this order only)</th></tr></thead><tbody>`;
+  list.slice(0, 800).forEach(o => {
+    const k = moKey(o), on = MO.sel.has(k), cx = moCancelled(o), dp = moDispatched(o), lab = !!o.label;
+    const st = cx ? `<span class="mo-st cx" title="${esc(o.ostatus)}">Cancelled</span>` : dp ? `<span class="mo-st dp">${esc(o.dispatch)}</span>` : `<span class="mo-st rd">${esc(o.dispatch || 'Ready')}</span>`;
+    const acts = cx ? `<button type="button" class="mo-b rs" data-act="restore" data-k="${esc(k)}">&#8634; Restore</button>`
+      : `<button type="button" class="mo-b ed" data-act="edit" data-k="${esc(k)}" ${lab ? '' : 'disabled title="No saved label for this order"'}>&#9998; Edit</button><button type="button" class="mo-b cn" data-act="cancel" data-k="${esc(k)}">&#8856; Cancel</button><button type="button" class="mo-b dl" data-act="delete" data-k="${esc(k)}" ${dp ? 'disabled title="Already dispatched: cancel it instead"' : ''}>&#128465; Delete</button>`;
+    h += `<tr class="${on ? 'on' : ''}${cx ? ' cx' : ''}"><td><input type="checkbox" data-k="${esc(k)}" ${on ? 'checked' : ''}></td>
+      <td class="st-x"><b>${esc(o.orderid)}</b><small>${esc([o.sender, String(o.printed || '').split(' ')[0]].filter(Boolean).join(' · '))}</small></td>
+      <td class="st-x">${esc(o.name || '')}<small>${esc([o.city, (parseInt(o.boxes,10) || 1) + ' box' + ((parseInt(o.boxes,10) || 1) > 1 ? 'es' : '')].filter(Boolean).join(' · '))}</small></td>
+      <td class="st-x">${esc(o.courier || '')}<div class="awb">${esc(o.trackid || '')}</div></td>
+      <td>${st}</td><td class="acts">${acts}</td></tr>`;
+  });
+  h += '</tbody></table>' + (list.length > 800 ? `<div class="sec-msg">Showing the first 800 of ${list.length}. Search or filter to narrow down.</div>` : '');
+  const sc = $('moList').scrollTop; $('moList').innerHTML = h; $('moList').scrollTop = sc;
+  moBar();
+}
+function moSelected(){ return MO.all.filter(o => MO.sel.has(moKey(o))); }
+function moBar(){
+  const p = moSelected(), n = p.length;
+  $('moBar').hidden = !n;
+  if(!n) return;
+  const labels = p.reduce((a, o) => a + (parseInt(o.boxes, 10) || 1), 0);
+  $('moBarTxt').textContent = `${n} order${n > 1 ? 's' : ''} selected · ${labels} label${labels > 1 ? 's' : ''}`;
+  $('moBulkEdit').disabled = !p.some(o => o.label && !moCancelled(o));
+  $('moBulkCancel').disabled = !p.some(o => !moCancelled(o));
+  $('moBulkDelete').disabled = !p.some(o => !moDispatched(o));
+}
+$('moClose').addEventListener('click', moClose);
+$('moModal').addEventListener('click', e => { if(e.target === $('moModal')) moClose(); });
+$('moModal').addEventListener('keydown', e => { if(e.key === 'Escape' && $('meModal').hidden && $('mcModal').hidden) moClose(); });
+$('moSearch').addEventListener('input', moRender);
+$('moSender').addEventListener('change', moRender);
+$('moDays').addEventListener('change', moLoad);
+document.querySelectorAll('#moModal .ra-chip').forEach(b => b.addEventListener('click', () => {
+  MO.f = b.dataset.f; document.querySelectorAll('#moModal .ra-chip').forEach(x => x.classList.toggle('on', x === b)); moRender();
+}));
+$('moList').addEventListener('change', e => {
+  const t = e.target;
+  if(t.id === 'moAllCb'){ moVisible().forEach(o => t.checked ? MO.sel.add(moKey(o)) : MO.sel.delete(moKey(o))); moRender(); }
+  else if(t.dataset.k){ t.checked ? MO.sel.add(t.dataset.k) : MO.sel.delete(t.dataset.k); t.closest('tr').classList.toggle('on', t.checked); moBar(); }
+});
+$('moList').addEventListener('click', e => {
+  const b = e.target.closest('button[data-act]'); if(!b || b.disabled) return;
+  const o = MO.all.find(x => moKey(x) === b.dataset.k); if(!o) return;
+  if(b.dataset.act === 'edit') meOpen([o]); else mcOpen(b.dataset.act, [o]);
+});
+$('moBulkEdit').addEventListener('click', () => meOpen(moSelected().filter(o => o.label && !moCancelled(o))));
+$('moBulkCancel').addEventListener('click', () => mcOpen('cancel', moSelected().filter(o => !moCancelled(o))));
+$('moBulkDelete').addEventListener('click', () => mcOpen('delete', moSelected()));
+$('moBulkClear').addEventListener('click', () => { MO.sel.clear(); moRender(); });
+
+/* ---------- cancel / restore / delete ---------- */
+var MC = null;
+function mcOpen(op, list){
+  if(op === 'cancel') list = list.filter(o => !moCancelled(o));
+  if(op === 'restore') list = list.filter(o => moCancelled(o));
+  const blocked = op === 'delete' ? list.filter(moDispatched) : [];
+  if(op === 'delete') list = list.filter(o => !moDispatched(o));
+  if(!list.length){ $('moMsg').innerHTML = `<span style="color:var(--danger)">${op === 'delete' ? 'Dispatched orders cannot be deleted. Cancel them instead.' : 'Nothing to do for the selected orders.'}</span>`; return; }
+  MC = { op, list };
+  const n = list.length, sa = list.some(o => isSA(o.courier) && moTrk(o.label).length);
+  $('mcTitle').innerHTML = op === 'cancel' ? `&#8856; Cancel ${n} order${n > 1 ? 's' : ''}` : op === 'delete' ? `&#128465; Delete ${n} order${n > 1 ? 's' : ''}` : `&#8634; Restore ${n} order${n > 1 ? 's' : ''}`;
+  $('mcSub').textContent = op === 'cancel' ? 'They stay in the Label Log, struck through in red, with the reason.'
+    : op === 'delete' ? 'They are removed from the Label Log and moved to the Deleted Orders tab (kept for safety).'
+    : 'The red strike-through is removed and the orders are active again.';
+  $('mcList').innerHTML = list.map(o => `<div><b>${esc(o.orderid)}</b> · ${esc(o.name || '')}${o.sender ? ' · ' + esc(o.sender) : ''} · ${esc(o.courier || '')} ${esc(o.trackid || '')}</div>`).join('') +
+    (blocked.length ? `<div style="color:var(--danger);margin-top:4px">Left out (already dispatched, cancel instead): ${esc(blocked.map(o => o.orderid).join(', '))}</div>` : '');
+  $('mcReason').value = ''; $('mcReason').parentNode.style.display = '';
+  $('mcReason').style.display = op === 'restore' ? 'none' : ''; $('mcReason').previousElementSibling.style.display = op === 'restore' ? 'none' : '';
+  $('mcFree').checked = false; $('mcFreeWrap').style.display = op === 'cancel' && sa ? '' : 'none';
+  $('mcDel').value = ''; $('mcDelWrap').style.display = op === 'delete' ? '' : 'none';
+  $('mcGo').innerHTML = op === 'cancel' ? `&#8856; Cancel ${n} order${n > 1 ? 's' : ''}` : op === 'delete' ? `&#128465; Delete ${n} order${n > 1 ? 's' : ''}` : `&#8634; Restore ${n} order${n > 1 ? 's' : ''}`;
+  $('mcGo').style.background = op === 'restore' ? 'var(--forest)' : '#b3261e';
+  $('mcSum').textContent = ''; $('mcSum').className = 'ra-sum'; $('mcSum').style.display = 'none';
+  mcCheck(); $('mcModal').hidden = false;
+  setTimeout(() => (op === 'delete' ? $('mcDel') : op === 'cancel' ? $('mcReason') : $('mcGo')).focus(), 50);
+}
+function mcCheck(){ $('mcGo').disabled = MO.busy || (MC && MC.op === 'delete' && $('mcDel').value.trim().toUpperCase() !== 'DELETE'); }
+function mcClose(){ if(!MO.busy){ $('mcModal').hidden = true; MC = null; } }
+$('mcDel').addEventListener('input', mcCheck);
+$('mcBack').addEventListener('click', mcClose);
+$('mcModal').addEventListener('click', e => { if(e.target === $('mcModal')) mcClose(); });
+$('mcModal').addEventListener('keydown', e => { if(e.key === 'Escape') mcClose(); });
+$('mcGo').addEventListener('click', async () => {
+  if(!MC || $('mcGo').disabled) return;
+  const { op, list } = MC, btn = $('mcGo'), label = btn.innerHTML;
+  const body = { action: 'manage', op, reason: $('mcReason').value.trim(), items: list.map(o => ({ row: o.row, orderid: o.orderid })) };
+  if(op === 'cancel' && $('mcFree').checked) body.release = [].concat(...list.filter(o => isSA(o.courier)).map(o => moTrk(o.label).map(a => ({ awb: a, order: o.orderid }))));
+  MO.busy = true; btn.disabled = true; btn.textContent = 'Saving to the Label Log…';
+  try{
+    const res = await fetch(LOG_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(body) }).then(r => r.json());
+    if(!res || !res.ok) throw new Error((res && res.error) || 'The sheet did not answer.');
+    const done = res.done || [], word = op === 'cancel' ? 'cancelled' : op === 'delete' ? 'deleted (moved to the Deleted Orders tab)' : 'restored';
+    $('moMsg').innerHTML = `<span style="color:#1c6b33;font-weight:600">${done.length} order${done.length === 1 ? '' : 's'} ${word}.${res.released ? ' ' + res.released + ' Shree Anjani AWB' + (res.released > 1 ? 's are' : ' is') + ' free again.' : ''}</span>` +
+      ((res.skipped || []).length ? `<br><span style="color:var(--danger)">Not done: ${esc(res.skipped.join(' · '))}</span>` : '');
+    if(op === 'cancel' && res.released) refreshSaList();
+    list.forEach(o => MO.sel.delete(moKey(o)));
+    MO.busy = false; mcClose(); moLoad();
+  }catch(err){
+    $('mcSum').style.display = ''; $('mcSum').className = 'ra-sum bad'; $('mcSum').textContent = 'Nothing was changed: ' + (err.message || err) + ' Check the internet connection and try again.';
+  }finally{ MO.busy = false; btn.innerHTML = label; mcCheck(); }
+});
+
+/* ---------- edit & reprint (one order = form, many = table) ---------- */
+var ME = null;
+const ME_NAMES = { name:'recipient', company:'company', phone:'phone', alt:'alt number', address:'address', landmark:'landmark', pincode:'pincode', city:'city', state:'state', sender:'sender company', courier:'courier', mode:'mode', shiptype:'shipment type', totalpkg:'boxes' };
+function meOpen(list){
+  list = list.filter(o => o.label);
+  if(!list.length){ $('moMsg').innerHTML = '<span style="color:var(--danger)">These orders have no saved label, so they cannot be edited here.</span>'; return; }
+  ME = { single: list.length === 1, items: list.map(o => {
+    const orig = Object.assign({}, o.label); orig.totalpkg = Math.min(5000, Math.max(1, parseInt(orig.totalpkg || o.boxes, 10) || 1));
+    if(o.sender && !orig.sender) orig.sender = o.sender;
+    return { o, orig, v: Object.assign({}, orig), typed: '' };
+  }) };
+  ['meAllSender','meAllCourier','meAllMode','meAllType','meAllBoxes','meReason'].forEach(id => $(id).value = '');
+  $('meFree').checked = false; $('mePerBox').checked = true;
+  const n = ME.items.length;
+  $('meTitle').innerHTML = ME.single ? `&#9998; Edit &amp; reprint · ${esc(list[0].orderid)}` : `&#9998; Bulk update · ${n} orders`;
+  $('meSub').textContent = ME.single ? 'Change any detail. The old line in the Label Log is struck through (grey) and a new line is added. The label downloads again.'
+    : 'Set a value once for all orders in the orange box, or change any cell. Old lines are struck through in the Label Log, new lines are added, and all labels download as one PDF.';
+  $('meAll').hidden = ME.single;
+  $('meAllAwb').innerHTML = ME.single ? '' : meAwbHtml();
+  $('meGo').innerHTML = ME.single ? '&#9998; Save &amp; reprint label' : `&#9998; Update &amp; reprint ${n} orders`;
+  meRender(); $('meModal').hidden = false;
+}
+function meAwbHtml(){
+  const one = ME.single, it = ME.items[0], cur = one ? moTrk(it.orig).join(', ') : '';
+  return `<div class="me-lb">Tracking ID / AWB</div>
+    <label class="me-rd on"><input type="radio" name="meAwb" value="keep" checked><span><b>Keep the same AWB</b>${one && cur ? ' ' + esc(cur) : ''}<small>Reprint with the old tracking ID</small></span></label>
+    <label class="me-rd" id="meSaRd"><input type="radio" name="meAwb" value="sa"><span><b>New Shree Anjani AWB${one ? '' : 's'} (automatic)</b><small>Next free AWB from the Shree Anjani tab</small></span></label>
+    ${one ? '' : `<label class="me-rd"><input type="radio" name="meAwb" value="series"><span><b>Auto series</b> from <input type="text" id="meFirst" placeholder="first ID" style="width:120px;display:inline-block;padding:3px 6px" autocomplete="off"><small>Next orders fill +1 in list order</small></span></label>`}
+    <label class="me-rd"><input type="radio" name="meAwb" value="type"><span><b>Type a new tracking ID</b>${one ? ` <input type="text" id="meTypeOne" placeholder="New tracking ID (comma between, one per box)" style="width:260px;display:inline-block;padding:3px 6px" autocomplete="off">` : ' <small style="display:inline">in the table</small>'}<small>Shree Anjani AWBs must be in the Shree Anjani tab</small></span></label>`;
+}
+const meMode = () => (document.querySelector('input[name=meAwb]:checked') || {}).value || 'keep';
+function meInput(i, f, cls, type){
+  const it = ME.items[i], val = it.v[f] == null ? '' : it.v[f], ch = String(val) !== String(it.orig[f] == null ? '' : it.orig[f]);
+  if(type === 'mode') return `<select data-i="${i}" data-f="${f}" class="${ch ? 'chg' : ''}">${['Air Shipping','Surface Shipping','Express Ground'].map(x => `<option ${x === val ? 'selected' : ''}>${x}</option>`).join('')}</select>`;
+  if(type === 'type') return `<select data-i="${i}" data-f="${f}" class="${ch ? 'chg' : ''}">${['Forward','Reverse'].map(x => `<option ${x === (val || 'Forward') ? 'selected' : ''}>${x}</option>`).join('')}</select>`;
+  return `<input type="${type || 'text'}" data-i="${i}" data-f="${f}" value="${esc(String(val))}" class="${ch ? 'chg' : ''} ${cls || ''}" ${f === 'courier' ? 'list="meCourierList"' : f === 'sender' ? 'list="senderList"' : ''} ${f === 'totalpkg' ? 'min="1" max="5000"' : ''} autocomplete="off" spellcheck="false">`;
+}
+/* the new tracking IDs of every order: { ids, auto, keep, err } */
+function mePlan(){
+  const mode = meMode(), perBox = $('mePerBox').checked;
+  let cur = mode === 'series' && $('meFirst') ? $('meFirst').value.trim() : '';
+  return ME.items.map((it, i) => {
+    const boxes = Math.min(5000, Math.max(1, parseInt(it.v.totalpkg, 10) || 1)), need = perBox ? boxes : 1;
+    if(mode === 'keep'){
+      const ids = moTrk(it.orig), per = it.orig.trackPer && it.orig.trackPer.length > 1;
+      return { ids, keep: true, err: per && ids.length !== boxes ? 'boxes changed, so pick new tracking IDs' : '' };
+    }
+    if(mode === 'sa') return { ids: [], auto: true, err: isSA(it.v.courier) ? '' : 'courier is not Shree Anjani' };
+    if(mode === 'series'){
+      const ids = [];
+      for(let k = 0; k < need && cur; k++){ ids.push(cur); cur = raNext(cur); }
+      return { ids, err: ids.length < need ? 'type the first ID (with a number at the end)' : '' };
+    }
+    const typed = raSplit(ME.single ? ($('meTypeOne') ? $('meTypeOne').value : '') : it.typed);
+    return { ids: typed.slice(0, Math.max(need, 1)), err: !typed.length ? 'type the new tracking ID' : (typed.length > 1 && typed.length < boxes ? `${typed.length} of ${boxes} IDs typed` : '') };
+  });
+}
+function meChanges(it){ return Object.keys(ME_NAMES).filter(f => String(it.v[f] == null ? '' : it.v[f]) !== String(it.orig[f] == null ? '' : it.orig[f])).map(f => ME_NAMES[f]); }
+function meRender(){
+  const plan = mePlan(), mode = meMode();
+  const ae = document.activeElement, fk = ae && ae.dataset && ae.dataset.f ? ae.dataset.i + '|' + ae.dataset.f : null, caret = fk && ae.selectionStart != null ? ae.selectionStart : null;
+  let h;
+  if(ME.single){
+    const it = ME.items[0], o = it.o;
+    const fl = (label, f, w, type) => `<div class="${w || ''}"><div class="me-lb">${label}</div>${meInput(0, f, '', type)}</div>`;
+    h = `<div class="me-form">
+      ${fl('Recipient', 'name', 'w2')}${fl('Company Name', 'company', 'w2')}
+      ${fl('Phone', 'phone')}${fl('Alt number', 'alt')}${fl('Sender Company (not printed)', 'sender', 'w2')}
+      ${fl('Address', 'address', 'w4')}
+      ${fl('Landmark', 'landmark', 'w2')}${fl('Pincode', 'pincode')}${fl('Total boxes', 'totalpkg', '', 'number')}
+      ${fl('City', 'city')}${fl('State', 'state')}${fl('Courier', 'courier', 'w2')}
+      ${fl('Mode of shipping', 'mode', 'w2', 'mode')}${fl('Shipment type', 'shiptype', 'w2', 'type')}
+    </div>
+    <div class="me-awb" id="meAwbBox">${meAwbHtml()}</div>`;
+  } else {
+    h = `<table class="ra-tbl me-tbl"><thead><tr><th>Order</th><th>Recipient</th><th>Phone</th><th style="min-width:220px">Address</th><th>Pincode</th><th>City</th><th>Courier</th><th>Mode</th><th style="width:60px">Boxes</th><th style="min-width:180px">New tracking ID</th></tr></thead><tbody>`;
+    ME.items.forEach((it, i) => {
+      const p = plan[i];
+      const trk = mode === 'type' ? `<input type="text" data-i="${i}" data-f="__typed" value="${esc(it.typed)}" class="${p.err ? 'bad' : 'chg'}" placeholder="Type tracking ID" autocomplete="off" spellcheck="false">`
+        : mode === 'sa' ? `<small style="color:#1D5C96;font-weight:600">${p.err ? '<span style="color:var(--danger)">' + esc(p.err) + '</span>' : 'next free Shree Anjani AWB'}</small>`
+        : `<div class="awb">${esc(p.ids.join(', ') || '—')}</div>${p.err ? `<small style="color:var(--danger)">${esc(p.err)}</small>` : (mode === 'keep' ? '<small>same as before</small>' : '')}`;
+      h += `<tr><td><b>${esc(it.o.orderid)}</b><small>${esc(it.o.sender || '')}</small></td><td>${meInput(i,'name')}</td><td>${meInput(i,'phone')}</td><td>${meInput(i,'address')}</td><td>${meInput(i,'pincode')}</td><td>${meInput(i,'city')}</td><td>${meInput(i,'courier')}</td><td>${meInput(i,'mode','', 'mode')}</td><td>${meInput(i,'totalpkg','','number')}</td><td>${trk}</td></tr>`;
+    });
+    h += '</tbody></table>';
+  }
+  // keep radio + typed values when the single form is redrawn
+  const keepMode = mode, first = $('meFirst') ? $('meFirst').value : '', one = $('meTypeOne') ? $('meTypeOne').value : '';
+  $('meBody').innerHTML = h;
+  const r = document.querySelector(`input[name=meAwb][value=${keepMode}]`); if(r) r.checked = true;
+  if($('meFirst')) $('meFirst').value = first; if($('meTypeOne')) $('meTypeOne').value = one;
+  if(fk){ const [fi, ff] = fk.split('|'); const el = document.querySelector(`[data-i="${fi}"][data-f="${ff}"]`); if(el){ el.focus(); try{ if(caret != null) el.setSelectionRange(caret, caret); }catch(e){} } }
+  else if(ae && (ae.id === 'meFirst' || ae.id === 'meTypeOne')){ const el = $(ae.id); if(el){ el.focus(); } }
+  meSummary(plan);
+}
+function meSummary(plan){
+  plan = plan || mePlan();
+  const mode = meMode(), allSa = ME.items.every(it => isSA(it.v.courier));
+  document.querySelectorAll('input[name=meAwb]').forEach(x => x.closest('.me-rd').classList.toggle('on', x.checked));
+  const saRd = document.querySelector('input[name=meAwb][value=sa]');
+  if(saRd){ saRd.disabled = !allSa; saRd.closest('.me-rd').classList.toggle('dis', !allSa); }
+  const anyMulti = ME.items.some(it => (parseInt(it.v.totalpkg, 10) || 1) > 1);
+  $('mePerBoxWrap').style.display = mode !== 'keep' && anyMulti ? '' : 'none';
+  const anyOldSa = ME.items.some(it => isSA(it.orig.courier) && moTrk(it.orig).length);
+  $('meFreeWrap').style.display = mode !== 'keep' && anyOldSa ? '' : 'none';
+  const errs = [], changes = ME.items.map(meChanges);
+  ME.items.forEach((it, i) => {
+    if(!String(it.v.name || '').trim()) errs.push(it.o.orderid + ': recipient is empty');
+    if(!String(it.v.address || '').trim()) errs.push(it.o.orderid + ': address is empty');
+    if(!/^\d{6}$/.test(String(it.v.pincode || '').trim()) && !it.v.intl) errs.push(it.o.orderid + ': pincode must be 6 digits');
+    if(plan[i].err) errs.push(it.o.orderid + ': ' + plan[i].err);
+  });
+  if(mode === 'sa' && !allSa) errs.unshift('New Shree Anjani AWBs need the courier to be Shree Anjani for every order');
+  const ids = [].concat(...plan.map(p => p.ids || [])); const dup = ids.filter((x, i) => ids.indexOf(x) !== i);
+  if(mode !== 'keep' && dup.length) errs.push('the same tracking ID is used twice: ' + [...new Set(dup)].slice(0, 3).join(', '));
+  const nCh = changes.reduce((a, c) => a + c.length, 0), labels = ME.items.reduce((a, it) => a + (parseInt(it.v.totalpkg, 10) || 1), 0);
+  const sum = $('meSum');
+  sum.className = 'ra-sum' + (errs.length ? ' bad' : '');
+  sum.innerHTML = `<b>${ME.items.length} order${ME.items.length > 1 ? 's' : ''} · ${labels} label${labels > 1 ? 's' : ''} · ${nCh} change${nCh === 1 ? '' : 's'}${mode !== 'keep' ? ' + new tracking ID' + (ME.items.length > 1 ? 's' : '') : ''}</b><br>` +
+    (errs.length ? `<span style="font-weight:600">To fix: ${esc(errs.slice(0, 4).join(' · '))}${errs.length > 4 ? ' …' : ''}</span>`
+      : `<small>${ME.single && changes[0].length ? 'Changed: ' + esc(changes[0].join(', ')) + '. ' : ''}Orange = changed. The old Label Log line is struck through (grey) and a new line is added.</small>`);
+  $('meGo').disabled = MO.busy || errs.length > 0;
+}
+function meClose(){ if(!MO.busy){ $('meModal').hidden = true; ME = null; } }
+$('meBack').addEventListener('click', meClose);
+$('meModal').addEventListener('click', e => { if(e.target === $('meModal')) meClose(); });
+$('meModal').addEventListener('keydown', e => { if(e.key === 'Escape') meClose(); });
+$('meModal').addEventListener('input', e => {
+  const t = e.target; if(!ME) return;
+  if(t.dataset && t.dataset.f){
+    const it = ME.items[+t.dataset.i], f = t.dataset.f;
+    if(f === '__typed'){ it.typed = t.value; meRender(); return; }
+    it.v[f] = f === 'totalpkg' ? (t.value === '' ? '' : Math.min(5000, Math.max(1, parseInt(t.value, 10) || 1))) : t.value;
+    if(f === 'pincode' || f === 'city'){ if(!it.orig.hubManual){ it.v.hubcode = ''; it.v.hubManual = false; } }
+    if(f === 'pincode' && /^\d{6}$/.test(t.value.trim()) && t.value.trim() !== String(it.orig.pincode || '')){
+      const pin = t.value.trim();
+      fetchPinInfo(pin).then(info => { if(info && ME && String(it.v.pincode).trim() === pin){ it.v.city = info.city || it.v.city; it.v.state = info.state || it.v.state; meRender(); } });
+    }
+    meRender(); return;
+  }
+  if(t.id === 'meFirst' || t.id === 'meTypeOne'){ meRender(); return; }
+  if(t.id && t.id.startsWith('meAll')){
+    const map = { meAllSender:'sender', meAllCourier:'courier', meAllMode:'mode', meAllType:'shiptype', meAllBoxes:'totalpkg' }, f = map[t.id];
+    if(f){ ME.items.forEach(it => { it.v[f] = t.value === '' ? it.orig[f] : (f === 'totalpkg' ? Math.min(5000, Math.max(1, parseInt(t.value, 10) || 1)) : t.value); }); meRender(); }
+  }
+});
+$('meModal').addEventListener('change', e => {
+  const t = e.target; if(!ME) return;
+  if(t.name === 'meAwb' || t.id === 'mePerBox' || t.id === 'meFree'){ meRender(); return; }
+  if(t.tagName === 'SELECT' && t.dataset.f){ ME.items[+t.dataset.i].v[t.dataset.f] = t.value; meRender(); return; }
+  if(t.tagName === 'SELECT' && t.id && t.id.startsWith('meAll')){ const f = t.id === 'meAllMode' ? 'mode' : 'shiptype'; ME.items.forEach(it => { it.v[f] = t.value || it.orig[f]; }); meRender(); }
+});
+$('meGo').addEventListener('click', async () => {
+  if(!ME || $('meGo').disabled || !pdfToolsReady()) return;
+  const plan = mePlan(), mode = meMode(), perBox = $('mePerBox').checked, reason = $('meReason').value.trim();
+  const btn = $('meGo'), label = btn.innerHTML; btn.disabled = true; MO.busy = true;
+  try{
+    const stamp = todayLabelDate().replace(/\s+/g, '-'), when = new Date().toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+    const items = ME.items.slice();
+    const orders = items.map((it, i) => {
+      const v = Object.assign({}, it.v), p = plan[i];
+      v.totalpkg = Math.min(5000, Math.max(1, parseInt(v.totalpkg, 10) || 1)); v.shipDate = todayLabelDate();
+      v.tracklink = ''; v.trackAuto = false;
+      if(isSA(v.courier)) v.courier = SA_NAME;
+      if(mode === 'keep'){ v.trackid = it.orig.trackid || ''; v.trackPer = it.orig.trackPer || null; v.awbSeries = !!it.orig.awbSeries; }
+      else if(mode === 'sa'){ v.trackid = ''; v.trackPer = null; v.trackAuto = true; v.awbSeries = perBox && v.totalpkg > 1; }
+      else if(p.ids.length > 1){ v.trackPer = p.ids.slice(0, v.totalpkg); v.trackid = p.ids[0]; v.awbSeries = true; }
+      else { v.trackid = p.ids[0] || ''; v.trackPer = null; v.awbSeries = false; if(v.totalpkg > 1) v.trkAllLabels = true; }
+      return v;
+    });
+    const fileName = orders.length === 1
+      ? `${(orders[0].orderid || 'ORDER').replace(/[^a-zA-Z0-9-_]/g, '')} ${(orders[0].name || 'Label').replace(/[^a-zA-Z0-9 '\-]/g, '').trim().replace(/\s+/g, ' ')}.pdf`
+      : `BoxUp Labels ${stamp} Edited (${orders.length} orders).pdf`;
+    const batchId = newBatchId();
+    const payload = sheetPayload(orders, 'Edited ' + stamp, fileName, batchId);
+    payload.bulk = false;
+    payload.replace = items.map(it => ({ row: it.o.row, orderid: it.o.orderid }));
+    payload.orders.forEach((po, i) => {
+      const ch = meChanges(items[i]).concat(mode !== 'keep' ? ['tracking ID'] : []);
+      po.editNote = 'Active · edited ' + when + (ch.length ? ': ' + ch.join(', ') : '') + (reason ? ' · ' + reason : '');
+      po.note = 'edited (was row ' + items[i].o.row + ')';
+    });
+    if(mode !== 'keep' && $('meFree').checked){
+      payload.release = [].concat(...items.filter(it => isSA(it.orig.courier)).map(it => moTrk(it.orig).map(a => ({ awb: a, order: it.o.orderid }))));
+    }
+    btn.textContent = 'Saving to the Label Log…';
+    let res;
+    try{ res = await fetch(LOG_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }).then(r => r.json()); }
+    catch(err){ res = { ok:false, error:'Could not reach the Google Sheet. Check the internet connection and try again.' }; }
+    if(!res || !res.ok){ $('meSum').className = 'ra-sum bad'; $('meSum').innerHTML = `<b>Nothing was changed:</b> ${esc((res && res.error) || 'the sheet did not answer.')}`; return; }
+    // Shree Anjani AWBs not in the Shree Anjani tab: those orders were not changed or printed
+    const rejected = [];
+    for(let i = (res.orders || []).length - 1; i >= 0; i--){
+      if(res.orders[i] && res.orders[i].rejected){ rejected.unshift(orders[i].orderid + ': ' + res.orders[i].error); orders.splice(i, 1); res.orders.splice(i, 1); }
+    }
+    if(!orders.length){ $('meSum').className = 'ra-sum bad'; $('meSum').innerHTML = `<b>Nothing was changed or printed.</b> ${esc(rejected.join(' · '))}`; return; }
+    const saUsed = [];
+    (res.orders || []).forEach((r, i) => {
+      const v = orders[i]; if(!r || !isSA(r.courier || v.courier)) return;
+      v.courier = SA_NAME;
+      if(r.awbs && r.awbs.length > 1){ v.trackPer = r.awbs.slice(); v.trackid = r.awbs[0]; saUsed.push(...r.awbs); }
+      else if(r.awb){ v.trackid = r.awb; if(!(v.trackPer && v.trackPer.length > 1)) v.trackPer = null; saUsed.push(r.awb); }
+      v.tracklink = r.link || '';
+    });
+    if(saUsed.length) markAwbUsed(saUsed);
+    refreshSaList();
+    const entries = []; orders.forEach(v => labelEntries(v).forEach(e => entries.push(e)));
+    const pdf = await buildLabelsPdf(entries, (n, t) => { btn.textContent = `Building PDF… (${n}/${t})`; });
+    pdf.save(fileName); lastLabelPdf = pdf;
+    MO.busy = false; meClose();
+    const saItems = orders.map((v, i) => ({ v, r: res.orders[i] })).filter(x => isSA(x.v.courier) && x.r && mode !== 'keep');
+    if(saItems.length){
+      const xlsName = `BoxUp Tracking Links ${stamp} Edited (${saItems.length} orders).xlsx`;
+      downloadTrackingExcel(saItems, xlsName);
+      showSaBulkModal(saItems, xlsName, { batchId, source: 'Edited', date: todayLabelDate() });
+    }
+    $('moMsg').innerHTML = `<span style="color:#1c6b33;font-weight:600">${orders.length} order${orders.length > 1 ? 's' : ''} updated and reprinted. Old lines are struck through in the Label Log.${res.released ? ' ' + res.released + ' old Shree Anjani AWB' + (res.released > 1 ? 's are' : ' is') + ' free again.' : ''}</span>` +
+      (rejected.length ? `<br><span style="color:var(--danger)">Not changed (AWB not in the Shree Anjani tab): ${esc(rejected.join(' · '))}</span>` : '');
+    if(rejected.length) alert('Not changed, the AWB is not in the Shree Anjani tab:\n' + rejected.join('\n'));
+    MO.sel.clear(); moLoad();
+  }catch(err){
+    console.error(err);
+    $('meSum').className = 'ra-sum bad'; $('meSum').textContent = err.message || 'Could not update and reprint.';
+  }finally{
+    MO.busy = false; btn.innerHTML = label; if(ME) meSummary();
+  }
+});
+
+/* ---------- Reassign Courier"""
+: change the courier and / or tracking ID of printed orders, then reprint ---------- */
 var raAll = [], raSel = new Set(), raEdit = {}, raFilter = 'sa', raBusy = false;
 function raKey(o){ return String(o.orderid).toLowerCase(); }
 function raOpen(){
@@ -4269,6 +4744,7 @@ $('intlGo').addEventListener('click', async ()=>{
   go('qaSecurity', () => $('secBtn').click());
   go('qaIntl', () => intlOpen());
   go('qaLabelSet', () => lsOpen());
+  go('qaManage', () => moOpen());
   go('qaSales', () => window.open('https://logisticsboxup.github.io/boxup-sales/', '_blank', 'noopener'));
   go('qaReassign', () => raOpen());
   go('qaSheet', () => { const a = $('logSheetBtn'); if(a && a.href) window.open(a.href, '_blank', 'noopener'); });
