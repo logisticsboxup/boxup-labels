@@ -16,8 +16,9 @@ button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inhe
 .date{background:#fff;border:1px solid #e1e5ef;border-radius:10px;padding:10px 14px;font:600 13.5px Inter,Segoe UI;display:flex;gap:8px;align-items:center;box-shadow:0 2px 8px rgba(30,50,90,.06)}
 .usr{display:flex;align-items:center;gap:10px;font:700 14px Inter,Segoe UI;position:relative;cursor:pointer}
 .av{width:36px;height:36px;border-radius:50%;background:var(--g);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
-.um{position:absolute;right:0;top:44px;background:#fff;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.18);padding:8px;width:230px;z-index:40;display:none}
-.um.on{display:block}.um div{padding:9px 10px;border-radius:8px;font:600 13px Inter,Segoe UI}.um div:hover{background:#f3f5f9}.um small{display:block;color:var(--mu);font-weight:500}
+.um{position:absolute;right:0;top:46px;background:#fff;border-radius:16px;box-shadow:0 18px 40px rgba(0,0,0,.22);width:360px;z-index:60;display:none;overflow:hidden;cursor:default;font-weight:500}
+.um.on{display:block}.um .ui{padding:12px 16px;border-bottom:1px solid #eef0f5;font:500 12.5px Inter,Segoe UI}.um .uh{display:flex;gap:12px;align-items:center}.um .uh b{display:block;font:800 15px Inter,Segoe UI}.um small{display:block;color:var(--mu);font-weight:500;font-size:12px}
+.um h6{margin:0 0 8px;font:800 13px Inter,Segoe UI}.um .so{color:#c42020;font-weight:700;cursor:pointer;border:0}.um .so:hover{background:#fdf0f0}.um .chips .chip{padding:5px 10px;font-size:11.5px}
 .al{margin:6px 28px 0;background:linear-gradient(90deg,#fde4e4,#fdeeee);border:1px solid #f6caca;border-radius:12px;padding:10px 16px;display:flex;align-items:center;gap:10px;font:700 14px Inter,Segoe UI;color:#9b1c1c;flex-wrap:wrap}
 .al.ok{background:#e9f7ef;border-color:#c6ead4;color:#16804a}
 .al .p{background:#d92d2d;color:#fff;border-radius:14px;padding:4px 12px;font:700 12px Inter,Segoe UI;cursor:pointer}
@@ -57,6 +58,10 @@ button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inhe
 .mini{margin-left:auto;display:flex;gap:4px}.mini button{width:24px;height:24px;border:1px solid #e1e5ef;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;background:#fff;padding:0}
 .mini button:hover{background:#eef3fb}
 .mini .donebtn{width:auto;padding:0 9px;background:#16a34a;border-color:#16a34a;color:#fff;font:800 11px Inter,Segoe UI}.mini .donebtn:hover{background:#12803b}
+.pg{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e6e8ef;border-radius:10px;padding:6px;margin:0 0 10px}
+.cd+.pg{margin:4px 0 0}
+.pb{border:1.5px solid #dfe3ec;background:#fff;border-radius:8px;padding:6px 8px;font:800 11.5px Inter,Segoe UI;color:#3b4560;white-space:nowrap}.pb.on{color:#fff}.pb:disabled{opacity:.4;cursor:default}
+.pi{flex:1;text-align:center;font:600 11.5px/1.25 Inter,Segoe UI;color:#55607a;white-space:nowrap}.pi small{font-size:10.5px;color:#8a93a6}.pi b{color:#18233a}
 .empty{color:#9aa2b3;font:600 12px Inter,Segoe UI;text-align:center;padding:30px 8px;border:1.5px dashed #d8dce6;border-radius:10px}
 .pn{background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(30,50,90,.08);overflow:hidden;margin-bottom:12px}
 .ph{background:var(--g);color:#fff;padding:11px 14px;display:flex;align-items:center;gap:8px;font:800 14px Inter,Segoe UI}.ph .va{margin-left:auto;font:600 12px Inter,Segoe UI;white-space:nowrap;cursor:pointer}
@@ -188,7 +193,18 @@ button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inhe
  <div class="srch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a93a6" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" placeholder="Search by Order ID / Job card / Client..."></div>
  <div class="date"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#18233a" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span id="today"></span><span id="live" style="font:800 11px Inter,Segoe UI;color:#9aa2b3;margin-left:6px">● Connecting</span></div>
  <div class="usr" id="usr"><span class="av" id="uav">P</span><span id="uname">Prajwal</span> ▾
-  <div class="um" id="um"><div><b id="umn"></b><small id="ume"></small></div><div id="soBtn">↩ Sign out</div></div></div>
+  <div class="um" id="um">
+   <div class="ui uh"><span class="av" id="umav" style="width:40px;height:40px"></span><div><b id="umn"></b><small id="ume"></small></div></div>
+   <div class="ui us"><h6>🔔 My reminders <span class="note" style="font-weight:600">· all optional</span></h6>
+    <div class="ck" data-r="time"><span class="sw"></span>Alarm when the task time comes</div>
+    <div class="ck" data-r="before"><span class="sw"></span>Alert 30 min before the task time</div>
+    <div class="ck" data-r="late"><span class="sw"></span>Repeat every 15 min while late</div>
+    <div class="ck" data-r="arrive"><span class="sw"></span>Alarm when a new task arrives</div>
+    <div class="ck" data-r="notify"><span class="sw"></span>Screen notification (even when the tab is in the background)</div>
+    <div class="ck" data-r="sound"><span class="sw"></span>Play sound</div>
+    <div style="display:flex;gap:6px;align-items:center;margin-top:8px"><span class="note" style="font-weight:700">Volume</span><span class="chips" id="volC" style="gap:5px"></span><button class="btn sm" id="volTest" style="margin-left:auto">▶ Test</button></div></div>
+   <div class="ui us"><h6>👥 Team access</h6><div class="ta" style="margin:0">Everyone · Google sign-in · full access</div><div class="note" id="umSess" style="margin-top:6px"></div></div>
+   <div class="ui so" id="soBtn">↩ Sign out</div></div></div>
 </div>
 
 <div class="al" id="al"></div>
@@ -204,17 +220,6 @@ button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inhe
  <div class="side">
   <div class="pn"><div class="ph">⏰ Upcoming Porter Dispatches<span class="va" id="upAll">View All →</span></div><div id="upl"></div></div>
   <div class="pn"><div class="ph">📦 Shipment Details<span class="va" id="sdOpen">Open / Edit →</span></div><div class="sd" id="sd"></div></div>
-  <div class="bot" style="grid-template-columns:1fr">
-   <div class="pn"><h6>🔔 Reminders <span class="note" style="font-weight:600">· all optional, turn on or off</span></h6>
-    <div class="ck" data-r="time"><span class="sw"></span>Alarm when the task time comes</div>
-    <div class="ck" data-r="before"><span class="sw"></span>Alert 30 min before the task time</div>
-    <div class="ck" data-r="late"><span class="sw"></span>Repeat every 15 min while late</div>
-    <div class="ck" data-r="arrive"><span class="sw"></span>Alarm when a new task arrives</div>
-    <div class="ck" data-r="notify"><span class="sw"></span>Screen notification (shows even when this tab is in the background)</div>
-    <div class="ck" data-r="sound"><span class="sw"></span>Play sound</div>
-    <div style="display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap"><span class="note" style="font-weight:700">Volume</span><span class="chips" id="volC" style="gap:5px"></span><button class="btn sm" id="volTest">▶ Test</button></div></div>
-   <div class="pn"><h6>👥 Team Access</h6><div class="ta">Everyone · Google sign-in</div><div class="note" style="margin-top:6px">Full access for all</div></div>
-  </div>
  </div>
 </div>
 
@@ -331,6 +336,7 @@ const STATUS = {
   issue: { name: 'Issues / RTO', col: '#f97316', txt: '#c2410c', bg: '#ffe8d9', ico: '⚠' } };
 
 let D = { tasks: [], rem: Object.assign({ time: true, before: true, late: true, arrive: true, notify: false, sound: true, vol: 'loud' }, store.get(RKEY, {})) };
+const PAGE = {};
 let ME = null, TOKEN = '', SEL = null, FILTER = null, Q = '', LOADED = false, PENDING = 0, LAST_OK = 0;
 const now = () => Date.now();
 const pad = n => String(n).padStart(2, '0');
@@ -410,30 +416,34 @@ const hist = (t, txt, c) => t.hist.push({ t: now(), who: ME ? ME.n : 'Someone', 
 /* ---------- sign in with Google ---------- */
 const COLORS = ['#0f3d2a', '#2f6fe0', '#8b5cf6', '#d97706', '#0ea5a4', '#c2410c'];
 function jwt(tok) { try { return JSON.parse(decodeURIComponent(escape(atob(tok.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))); } catch (e) { return null; } }
-function useToken(tok, quiet) {
-  const p = jwt(tok); if (!p || p.exp * 1000 < now() + 60000) return false;
-  TOKEN = tok; store.set(TKEY, tok);
-  ME = { n: p.name || p.given_name || p.email, e: p.email, pic: p.picture || '', c: COLORS[[...p.email].reduce((a, c) => a + c.charCodeAt(0), 0) % COLORS.length] };
-  $('#si').style.display = 'none'; paintUser();
-  clearTimeout(useToken.t); useToken.t = setTimeout(renewToken, Math.max(60000, p.exp * 1000 - now() - 5 * 60000));
-  if (!quiet) toast('Signed in as ' + ME.n);
-  return true;
+const colorOf = e => COLORS[[...String(e)].reduce((a, c) => a + c.charCodeAt(0), 0) % COLORS.length];
+function useSession(sv) {
+  if (!sv || !sv.tok || !sv.exp || sv.exp < now() + 60000) return false;
+  TOKEN = sv.tok; ME = Object.assign({ c: colorOf(sv.me.e) }, sv.me);
+  $('#si').style.display = 'none'; paintUser(); return true;
 }
-function renewToken() { try { google.accounts.id.prompt(); } catch (e) { } }
-function onCredential(resp) { const first = !LOADED; if (useToken(resp.credential)) refresh(first); }
+async function onCredential(resp) {
+  TOKEN = resp.credential; $('#siMsg').textContent = 'Signing in…';
+  try {
+    const r = await api('session');
+    const sv = { tok: r.session, exp: r.exp, owner: !!r.owner, me: { n: r.me.name, e: r.me.email, pic: r.me.pic || '' } };
+    store.set(TKEY, sv); useSession(sv); toast('Signed in as ' + ME.n); refresh(!LOADED);
+  } catch (e) { if (e.message !== 'auth') { $('#siMsg').textContent = 'Could not sign in: ' + e.message; $('#si').style.display = 'flex'; } }
+}
 function needSignIn(msg) { TOKEN = ''; try { localStorage.removeItem(TKEY); } catch (e) { } $('#siMsg').textContent = msg || ''; $('#si').style.display = 'flex'; startGsi(); }
 function startGsi() {
   if (!window.google || !google.accounts || !google.accounts.id) { setTimeout(startGsi, 300); return; }
   if (!startGsi.done) { google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onCredential, auto_select: true, cancel_on_tap_outside: false, itp_support: true }); startGsi.done = 1; }
   google.accounts.id.renderButton($('#gsiBtn'), { theme: 'outline', size: 'large', text: 'signin_with', shape: 'pill', width: 300 });
-  if ($('#si').style.display !== 'none') google.accounts.id.prompt();
+  if ($('#si').style.display !== 'none') google.accounts.id.prompt();   // signs in by itself when Chrome already knows the account
 }
-function paintUser() { if (!ME) return; const a = $('#uav'); a.style.background = ME.c;
-  a.innerHTML = ME.pic ? `<img src="${esc(ME.pic)}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%">` : esc(ME.n[0]);
+function paintUser() { if (!ME) return; const pic = ME.pic ? `<img src="${esc(ME.pic)}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%">` : esc(ME.n[0]);
+  [$('#uav'), $('#umav')].forEach(a => { a.style.background = ME.c; a.innerHTML = pic; });
+  { const sv = store.get(TKEY, {}); $('#umSess').textContent = sv && sv.exp ? (sv.owner ? 'You stay signed in on this computer.' : 'Signed in until ' + fmtTs(sv.exp) + ', then sign in again.') : ''; }
   $('#uname').textContent = ME.n.split(' ')[0]; $('#umn').textContent = ME.n; $('#ume').textContent = ME.e; }
-$('#usr').onclick = e => { e.stopPropagation(); $('#um').classList.toggle('on'); };
-document.addEventListener('click', () => $('#um').classList.remove('on'));
-$('#soBtn').onclick = () => { try { google.accounts.id.disableAutoSelect(); } catch (e) { } ME = null; needSignIn('Signed out.'); };
+$('#usr').onclick = e => { if (e.target.closest('#um')) return; e.stopPropagation(); $('#um').classList.toggle('on'); };
+document.addEventListener('click', e => { if (!e.target.closest('#um')) $('#um').classList.remove('on'); });
+$('#soBtn').onclick = () => { try { google.accounts.id.disableAutoSelect(); } catch (e) { } const t = TOKEN; fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'dcc', op: 'logout', token: t }) }).catch(() => {}); ME = null; $('#um').classList.remove('on'); needSignIn('Signed out.'); };
 
 /* ---------- toast ---------- */
 let tT; function toast(msg, undo) { $('#toastT').textContent = msg; $('#toastU').style.display = undo ? '' : 'none'; $('#toastU').onclick = () => { undo(); $('#toast').classList.remove('on'); };
@@ -506,7 +516,10 @@ function render() {
     const s = c.dataset.s, S = STATUS[s];
     let L = T.filter(t => t.status === s && match(t));
     L.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0) || (s === 'sched' || s === 'ready' ? dueOf(a) - dueOf(b) : b.at - a.at));
-    c.innerHTML = `<div class="ch"><span style="color:${S.txt}">${S.ico}</span>${S.name}<span class="n" style="color:${S.txt}">${L.length}</span></div>` + (L.map(card).join('') || `<div class="empty">${FILTER || Q ? 'Nothing matches' : 'Drop a task here'}</div>`);
+    const per = 20, pages = Math.max(1, Math.ceil(L.length / per)); PAGE[s] = Math.min(PAGE[s] || 0, pages - 1);
+    const p = PAGE[s], shown = L.slice(p * per, p * per + per);
+    const pager = L.length > per ? `<div class="pg"><button class="pb" data-pg="${s}" data-d="-1" ${p ? '' : 'disabled'}>◀ Back</button><span class="pi" title="Page ${p + 1} of ${pages}"><b>${p * per + 1}–${p * per + shown.length}</b> of ${L.length}<br><small>Page ${p + 1} / ${pages}</small></span><button class="pb on" data-pg="${s}" data-d="1" style="background:${S.col};border-color:${S.col}" ${p < pages - 1 ? '' : 'disabled'}>Next ▶</button></div>` : '';
+    c.innerHTML = `<div class="ch"><span style="color:${S.txt}">${S.ico}</span>${S.name}<span class="n" style="color:${S.txt}">${L.length}</span></div>` + pager + (shown.map(card).join('') || `<div class="empty">${FILTER || Q ? 'Nothing matches' : 'Drop a task here'}</div>`) + (shown.length > 5 ? pager : '');
   });
   // upcoming porter
   const up = T.filter(t => t.type === 'por' && isOpen(t)).sort((a, b) => dueOf(a) - dueOf(b)).slice(0, 4);
@@ -538,7 +551,8 @@ function renderDetails() {
 
 /* ---------- board events ---------- */
 document.addEventListener('click', e => {
-  const k = e.target.closest('[data-k]'); if (k) { FILTER = FILTER === k.dataset.k ? null : k.dataset.k; if (['ready', 'issue'].includes(FILTER)) { const s = FILTER; FILTER = null; document.querySelector(`.col[data-s="${s}"]`).scrollIntoView({ behavior: 'smooth', block: 'center' }); } render(); return; }
+  const pg = e.target.closest('[data-pg]'); if (pg) { if (!pg.disabled) { PAGE[pg.dataset.pg] = (PAGE[pg.dataset.pg] || 0) + Number(pg.dataset.d); render(); const col = document.querySelector(`.col[data-s="${pg.dataset.pg}"]`); if (col) col.scrollTop = 0; } return; }
+  const k = e.target.closest('[data-k]'); if (k) { Object.keys(PAGE).forEach(x => PAGE[x] = 0); FILTER = FILTER === k.dataset.k ? null : k.dataset.k; if (['ready', 'issue'].includes(FILTER)) { const s = FILTER; FILTER = null; document.querySelector(`.col[data-s="${s}"]`).scrollIntoView({ behavior: 'smooth', block: 'center' }); } render(); return; }
   if (e.target.closest('#ctBtn')) { openTask(null); return; }
   if (e.target.closest('#alOpen')) { FILTER = FILTER === 'over' ? null : 'over'; render(); return; }
   if (e.target.closest('#alSnz')) { D.tasks.filter(isLate).forEach(t => { t.snooze = now() + 15 * 60000; hist(t, 'Alarm snoozed 15 min', '#a86400'); }); save(); render(); toast('Late alarms snoozed for 15 minutes'); return; }
@@ -560,7 +574,7 @@ document.addEventListener('click', e => {
     const t = byId(id); if (t.isNew) { t.isNew = false; save(); }
     if (SEL === id) openView(id); else { SEL = id; render(); } }
 });
-$('#q').oninput = e => { Q = e.target.value.trim().toLowerCase(); render(); };
+$('#q').oninput = e => { Q = e.target.value.trim().toLowerCase(); Object.keys(PAGE).forEach(k => PAGE[k] = 0); render(); };
 // drag and drop between columns
 document.addEventListener('dragstart', e => { const c = e.target.closest && e.target.closest('.cd[data-id]'); if (c) { e.dataTransfer.setData('text/plain', c.dataset.id); e.dataTransfer.effectAllowed = 'move'; } });
 $$('.col').forEach(col => {
@@ -823,7 +837,7 @@ function checkAlarms() {
 /* ---------- start ---------- */
 $('#today').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
 render();
-{ const tok = store.get(TKEY, ''); if (tok && useToken(tok, true)) refresh(true); else needSignIn(''); }
+{ const sv = store.get(TKEY, null); if (sv && typeof sv === 'object' && useSession(sv)) refresh(true); else needSignIn(''); }
 window.addEventListener('load', startGsi);
 setInterval(() => refresh(false), 15000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(false); });
