@@ -37,7 +37,8 @@ button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inhe
 .ct:hover{filter:brightness(1.1)}
 .ct .pl{width:38px;height:38px;border-radius:50%;background:#fff;color:#0f3d2a;font:800 26px Inter,Segoe UI;display:flex;align-items:center;justify-content:center;line-height:1}.ct b{font:800 15px Inter,Segoe UI}.ct span{font:500 11px Inter,Segoe UI;opacity:.85}
 .main{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) 320px;gap:10px;margin:16px 28px 0;align-items:start}
-.col{border-radius:14px;padding:10px;min-height:520px;transition:outline .1s}
+.col{border-radius:14px;padding:10px;min-height:520px;max-height:calc(100vh - 40px);overflow-y:auto;transition:outline .1s;position:relative}
+.col .ch{position:sticky;top:-10px;z-index:2;background:inherit;margin:-10px -10px 0;padding:14px 14px 10px}
 .col.over{outline:3px dashed var(--g2);outline-offset:-3px}
 .ch{white-space:nowrap;display:flex;align-items:center;gap:7px;font:800 14px Inter,Segoe UI;padding:4px 4px 10px}
 .ch .n{margin-left:auto;border:1.5px solid currentColor;border-radius:12px;padding:1px 10px;font:800 12px Inter,Segoe UI;background:#fff}
@@ -353,7 +354,7 @@ const isBulk = t => !!t.file;
 
 
 /* ---------- sync with the Google Sheet ---------- */
-const SYNC = ['status', 'type', 'name', 'co', 'phone', 'addr', 'qty', 'est', 'date', 'time', 'jc', 'note', 'veh', 'drv', 'dph', 'awb', 'snooze', 'deliveredAt', 'dispatchedAt', 'src'];
+const SYNC = ['courier', 'status', 'type', 'name', 'co', 'phone', 'addr', 'qty', 'est', 'date', 'time', 'jc', 'note', 'veh', 'drv', 'dph', 'awb', 'snooze', 'deliveredAt', 'dispatchedAt', 'src'];
 const SERVER = {}, SEEN = new Set(), LOCAL = store.get(LKEY, {});
 const sig = t => JSON.stringify(SYNC.map(k => t[k] === undefined ? null : t[k])) + '|' + (t.hist || []).length + '|' + (t._fileData ? 'f' : '');
 async function api(op, body) {
@@ -380,7 +381,7 @@ function save() {
     const file = t._fileData ? { name: t._fileData.name, size: t._fileData.size, rows: t._fileData.rows, mime: t._fileData.mime, data: t._fileData.data } : null;
     if (/^NEW-/.test(t.id)) { t._busy = 1; push(t.id, api('create', { task: set, file }), t.id); return; }
     const S = SERVER[t.id];
-    if (S && (S.deleted || S.sig !== sig(t))) { t._busy = 1; set.deleted = false; if (t._removeFile) set.removeFile = true; push(t.id, api('patch', { id: t.id, set, hist: add, file }), t.id); }
+    if (S && (S.deleted || S.sig !== sig(t))) { t._busy = 1; set.deleted = false; if (t._removeFile) set.removeFile = true; const base = /^LOG-/.test(t.id) ? Object.assign({}, set, { at: t.at, hist: (t.hist || []).slice(0, t._hn || 1) }) : undefined; push(t.id, api('patch', { id: t.id, set, hist: add, file, base }), t.id); }
   });
 }
 function push(id, p, key) {
@@ -397,7 +398,7 @@ async function refresh(first) {
     if (r.me && ME) { ME.n = r.me.name; paintUser(); }
     const pend = D.tasks.filter(t => /^NEW-/.test(t.id) || t._busy);
     const list = r.tasks.map(fromServer);
-    const fresh = LOADED ? list.filter(t => !t.deleted && !SEEN.has(t.id)) : [];
+    const fresh = LOADED ? list.filter(t => !t.deleted && !SEEN.has(t.id) && t.src !== 'log') : [];
     list.forEach(t => SEEN.add(t.id));
     D.tasks = list.filter(t => !t.deleted).filter(t => !pend.some(p => p.id === t.id)).concat(pend);
     LOADED = true; render(); if (fresh.length) arrived(fresh);
@@ -465,9 +466,8 @@ function card(t) {
    <div class="nm">${esc(t.name)}${t.co ? ' · <span style="font-weight:500">' + esc(t.co) + '</span>' : ''}</div>
    <div class="loc">${b ? '📑 ' + esc(t.file.name.length > 26 ? t.file.name.slice(0, 24) + '…' : t.file.name) + ' · ' + esc(t.qty) + ' orders' : '📍 ' + esc(cityOf(t.addr))}</div>
    <div class="loc">${t.jc && t.jc.length ? 'JC ' + t.jc.map(esc).join(', ') : ''}${t.est ? ' · ' + esc(t.est) : ''}</div>
-   <div class="row"><span class="tg ${b && isOpen(t) ? 't-bk' : ty.cls}">${b && isOpen(t) ? ((t.printed || 0) >= (parseInt(t.qty) || 0) ? 'PUNCHED ✓' : 'TO PUNCH') : ty.lbl}</span>${pill(t)}
+   <div class="row"><span class="tg ${b && isOpen(t) ? 't-bk' : ty.cls}">${b && isOpen(t) ? 'TO PUNCH' : (t.type !== 'por' && t.courier ? esc(t.courier.toUpperCase()).slice(0, 18) : ty.lbl)}</span>${pill(t)}
     <span class="mini">${b ? '<button data-a="dl" title="Download file">⬇</button>' : ''}<button data-a="status" title="Update status">↻</button><button data-a="edit" title="Edit">✎</button>${t.status !== 'delivered' ? '<button data-a="done" class="donebtn" title="Mark completed">✔ Completed</button>' : ''}</span></div>
-   ${b && isOpen(t) ? `<div class="row" style="margin-top:6px"><div class="prog"><div style="width:${Math.min(100, Math.round((t.printed || 0) / (parseInt(t.qty) || 1) * 100))}%"></div></div><span class="note" style="font-weight:700">${t.printed || 0}/${parseInt(t.qty) || 0}</span></div>` : ''}
    ${t.isNew || t.status === 'sched' ? `<div class="loc" style="margin-top:5px">👤 ${esc(t.by)} · ${fmtTs(t.at)}</div>` : ''}
   </div>`;
 }
@@ -738,8 +738,7 @@ function openView(id) {
   $('#vwBody').innerHTML = `
    ${b ? `<div class="sec"><h4>File</h4><div class="file" style="margin:0"><span class="xl">${/csv$/i.test(t.file.name) ? 'CSV' : 'XLS'}</span><div style="min-width:0"><b style="font:800 13.5px Inter,Segoe UI;word-break:break-all">${esc(t.file.name)}</b><div class="note">${(t.file.size / 1024).toFixed(0)} KB${t.file.rows ? ' · ' + t.file.rows + ' rows' : ''} · any format</div></div><button class="btn k" data-v="dl" style="margin-left:auto">⬇ Download</button></div>
      <div class="note" style="margin-top:8px">☁ Real version: Google Drive › BoxUp Shared Files › Bulk Order Tasks › ${t.id}_${esc(t.file.name)}</div></div>
-    <div class="sec"><h4>Punch progress <span class="note" style="font-weight:600">(from the Label page)</span></h4><div style="display:flex;align-items:center;gap:10px"><div class="prog"><div style="width:${Math.min(100, Math.round((t.printed || 0) / (q || 1) * 100))}%"></div></div><b style="font:800 13px Inter,Segoe UI">${t.printed || 0} of ${q} printed</b></div>
-     <div class="note" style="margin-top:6px">Orders are punched and printed on the Label page only. This count updates from the Label Log, and the ticket moves to Ready to Dispatch when all are printed.</div></div>` : ''}
+    <div class="sec"><h4>Punch the orders</h4><div class="note">Download the file, then punch and print the orders on the <b>Label page</b>. When all are printed, move this ticket to <b>Ready to Dispatch</b>.</div></div></div>` : ''}
    <div class="sec"><h4>Details</h4><div class="g g2">${row('Name', esc(t.name))}${row('Company Name', esc(t.co))}${row('Phone', esc(t.phone))}${row('Hamper Qty', esc(t.qty))}${row('Estimate', esc(t.est))}${row('Dispatch', fmtD(t.date) + (t.time ? ' · ' + fmtT(t.time) : ''))}${row('Job Card', t.jc.map(j => `<span class="jc">${esc(j)}</span>`).join(' '))}${row('Vehicle / driver', esc([t.veh, t.drv, t.dph].filter(Boolean).join(' · ')))}${row('AWB / booking', esc(t.awb))}</div>
     ${row('Address', esc(t.addr))}${row('Note', esc(t.note))}</div>
    <div class="sec" style="margin-bottom:0"><h4>History</h4><div class="tl">${t.hist.slice().reverse().map(h => `<div><i style="background:${h.c}"></i><span>${esc(h.txt)} · <b>${esc(h.who)}</b> · ${fmtTs(h.t)}</span></div>`).join('')}</div></div>`;
