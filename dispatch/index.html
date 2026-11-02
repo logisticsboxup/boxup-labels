@@ -1,0 +1,852 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dispatch Control Center</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--g:#0f3d2a;--g2:#1d6b47;--ink:#18233a;--mu:#6b7385;--line:#e6e8ef;--teal:#0ea5a4}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink);min-width:1280px;background:linear-gradient(180deg,#eef3fb 0,#f6f8fc 260px,#f7f8fb 100%)}
+button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inherit}
+.hd{display:flex;align-items:center;gap:18px;padding:16px 28px 8px}
+.ti h1{margin:0;font:800 28px Inter,Segoe UI;color:#14213d;letter-spacing:-.3px}
+.ti p{margin:4px 0 0;color:#5d6880;font-size:15px;letter-spacing:.3px}
+.art{flex:1;height:64px;min-width:120px}
+.srch{width:300px;background:#fff;border:1px solid #e1e5ef;border-radius:22px;padding:0 14px;display:flex;gap:8px;align-items:center;box-shadow:0 2px 8px rgba(30,50,90,.06)}
+.srch input{border:0;outline:0;padding:11px 0;font-size:13.5px;flex:1;background:none}
+.date{background:#fff;border:1px solid #e1e5ef;border-radius:10px;padding:10px 14px;font:600 13.5px Inter,Segoe UI;display:flex;gap:8px;align-items:center;box-shadow:0 2px 8px rgba(30,50,90,.06)}
+.usr{display:flex;align-items:center;gap:10px;font:700 14px Inter,Segoe UI;position:relative;cursor:pointer}
+.av{width:36px;height:36px;border-radius:50%;background:var(--g);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.um{position:absolute;right:0;top:44px;background:#fff;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.18);padding:8px;width:230px;z-index:40;display:none}
+.um.on{display:block}.um div{padding:9px 10px;border-radius:8px;font:600 13px Inter,Segoe UI}.um div:hover{background:#f3f5f9}.um small{display:block;color:var(--mu);font-weight:500}
+.al{margin:6px 28px 0;background:linear-gradient(90deg,#fde4e4,#fdeeee);border:1px solid #f6caca;border-radius:12px;padding:10px 16px;display:flex;align-items:center;gap:10px;font:700 14px Inter,Segoe UI;color:#9b1c1c;flex-wrap:wrap}
+.al.ok{background:#e9f7ef;border-color:#c6ead4;color:#16804a}
+.al .p{background:#d92d2d;color:#fff;border-radius:14px;padding:4px 12px;font:700 12px Inter,Segoe UI;cursor:pointer}
+.al .sep{width:1px;height:20px;background:#e3a9a9}.al .t2{font-weight:500;color:#7a2a2a}
+.al .r{margin-left:auto;display:flex;gap:10px}
+.btn{border-radius:9px;padding:8px 14px;font:800 12.5px Inter,Segoe UI;border:1.5px solid var(--g);color:var(--g);background:#fff;display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.btn.k{background:var(--g);color:#fff}.btn.gh{border-color:#dfe3ec;color:#55607a}.btn.rd{background:#d92d2d;border-color:#d92d2d;color:#fff}.btn.tl{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.sm{padding:5px 10px;font-size:11.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.kp{display:grid;grid-template-columns:repeat(6,1fr) 178px;gap:14px;margin:14px 28px 0}
+.kc{background:#fff;border-radius:16px;padding:14px 16px 0;box-shadow:0 4px 16px rgba(30,50,90,.07);display:flex;gap:14px;position:relative;overflow:hidden;height:96px;cursor:pointer;border:2px solid transparent}
+.kc.on{border-color:var(--g)}
+.kc .ic{width:48px;height:48px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center}
+.kc small{font:700 12.5px Inter,Segoe UI;color:#27324a;white-space:nowrap}.kc b{display:block;font:800 30px Inter,Segoe UI;margin-top:2px}
+.kc svg.sp{position:absolute;right:0;bottom:0;width:62%;height:40px}
+.ct{background:linear-gradient(135deg,#0f3d2a,#1d6b47);border-radius:16px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:0 6px 18px rgba(15,61,42,.35);height:96px;cursor:pointer;border:0}
+.ct:hover{filter:brightness(1.1)}
+.ct .pl{width:38px;height:38px;border-radius:50%;background:#fff;color:#0f3d2a;font:800 26px Inter,Segoe UI;display:flex;align-items:center;justify-content:center;line-height:1}.ct b{font:800 15px Inter,Segoe UI}.ct span{font:500 11px Inter,Segoe UI;opacity:.85}
+.main{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) 320px;gap:10px;margin:16px 28px 0;align-items:start}
+.col{border-radius:14px;padding:10px;min-height:520px;transition:outline .1s}
+.col.over{outline:3px dashed var(--g2);outline-offset:-3px}
+.ch{white-space:nowrap;display:flex;align-items:center;gap:7px;font:800 14px Inter,Segoe UI;padding:4px 4px 10px}
+.ch .n{margin-left:auto;border:1.5px solid currentColor;border-radius:12px;padding:1px 10px;font:800 12px Inter,Segoe UI;background:#fff}
+.cd{background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(30,50,90,.06);border-left:4px solid;font-size:12.5px;cursor:pointer;transition:transform .1s}
+.cd:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(30,50,90,.12)}
+.cd.sel{box-shadow:0 0 0 2.5px var(--g2)}
+.cd.tk{background:linear-gradient(180deg,#f0fdfa,#fff)}
+.cd b.id{font:800 13.5px Inter,Segoe UI;display:flex;gap:6px;align-items:center}.cd .nm{font:600 12.5px Inter,Segoe UI;margin-top:1px}
+.cd .loc{color:#6b7385;font-size:11.5px;margin-top:2px}
+.row{display:flex;gap:5px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.tg{white-space:nowrap;font:800 10px Inter,Segoe UI;border-radius:6px;padding:3px 7px}
+.t-por{background:#0f3d2a;color:#fff}.t-std{background:#e3edfd;color:#1f4fa8}.t-pick{background:#fff1d6;color:#8a5200}.t-exp{background:#efe5fc;color:#6b34b5}.t-bk{background:var(--teal);color:#fff}
+.nw{background:#16a34a;color:#fff;font:800 9px Inter,Segoe UI;border-radius:5px;padding:2px 5px}
+.tm{white-space:nowrap;font:700 10.5px Inter,Segoe UI;border-radius:12px;padding:3px 8px}
+.late{background:#fde2e2;color:#c42020}.soon{background:#fff1d6;color:#a86400}.okk{background:#e1f4e8;color:#16804a}.gry{background:#eef0f5;color:#55607a}
+.mini{margin-left:auto;display:flex;gap:4px}.mini button{width:24px;height:24px;border:1px solid #e1e5ef;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;background:#fff;padding:0}
+.mini button:hover{background:#eef3fb}
+.mini .donebtn{width:auto;padding:0 9px;background:#16a34a;border-color:#16a34a;color:#fff;font:800 11px Inter,Segoe UI}.mini .donebtn:hover{background:#12803b}
+.empty{color:#9aa2b3;font:600 12px Inter,Segoe UI;text-align:center;padding:30px 8px;border:1.5px dashed #d8dce6;border-radius:10px}
+.pn{background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(30,50,90,.08);overflow:hidden;margin-bottom:12px}
+.ph{background:var(--g);color:#fff;padding:11px 14px;display:flex;align-items:center;gap:8px;font:800 14px Inter,Segoe UI}.ph .va{margin-left:auto;font:600 12px Inter,Segoe UI;white-space:nowrap;cursor:pointer}
+.up{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid #f0f2f7;cursor:pointer}
+.up .t{border-radius:7px;padding:6px 8px;font:800 12px Inter,Segoe UI;min-width:74px;text-align:center}
+.up .i b{font:800 13px Inter,Segoe UI;display:block}.up .i span{font-size:11.5px;color:#6b7385}
+.up .x2{margin-left:auto}
+.sd{padding:12px 14px;font-size:12.5px}
+.sd .t1{display:flex;align-items:center;justify-content:space-between;gap:8px}.sd .t1 b{font:800 18px Inter,Segoe UI}
+.st{font:700 11.5px Inter,Segoe UI;border-radius:8px;padding:4px 10px;white-space:nowrap}
+.sd .l{margin:5px 0;color:#2b3550}
+.sd .bt{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.sd .bt .btn{justify-content:center}
+.sd h5{margin:4px 0 6px;font:800 13.5px Inter,Segoe UI}
+.tl div{display:flex;gap:8px;align-items:flex-start;font-size:11.5px;margin:4px 0;color:#3b4560}.tl i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-top:3px;flex:none}
+.bot{display:grid;grid-template-columns:1.2fr 1fr;gap:10px}
+.bot .pn{padding:10px 12px;font-size:11.5px;margin-bottom:0}
+.bot h6{margin:0 0 6px;font:800 12px Inter,Segoe UI}
+.ck{display:flex;gap:6px;align-items:center;margin:5px 0;cursor:pointer}
+.sw{width:30px;height:18px;border-radius:12px;background:#1d6b47;position:relative;flex:none}.sw:after{content:"";position:absolute;right:3px;top:3px;width:12px;height:12px;border-radius:50%;background:#fff}.sw.off{background:#cfd4de}.sw.off:after{left:3px;right:auto}
+.ta{background:#e1f4e8;color:#16804a;border-radius:8px;padding:7px 10px;font:700 12px Inter,Segoe UI;margin-top:6px}
+.ft{position:relative;height:96px;margin-top:6px;overflow:hidden}
+.ft p{position:absolute;left:28px;bottom:18px;margin:0;font:600 12px Inter,Segoe UI;color:#3b4560;z-index:1}
+.ft .rs{position:absolute;right:28px;bottom:16px;z-index:1}
+/* modals */
+.ov{position:fixed;inset:0;background:rgba(15,25,45,.55);z-index:80;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:40px 16px}
+.ov.on{display:flex}
+.md{background:#fff;border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.35);overflow:hidden;font-size:13px;width:100%}
+.mh{background:var(--g);color:#fff;padding:16px 22px;display:flex;align-items:center;gap:12px}
+.mh h2{margin:0;font:800 20px Inter,Segoe UI}.mh p{margin:2px 0 0;font:500 12.5px Inter,Segoe UI;opacity:.85}
+.mh .x{margin-left:auto;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);border:0;color:#fff;font:700 16px Inter,Segoe UI;flex:none}
+.mb{padding:18px 22px}
+.sec{border:1px solid #e6e8ef;border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.sec h4{margin:0 0 10px;font:800 13px Inter,Segoe UI;color:#0f3d2a;display:flex;gap:8px;align-items:center}
+.sec h4 i{width:22px;height:22px;border-radius:50%;background:#0f3d2a;color:#fff;font:800 11px Inter,Segoe UI;display:inline-flex;align-items:center;justify-content:center;font-style:normal}
+.g{display:grid;gap:10px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}
+.f label{display:block;font:700 11px Inter,Segoe UI;color:#55607a;margin-bottom:4px}.f label em{color:#d92d2d;font-style:normal}
+.f input,.f select,.f textarea{width:100%;border:1.5px solid #dfe3ec;border-radius:9px;padding:9px 11px;font:500 13px Inter,Segoe UI;color:#18233a;background:#fff;outline:0}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:#1d6b47;box-shadow:0 0 0 3px rgba(29,107,71,.15)}
+.f .bad{border-color:#d92d2d!important;background:#fff7f7}
+.f textarea{resize:vertical}
+.af{background:#e1f4e8;color:#16804a;font:800 10px Inter,Segoe UI;border-radius:5px;padding:2px 6px;display:none}.af.on{display:inline}
+.qp{width:100%;min-height:210px;border:1.5px solid #cfe6d8;background:#fbfdf9;border-radius:10px;padding:10px 12px;font:500 12px/1.55 Inter,Segoe UI;color:#2b3550;outline:0;resize:vertical}
+.jcb{display:flex;flex-wrap:wrap;gap:5px;align-items:center;border:1.5px solid #dfe3ec;border-radius:9px;padding:5px 8px;min-height:40px;background:#fff}
+.jcb input{border:0!important;box-shadow:none!important;flex:1;min-width:120px;padding:4px!important}
+.jc{display:inline-flex;align-items:center;gap:5px;background:#e3edfd;color:#1f4fa8;font:800 12px Inter,Segoe UI;border-radius:7px;padding:4px 9px}
+.jc button{border:0;background:none;color:#1f4fa8;font-weight:900;padding:0;font-size:12px}
+.drop{border:2.5px dashed #1d6b47;background:#f0f8f3;border-radius:14px;padding:14px;text-align:center;cursor:pointer;display:block}
+.drop.hov{background:#dff1e6}
+.drop b{font:800 14px Inter,Segoe UI;color:#0f3d2a;display:block;margin-top:4px}
+.file{display:flex;align-items:center;gap:12px;border:1.5px solid #cfe6d8;background:#fff;border-radius:12px;padding:10px 14px;margin-top:10px}
+.xl{width:38px;height:44px;border-radius:6px;background:#1d6f42;color:#fff;font:900 12px Inter,Segoe UI;display:flex;align-items:center;justify-content:center;flex:none}
+.note{font:500 11.5px Inter,Segoe UI;color:#6b7385}
+.mf{display:flex;gap:10px;align-items:center;padding:14px 22px;border-top:1px solid #eef0f5;background:#fafbfd;flex-wrap:wrap}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1.5px solid #dfe3ec;border-radius:22px;padding:8px 14px;font:700 12.5px Inter,Segoe UI;color:#3b4560;background:#fff}
+.chip.on{background:#0f3d2a;border-color:#0f3d2a;color:#fff}
+.prog{flex:1;height:12px;border-radius:8px;background:#eef0f5;overflow:hidden}.prog div{height:100%;background:var(--teal)}
+.lp{background:#f3f5f9;border-radius:12px;padding:14px;display:flex;justify-content:center;overflow:auto;max-height:640px}
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#0f3d2a;color:#fff;border-radius:12px;padding:12px 18px;font:700 14px Inter,Segoe UI;box-shadow:0 12px 30px rgba(0,0,0,.3);z-index:200;display:none;align-items:center;gap:12px}
+.toast.on{display:flex}
+/* sign in */
+.si{position:fixed;inset:0;z-index:300;background:linear-gradient(135deg,#0f3d2a,#1d6b47 60%,#f2b33d);display:flex;align-items:center;justify-content:center}
+.si .c{background:#fff;border-radius:22px;width:480px;padding:36px 40px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.si h1{margin:14px 0 4px;font:800 26px Inter,Segoe UI;color:#14213d}.si p{color:#5d6880;margin:0 0 22px;font-size:14.5px}
+.gbtn{border:1.5px solid #dadce0;border-radius:12px;padding:13px;display:flex;gap:12px;align-items:center;justify-content:center;font:700 15px Inter,Segoe UI;color:#3c4043;background:#fff;width:100%}
+.acc{display:none;text-align:left;margin-top:14px;border:1px solid #e6e8ef;border-radius:12px;overflow:hidden}
+.acc.on{display:block}.acc div{padding:11px 14px;display:flex;gap:10px;align-items:center;cursor:pointer;border-bottom:1px solid #f0f2f7}.acc div:hover{background:#f3f5f9}
+.acc small{display:block;color:var(--mu)}
+.lw{font:700 32px Georgia;letter-spacing:6px;color:#0b3319}.ls{font:700 10px Georgia;letter-spacing:3px;color:#0b3319}
+/* porter label */
+.lab{width:100mm;height:150mm;border:0.8mm solid #000;display:flex;flex-direction:column;overflow:hidden;background:#fff;color:#000;font-family:Inter,Arial,sans-serif;flex:none}
+.lab .r{display:flex;border-bottom:0.8mm solid #000}
+.lab .logo{flex:1.1;display:flex;flex-direction:column;justify-content:center;padding:3mm 4mm;min-height:24mm}
+.lab .logo .w{font:700 30px Georgia,'Times New Roman',serif;letter-spacing:4px;color:#0b3319;line-height:1}
+.lab .logo .s{font:700 9.5px Georgia,serif;letter-spacing:2.6px;color:#0b3319;margin-top:3px}
+.lab .port{flex:1;background:#000;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2mm;text-align:center}
+.lab .port .a{font:800 8px Inter,Arial;letter-spacing:.3em}
+.lab .port .p{font:900 30px 'Arial Black',Inter,sans-serif;letter-spacing:1px;line-height:1.05}
+.lab .port .b{background:#fff;color:#000;font:900 8px Inter,Arial;letter-spacing:.12em;padding:2px 6px;border-radius:2px;margin-top:3px}
+.lab .to{padding:3mm 4mm 2.5mm;border-bottom:0.8mm solid #000;flex:1;overflow:hidden}
+.lab .to .h{font:900 7.5px Inter,Arial;letter-spacing:.24em;margin-bottom:1mm}
+.lab .to .nm{font:700 24px Georgia,serif;line-height:1.1}
+.lab .to .co{font:700 14px Georgia,serif;margin-top:1px}
+.lab .to .ad{font:700 13.5px Georgia,serif;line-height:1.32;margin-top:1.5mm}
+.lab .call2{display:flex;align-items:center;gap:4mm;background:#c8c8c8;border-radius:1.5mm;padding:2mm 3.5mm;margin-top:2.5mm}
+.lab .call2 small{font:900 7.5px Inter,Arial;letter-spacing:.2em}
+.lab .call2 b{font:900 22px Inter,Arial;letter-spacing:1px}
+.lab .alt{font:800 10px Inter,Arial;margin-top:1.4mm}
+.lab .boxc2{display:flex;align-items:center;justify-content:center;gap:3mm;margin-top:2.5mm;border:0.8mm solid #000;border-radius:2mm;padding:1.2mm 0;font:900 24px 'Arial Black',Inter,Arial}
+.lab .boxc2 .n{border:0.9mm solid #8b0000;color:#8b0000;border-radius:1.5mm;padding:0 3mm;font-size:25px}
+.lab .dt{display:grid;grid-template-columns:1fr 1fr;border-bottom:0.8mm solid #000}
+.lab .dt>div{padding:1.6mm 3.5mm}.lab .dt>div+div{border-left:0.8mm solid #000}
+.lab small.k{display:block;font:900 7px Inter,Arial;letter-spacing:.22em}
+.lab .dt b{font:900 15px Inter,Arial}
+.lab .k2{display:grid;grid-template-columns:1.25fr 1fr}
+.lab .k2>div{padding:1.8mm 3.5mm}.lab .k2>div+div{border-left:0.8mm solid #000}
+.lab .k2 b{font:900 13px Inter,Arial}
+.lab .k2 svg{width:100%;height:11mm;display:block;margin-top:1mm}
+.lab .veh .line{border-bottom:0.6mm dashed #000;height:9mm;font:900 15px Inter,Arial;display:flex;align-items:flex-end;padding-bottom:1mm}
+.lab .veh .hint{font:700 7px Inter,Arial;color:#333;margin-top:0.6mm}
+.lab .foot{border-top:0.8mm solid #000;padding:1.4mm 3mm;font:900 7.5px Inter,Arial;text-align:center;letter-spacing:.08em}
+@keyframes pulse{0%,100%{box-shadow:0 30px 80px rgba(0,0,0,.35),0 0 0 0 rgba(217,45,45,.6)}50%{box-shadow:0 30px 80px rgba(0,0,0,.35),0 0 0 12px rgba(217,45,45,0)}}
+.alarm{border:3px solid #d92d2d;animation:pulse 1.4s infinite}
+.cnt{background:#fde2e2;color:#c42020;border-radius:12px;padding:10px 14px;font:800 26px Inter,Segoe UI;font-variant-numeric:tabular-nums}
+</style></head><body>
+
+<!-- Sign in (dummy) -->
+<div class="si" id="si"><div class="c"><div class="lw">BOXUP</div><div class="ls">LUXURY GIFTING</div>
+ <h1>Dispatch Control Center</h1><p>Sign in to see and manage all dispatches</p>
+ <div id="gsiBtn" style="display:flex;justify-content:center;min-height:44px"></div>
+ <div class="note" id="siMsg" style="margin-top:12px;color:#c42020"></div>
+ <p class="note" style="margin:14px 0 0">Everyone who signs in has full access. Your name is saved on every change.</p>
+</div></div>
+
+<div class="hd">
+ <div class="ti"><h1>Dispatch Control Center</h1><p>Track &nbsp;•&nbsp; Manage &nbsp;•&nbsp; Deliver</p></div>
+  <div class="art"><svg viewBox="0 0 520 70" width="100%" height="70" preserveAspectRatio="xMidYMid meet">
+  <path d="M10 52 C120 30 200 60 300 40" stroke="#f0c46a" stroke-width="2" fill="none" stroke-dasharray="4 5" opacity=".8"/>
+  <path d="M40 58 C150 40 220 62 300 50" stroke="#f6d99b" stroke-width="5" fill="none" opacity=".45"/>
+  <g transform="translate(150,26)"><rect width="22" height="18" rx="2" fill="#f2a43a"/><rect x="9" width="4" height="18" fill="#c9302c"/><rect y="6" width="22" height="4" fill="#c9302c"/></g>
+  <g transform="translate(280,8)"><rect x="0" y="10" width="64" height="38" rx="4" fill="#e9a425"/><rect x="62" y="20" width="30" height="28" rx="4" fill="#f2b33d"/><rect x="68" y="25" width="16" height="11" rx="2" fill="#bfe1f5"/>
+   <circle cx="16" cy="50" r="8" fill="#2c2c2c"/><circle cx="16" cy="50" r="3" fill="#aaa"/><circle cx="74" cy="50" r="8" fill="#2c2c2c"/><circle cx="74" cy="50" r="3" fill="#aaa"/>
+   <rect x="6" y="16" width="20" height="14" rx="2" fill="#c78a17"/><text x="36" y="33" font-size="9" font-weight="800" fill="#7a4d00" font-family="Inter">BOXUP</text></g>
+  <g transform="translate(400,22)"><rect y="8" width="28" height="24" rx="2" fill="#2f7d4f"/><rect x="11" y="8" width="6" height="24" fill="#f2c94c"/><rect y="0" width="28" height="9" rx="2" fill="#3a9862"/><path d="M14 0 C8 -8 2 -2 14 0 C26 -2 20 -8 14 0" fill="#f2c94c"/></g>
+  <g fill="#f2c94c" opacity=".8"><circle cx="388" cy="18" r="2"/><circle cx="440" cy="14" r="2.5"/><circle cx="378" cy="40" r="1.6"/></g>
+ </svg></div>
+
+ <div class="srch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a93a6" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" placeholder="Search by Order ID / Job card / Client..."></div>
+ <div class="date"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#18233a" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span id="today"></span><span id="live" style="font:800 11px Inter,Segoe UI;color:#9aa2b3;margin-left:6px">● Connecting</span></div>
+ <div class="usr" id="usr"><span class="av" id="uav">P</span><span id="uname">Prajwal</span> ▾
+  <div class="um" id="um"><div><b id="umn"></b><small id="ume"></small></div><div id="soBtn">↩ Sign out</div></div></div>
+</div>
+
+<div class="al" id="al"></div>
+
+<div class="kp" id="kp"></div>
+
+<div class="main">
+ <div class="col" data-s="sched" style="background:#f4f7fe"></div>
+ <div class="col" data-s="ready" style="background:#fff6e8"></div>
+ <div class="col" data-s="transit" style="background:#eef9f1"></div>
+ <div class="col" data-s="delivered" style="background:#f5f1fd"></div>
+ <div class="col" data-s="issue" style="background:#fff2ea"></div>
+ <div class="side">
+  <div class="pn"><div class="ph">⏰ Upcoming Porter Dispatches<span class="va" id="upAll">View All →</span></div><div id="upl"></div></div>
+  <div class="pn"><div class="ph">📦 Shipment Details<span class="va" id="sdOpen">Open / Edit →</span></div><div class="sd" id="sd"></div></div>
+  <div class="bot" style="grid-template-columns:1fr">
+   <div class="pn"><h6>🔔 Reminders <span class="note" style="font-weight:600">· all optional, turn on or off</span></h6>
+    <div class="ck" data-r="time"><span class="sw"></span>Alarm when the task time comes</div>
+    <div class="ck" data-r="before"><span class="sw"></span>Alert 30 min before the task time</div>
+    <div class="ck" data-r="late"><span class="sw"></span>Repeat every 15 min while late</div>
+    <div class="ck" data-r="arrive"><span class="sw"></span>Alarm when a new task arrives</div>
+    <div class="ck" data-r="notify"><span class="sw"></span>Screen notification (shows even when this tab is in the background)</div>
+    <div class="ck" data-r="sound"><span class="sw"></span>Play sound</div>
+    <div style="display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap"><span class="note" style="font-weight:700">Volume</span><span class="chips" id="volC" style="gap:5px"></span><button class="btn sm" id="volTest">▶ Test</button></div></div>
+   <div class="pn"><h6>👥 Team Access</h6><div class="ta">Everyone · Google sign-in</div><div class="note" style="margin-top:6px">Full access for all</div></div>
+  </div>
+ </div>
+</div>
+
+<div class="ft"><p>Smart Logistics. Seamless Deliveries.</p>
+ <svg viewBox="0 0 1600 96" width="100%" height="96" preserveAspectRatio="none" style="position:absolute;left:0;bottom:0">
+  <g fill="#dbe4f3" opacity=".9"><rect x="760" y="40" width="22" height="56"/><rect x="786" y="20" width="16" height="76"/><rect x="806" y="48" width="26" height="48"/><rect x="836" y="10" width="14" height="86"/><rect x="854" y="36" width="24" height="60"/><rect x="882" y="54" width="30" height="42"/><rect x="916" y="28" width="18" height="68"/><rect x="938" y="50" width="26" height="46"/><rect x="968" y="60" width="40" height="36"/></g>
+  <path d="M0 90 C400 60 800 96 1200 70 S1500 80 1600 66 L1600 96 L0 96Z" fill="#f4e7c8" opacity=".6"/>
+  <g transform="translate(1020,58)"><rect width="30" height="20" rx="2" fill="#e9a425"/><rect x="29" y="6" width="14" height="14" rx="2" fill="#f2b33d"/><circle cx="8" cy="22" r="4" fill="#333"/><circle cx="34" cy="22" r="4" fill="#333"/></g>
+  <g fill="#7bbf8e"><circle cx="740" cy="84" r="7"/><circle cx="1000" cy="86" r="6"/><circle cx="1100" cy="84" r="7"/></g>
+ </svg></div>
+
+
+<!-- Create / Edit task -->
+<div class="ov" id="ovTask"><div class="md" style="max-width:1080px">
+ <div class="mh"><span style="font-size:26px">📝</span><div><h2 id="tkTitle">Create Task</h2><p id="tkSub">Paste the message or fill the details · logistics handles the rest</p></div><button class="x" data-close>✕</button></div>
+ <div class="mb" style="display:grid;grid-template-columns:370px 1fr;gap:16px">
+  <div>
+   <div class="sec"><h4><i>1</i>Quick fill · paste message</h4>
+    <textarea class="qp" id="qp" placeholder="Paste the WhatsApp message from Sales here"></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px"><button class="btn k" id="qfill" style="flex:1;justify-content:center">⚡ Fill the form</button><button class="btn gh" id="qclr">Clear</button><button class="btn gh" id="qex" title="Paste a sample">Sample</button></div>
+    <div class="note" style="margin-top:8px">Works with "JC -", "Job card -", "Client Name", "Delivery mode -" too.</div></div>
+   <div class="sec" style="margin-bottom:0"><h4><i>3</i>Upload file <span class="note" style="font-weight:600">(optional, many addresses)</span></h4>
+    <label class="drop" id="drop"><input type="file" id="fileIn" accept=".xlsx,.xls,.csv" hidden><span style="font-size:22px">⬆</span><b>Drop Excel / CSV here or click</b><span class="note">Any format · no template needed</span></label>
+    <div id="fileBox"></div></div>
+  </div>
+  <div class="sec" style="margin:0"><h4><i>2</i>Delivery details <span class="af" id="afTag">✓ filled from message</span></h4>
+   <div class="g g2">
+    <div class="f"><label>Type <em>*</em></label><select id="fType"><option value="std">🚚 Standard Delivery</option><option value="pick">🏬 Store Pickup</option><option value="por">🛵 Porter (same day)</option><option value="exp">⚡ Express Delivery</option></select></div>
+    <div class="f" style="display:grid;grid-template-columns:1.3fr 1fr;gap:8px"><div><label>Dispatch Date <em>*</em></label><input type="date" id="fDate"></div><div><label>Time</label><input type="time" id="fTime"></div></div>
+    <div class="f"><label>Name <em>*</em></label><input id="fName"></div>
+    <div class="f"><label>Company Name</label><input id="fCo"></div>
+    <div class="f"><label>Phone <em>*</em></label><input id="fPhone"></div>
+    <div class="f"><label>Hamper Qty <em>*</em></label><input id="fQty"></div></div>
+   <div class="f" style="margin-top:10px"><label>Address (full address with pincode) <em>*</em></label><textarea id="fAddr" rows="3"></textarea><div class="note" id="pinNote" style="margin-top:4px"></div></div>
+   <div class="g g2" style="margin-top:10px">
+    <div class="f"><label>Estimate</label><input id="fEst"></div>
+    <div class="f"><label>Job Card (one or more)</label><div class="jcb" id="jcb"><input id="jcIn"></div></div></div>
+   <div class="f" style="margin-top:10px"><label>Note for logistics</label><input id="fNote"></div>
+   <div class="note" style="margin-top:8px">The alarm rings at the dispatch date and time. Orders are punched and labels printed on the Label page only.</div>
+  </div>
+ </div>
+ <div class="mf"><button class="btn gh" data-close>Cancel</button><button class="btn rd" id="tkDel" style="display:none">🗑 Delete</button><span class="note" id="tkBy"></span><span style="margin-left:auto"></span><button class="btn k" id="tkSave">📤 Create Task</button></div>
+</div></div>
+
+<!-- Ticket / details -->
+<div class="ov" id="ovView"><div class="md" style="max-width:860px">
+ <div class="mh" id="vwHead"><span style="font-size:26px" id="vwIco">📦</span><div><h2 id="vwTitle"></h2><p id="vwSub"></p></div><button class="x" data-close>✕</button></div>
+ <div class="mb" id="vwBody"></div>
+ <div class="mf" id="vwFoot"></div>
+</div></div>
+
+<!-- Update status -->
+<div class="ov" id="ovStatus"><div class="md" style="max-width:660px">
+ <div class="mh"><span style="font-size:24px">↻</span><div><h2 id="stTitle">Update Status</h2><p id="stSub"></p></div><button class="x" data-close>✕</button></div>
+ <div class="mb">
+  <div class="sec"><h4>New status</h4><div class="chips" id="stChips"></div></div>
+  <div class="sec" id="stPorter"><h4>Vehicle / driver <span class="note" style="font-weight:600">(optional)</span></h4><div class="g g3">
+   <div class="f"><label>Vehicle number</label><input id="sVeh"></div>
+   <div class="f"><label>Driver name</label><input id="sDrv"></div>
+   <div class="f"><label>Driver phone</label><input id="sDph"></div></div>
+   <div class="f" style="margin-top:10px"><label>AWB / Porter booking ID</label><input id="sAwb"></div></div>
+  <div class="sec" style="margin-bottom:0"><h4>Note <span class="note" style="font-weight:600">(optional)</span></h4><div class="f"><input id="sNote"></div></div>
+ </div>
+ <div class="mf"><button class="btn gh" data-close>Cancel</button><span style="margin-left:auto"></span><button class="btn k" id="stSave">✔ Save Status</button></div>
+</div></div>
+
+<!-- Completed confirm -->
+<div class="ov" id="ovDone"><div class="md" style="max-width:460px;margin-top:140px">
+ <div class="mh"><span style="font-size:26px">✔</span><div><h2>Mark as Completed?</h2><p>The task moves to Delivered / Completed</p></div></div>
+ <div class="mb"><div class="sec" id="dnTxt" style="margin:0"></div></div>
+ <div class="mf"><button class="btn gh" id="dnNo">No</button><span style="margin-left:auto"></span><button class="btn k" id="dnYes">✔ Yes, completed</button></div>
+</div></div>
+
+<!-- Alarm -->
+<div class="ov" id="ovAlarm"><div class="md alarm" style="max-width:680px;margin-top:80px">
+ <div class="mh" style="background:#d92d2d"><span style="font-size:30px">⏰</span><div><h2 id="amTitle">Porter dispatch is LATE</h2><p id="amSub"></p></div></div>
+ <div class="mb">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><b style="font:800 22px Inter,Segoe UI" id="amId"></b><div style="font:600 14px Inter,Segoe UI;margin-top:2px" id="amWho"></div><div class="note" id="amBy"></div></div><div class="cnt" id="amCnt"></div></div>
+  <div class="sec" style="margin-top:14px"><h4>What happened?</h4><div class="chips" id="amWhy"><span class="chip">Porter not booked yet</span><span class="chip">Driver delayed</span><span class="chip">Order not packed</span><span class="chip">Customer asked to delay</span></div></div>
+  <div class="note" id="amNote">🔔 Also shown in the red bar on top.</div>
+ </div>
+ <div class="mf"><button class="btn gh" id="amSnz">⏸ Snooze 15 min</button><button class="btn" id="amRes">📅 Reschedule</button><span style="margin-left:auto"></span><button class="btn k" id="amDone">🚚 Mark Dispatched</button></div>
+</div></div>
+
+<!-- New task arrived -->
+<div class="ov" id="ovNew"><div class="md alarm" style="max-width:560px;margin-top:90px;border-color:#16a34a;animation:none">
+ <div class="mh" style="background:#16a34a"><span style="font-size:30px">🔔</span><div><h2>New task arrived</h2><p id="nwSub"></p></div></div>
+ <div class="mb" id="nwBody"></div>
+ <div class="mf"><button class="btn gh" id="nwOk">OK, got it</button><span style="margin-left:auto"></span><button class="btn k" id="nwOpen">Open task</button></div>
+</div></div>
+<div class="toast" id="toast"><span id="toastT"></span><button class="btn sm" id="toastU" style="display:none">Undo</button></div>
+<div id="printArea" style="position:fixed;left:-9999px;top:0"></div>
+<script>
+/* ================= BoxUp Dispatch Control Center (live) =================
+   Tasks are saved in the Label Log Google Sheet ("Dispatch Tasks" tab) through the Apps Script web app.
+   Everyone signs in with Google and has full access. Reminder settings are kept per person in this browser. */
+const API = 'https://script.google.com/macros/s/AKfycbxkWlpzmubWJwgFQF7cCDAegDHDFpst-j2AnoLVrk3rVnZL9CuOukEIC_GR43gUlL7e/exec';
+const CLIENT_ID = '473864275614-9itokp6oq18e4snsjmhl0754j6sks6an.apps.googleusercontent.com';
+const RKEY = 'dcc.rem', LKEY = 'dcc.local', TKEY = 'dcc.token';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const store = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } } };
+
+const TYPES = { por: { lbl: 'PORTER', name: '🛵 Porter (same day)', cls: 't-por', col: '#2f6fe0' },
+  std: { lbl: 'STANDARD', name: '🚚 Standard Delivery', cls: 't-std', col: '#2f6fe0' },
+  pick: { lbl: 'STORE PICKUP', name: '🏬 Store Pickup', cls: 't-pick', col: '#2f6fe0' },
+  exp: { lbl: 'EXPRESS', name: '⚡ Express Delivery', cls: 't-exp', col: '#2f6fe0' } };
+const STATUS = {
+  sched: { name: 'Scheduled', col: '#2f6fe0', txt: '#1f5fd1', bg: '#e3edfd', ico: '📅' },
+  ready: { name: 'Ready to Dispatch', col: '#f59e0b', txt: '#c27a00', bg: '#fff1d6', ico: '✔' },
+  transit: { name: 'In Transit', col: '#22a35a', txt: '#16804a', bg: '#e1f4e8', ico: '🚚' },
+  delivered: { name: 'Delivered / Completed', col: '#8b5cf6', txt: '#6b34b5', bg: '#efe5fc', ico: '✅' },
+  issue: { name: 'Issues / RTO', col: '#f97316', txt: '#c2410c', bg: '#ffe8d9', ico: '⚠' } };
+
+let D = { tasks: [], rem: Object.assign({ time: true, before: true, late: true, arrive: true, notify: false, sound: true, vol: 'loud' }, store.get(RKEY, {})) };
+let ME = null, TOKEN = '', SEL = null, FILTER = null, Q = '', LOADED = false, PENDING = 0, LAST_OK = 0;
+const now = () => Date.now();
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const hm = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const fmtD = s => { if (!s) return ''; const [y, m, d] = s.split('-'); return d + ' ' + MON[+m - 1] + ' ' + y; };
+const fmtT = s => { if (!s) return ''; let [h, m] = s.split(':').map(Number); const ap = h >= 12 ? 'pm' : 'am'; h = h % 12 || 12; return h + ':' + pad(m) + ' ' + ap; };
+const fmtTs = t => { const d = new Date(t); return pad(d.getDate()) + ' ' + MON[d.getMonth()] + ', ' + fmtT(hm(d)); };
+const dueOf = t => t.date ? new Date(t.date + 'T' + (t.time || '10:00')).getTime() : 0;
+const isOpen = t => t.status === 'sched' || t.status === 'ready';
+const lateMin = t => isOpen(t) && t.time && !isBulk(t) ? Math.floor((now() - dueOf(t)) / 60000) : -1e9;
+const isLate = t => lateMin(t) > 0;
+const cityOf = a => { a = String(a || ''); const pin = (a.match(/\b\d{6}\b/) || [''])[0];
+  const parts = a.split(',').map(s => s.trim()).filter(Boolean);
+  let i = parts.findIndex(p => pin && p.includes(pin)); let c = i > 0 ? parts[i - 1] : parts[parts.length - 1] || '';
+  c = c.replace(/\b\d{6}\b/, '').replace(/\b(india|maharashtra|karnataka|telangana|tamil nadu|delhi|haryana|west bengal)\b/ig, '').trim() || (parts[i] || '').replace(/\d{6}/, '').trim();
+  if (/^(maharashtra|karnataka|india)$/i.test(c) && i > 1) c = parts[i - 2];
+  return (c.split(' ').slice(-2).join(' ') + (pin ? ' · ' + pin : '')).trim(); };
+const isBulk = t => !!t.file;
+
+
+/* ---------- sync with the Google Sheet ---------- */
+const SYNC = ['status', 'type', 'name', 'co', 'phone', 'addr', 'qty', 'est', 'date', 'time', 'jc', 'note', 'veh', 'drv', 'dph', 'awb', 'snooze', 'deliveredAt', 'dispatchedAt', 'src'];
+const SERVER = {}, SEEN = new Set(), LOCAL = store.get(LKEY, {});
+const sig = t => JSON.stringify(SYNC.map(k => t[k] === undefined ? null : t[k])) + '|' + (t.hist || []).length + '|' + (t._fileData ? 'f' : '');
+async function api(op, body) {
+  const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action: 'dcc', op, token: TOKEN }, body || {})) });
+  const j = await r.json();
+  if (j && j.auth) { needSignIn('Your sign-in expired. Please sign in again.'); throw new Error('auth'); }
+  if (!j || !j.ok) throw new Error((j && j.error) || 'The sheet did not answer.');
+  LAST_OK = now(); live(true); return j;
+}
+function live(ok, msg) { const el = $('#live'); if (!el) return; el.textContent = ok ? '● Live' : '● ' + (msg || 'Offline'); el.style.color = ok ? '#16a34a' : '#c42020'; }
+function keepLocal(t) { const o = LOCAL[t.id] || {}; ['alarmAt', 'pre'].forEach(k => { if (t[k]) o[k] = t[k]; }); LOCAL[t.id] = o; }
+function fromServer(s) { s.jc = s.jc || []; s.hist = s.hist || []; s._hn = s.hist.length; Object.assign(s, LOCAL[s.id] || {}); SERVER[s.id] = { sig: sig(s), deleted: !!s.deleted }; return s; }
+function replaceTask(oldId, s) { const old = D.tasks.find(t => t.id === oldId); fromServer(s); if (old) { s.isNew = old.isNew; ['alarmAt', 'pre'].forEach(k => { if (old[k]) s[k] = old[k]; }); }
+  const i = D.tasks.findIndex(t => t.id === oldId); if (i >= 0) D.tasks[i] = s; else D.tasks.push(s); SEEN.add(s.id); if (SEL === oldId) SEL = s.id; }
+function save() {
+  store.set(RKEY, D.rem); D.tasks.forEach(keepLocal); store.set(LKEY, LOCAL);
+  if (!LOADED) return;
+  const ids = new Set(D.tasks.map(t => t.id));
+  Object.keys(SERVER).forEach(id => { if (!ids.has(id) && !SERVER[id].deleted) { SERVER[id].deleted = true; push(id, api('patch', { id, set: { deleted: true }, hist: [{ txt: 'Task deleted', c: '#c42020' }] }), id); } });
+  D.tasks.forEach(t => {
+    if (t._busy) return;
+    const set = {}; SYNC.forEach(k => set[k] = t[k] === undefined ? null : t[k]);
+    const add = (t.hist || []).slice(t._hn || 0).map(h => ({ txt: h.txt, c: h.c }));
+    const file = t._fileData ? { name: t._fileData.name, size: t._fileData.size, rows: t._fileData.rows, mime: t._fileData.mime, data: t._fileData.data } : null;
+    if (/^NEW-/.test(t.id)) { t._busy = 1; push(t.id, api('create', { task: set, file }), t.id); return; }
+    const S = SERVER[t.id];
+    if (S && (S.deleted || S.sig !== sig(t))) { t._busy = 1; set.deleted = false; if (t._removeFile) set.removeFile = true; push(t.id, api('patch', { id: t.id, set, hist: add, file }), t.id); }
+  });
+}
+function push(id, p, key) {
+  PENDING++; live(true);
+  p.then(r => { if (r.task) { replaceTask(id, r.task); const t = byId(r.task.id); if (t) { delete t._busy; delete t._fileData; delete t._removeFile; } } render(); })
+   .catch(e => { const t = byId(id); if (t) delete t._busy; if (e.message !== 'auth') { live(false, 'Not saved'); toast('⚠ Not saved: ' + e.message + ' · will retry'); } })
+   .finally(() => { PENDING--; if (PENDING === 0) setTimeout(() => { if (PENDING === 0) save(); }, 50); });
+}
+async function refresh(first) {
+  if (!TOKEN) return;
+  if (!first && (PENDING || $$('.ov.on').some(o => !['ovAlarm', 'ovNew'].includes(o.id)))) return;
+  try {
+    const r = await api('list');
+    if (r.me && ME) { ME.n = r.me.name; paintUser(); }
+    const pend = D.tasks.filter(t => /^NEW-/.test(t.id) || t._busy);
+    const list = r.tasks.map(fromServer);
+    const fresh = LOADED ? list.filter(t => !t.deleted && !SEEN.has(t.id)) : [];
+    list.forEach(t => SEEN.add(t.id));
+    D.tasks = list.filter(t => !t.deleted).filter(t => !pend.some(p => p.id === t.id)).concat(pend);
+    LOADED = true; render(); if (fresh.length) arrived(fresh);
+  } catch (e) { if (e.message !== 'auth') live(false, 'Offline · retrying'); }
+}
+const byId = id => D.tasks.find(t => t.id === id);
+const hist = (t, txt, c) => t.hist.push({ t: now(), who: ME ? ME.n : 'Someone', txt, c: c || '#2f6fe0' });
+
+/* ---------- sign in with Google ---------- */
+const COLORS = ['#0f3d2a', '#2f6fe0', '#8b5cf6', '#d97706', '#0ea5a4', '#c2410c'];
+function jwt(tok) { try { return JSON.parse(decodeURIComponent(escape(atob(tok.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))); } catch (e) { return null; } }
+function useToken(tok, quiet) {
+  const p = jwt(tok); if (!p || p.exp * 1000 < now() + 60000) return false;
+  TOKEN = tok; store.set(TKEY, tok);
+  ME = { n: p.name || p.given_name || p.email, e: p.email, pic: p.picture || '', c: COLORS[[...p.email].reduce((a, c) => a + c.charCodeAt(0), 0) % COLORS.length] };
+  $('#si').style.display = 'none'; paintUser();
+  clearTimeout(useToken.t); useToken.t = setTimeout(renewToken, Math.max(60000, p.exp * 1000 - now() - 5 * 60000));
+  if (!quiet) toast('Signed in as ' + ME.n);
+  return true;
+}
+function renewToken() { try { google.accounts.id.prompt(); } catch (e) { } }
+function onCredential(resp) { const first = !LOADED; if (useToken(resp.credential)) refresh(first); }
+function needSignIn(msg) { TOKEN = ''; try { localStorage.removeItem(TKEY); } catch (e) { } $('#siMsg').textContent = msg || ''; $('#si').style.display = 'flex'; startGsi(); }
+function startGsi() {
+  if (!window.google || !google.accounts || !google.accounts.id) { setTimeout(startGsi, 300); return; }
+  if (!startGsi.done) { google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onCredential, auto_select: true, cancel_on_tap_outside: false, itp_support: true }); startGsi.done = 1; }
+  google.accounts.id.renderButton($('#gsiBtn'), { theme: 'outline', size: 'large', text: 'signin_with', shape: 'pill', width: 300 });
+  if ($('#si').style.display !== 'none') google.accounts.id.prompt();
+}
+function paintUser() { if (!ME) return; const a = $('#uav'); a.style.background = ME.c;
+  a.innerHTML = ME.pic ? `<img src="${esc(ME.pic)}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%">` : esc(ME.n[0]);
+  $('#uname').textContent = ME.n.split(' ')[0]; $('#umn').textContent = ME.n; $('#ume').textContent = ME.e; }
+$('#usr').onclick = e => { e.stopPropagation(); $('#um').classList.toggle('on'); };
+document.addEventListener('click', () => $('#um').classList.remove('on'));
+$('#soBtn').onclick = () => { try { google.accounts.id.disableAutoSelect(); } catch (e) { } ME = null; needSignIn('Signed out.'); };
+
+/* ---------- toast ---------- */
+let tT; function toast(msg, undo) { $('#toastT').textContent = msg; $('#toastU').style.display = undo ? '' : 'none'; $('#toastU').onclick = () => { undo(); $('#toast').classList.remove('on'); };
+  $('#toast').classList.add('on'); clearTimeout(tT); tT = setTimeout(() => $('#toast').classList.remove('on'), undo ? 6000 : 3200); }
+
+/* ---------- render ---------- */
+function pill(t) {
+  if (t.status === 'issue') return `<span class="tm late">⊘ ${t.awb ? 'RTO' : 'Issue'}</span>`;
+  if (t.status === 'delivered') return `<span class="tm okk">✓ Delivered</span>`;
+  if (t.status === 'transit') return `<span class="tm gry">🚚 On the way</span>`;
+  if (isBulk(t)) return `<span class="tm soon">⏱ Ship by ${fmtD(t.date).slice(0, 6)}</span>`;
+  if (t.type !== 'por') return `<span class="tm gry">📅 ${fmtD(t.date).slice(0, 6)}${t.type === 'pick' && t.time ? ' · ' + fmtT(t.time) : ''}</span>`;
+  const m = lateMin(t);
+  if (m > 0) return `<span class="tm late">⏱ late ${m < 60 ? m + ' min' : Math.floor(m / 60) + 'h ' + (m % 60) + 'm'}</span>`;
+  if (m > -60) return `<span class="tm soon">⏱ Due in ${-m} min</span>`;
+  const d = new Date(dueOf(t)), today = ymd(new Date()) === t.date;
+  return `<span class="tm okk">⏱ ${today ? 'Today' : fmtD(t.date).slice(0, 6)} · ${fmtT(t.time)}</span>`;
+}
+function match(t) {
+  if (Q) { const h = [t.id, t.name, t.co, t.phone, t.addr, t.est, t.awb, (t.jc || []).join(' '), t.file && t.file.name].join(' ').toLowerCase(); if (!h.includes(Q)) return false; }
+  if (FILTER === 'por') return t.type === 'por' && isOpen(t);
+  if (FILTER === 'over') return isLate(t);
+  if (FILTER === 'deliv') return t.status === 'delivered';
+  return true;
+}
+function card(t) {
+  const ty = TYPES[t.type], b = isBulk(t);
+  return `<div class="cd ${b ? 'tk' : ''} ${SEL === t.id ? 'sel' : ''}" draggable="true" data-id="${t.id}" style="border-left-color:${b ? '#0ea5a4' : STATUS[t.status].col}">
+   <b class="id">${b ? '🎫 ' : ''}${t.id}${b ? '<span class="tg t-bk">BULK</span>' : ''}${t.isNew ? '<span class="nw">NEW</span>' : ''}</b>
+   <div class="nm">${esc(t.name)}${t.co ? ' · <span style="font-weight:500">' + esc(t.co) + '</span>' : ''}</div>
+   <div class="loc">${b ? '📑 ' + esc(t.file.name.length > 26 ? t.file.name.slice(0, 24) + '…' : t.file.name) + ' · ' + esc(t.qty) + ' orders' : '📍 ' + esc(cityOf(t.addr))}</div>
+   <div class="loc">${t.jc && t.jc.length ? 'JC ' + t.jc.map(esc).join(', ') : ''}${t.est ? ' · ' + esc(t.est) : ''}</div>
+   <div class="row"><span class="tg ${b && isOpen(t) ? 't-bk' : ty.cls}">${b && isOpen(t) ? ((t.printed || 0) >= (parseInt(t.qty) || 0) ? 'PUNCHED ✓' : 'TO PUNCH') : ty.lbl}</span>${pill(t)}
+    <span class="mini">${b ? '<button data-a="dl" title="Download file">⬇</button>' : ''}<button data-a="status" title="Update status">↻</button><button data-a="edit" title="Edit">✎</button>${t.status !== 'delivered' ? '<button data-a="done" class="donebtn" title="Mark completed">✔ Completed</button>' : ''}</span></div>
+   ${b && isOpen(t) ? `<div class="row" style="margin-top:6px"><div class="prog"><div style="width:${Math.min(100, Math.round((t.printed || 0) / (parseInt(t.qty) || 1) * 100))}%"></div></div><span class="note" style="font-weight:700">${t.printed || 0}/${parseInt(t.qty) || 0}</span></div>` : ''}
+   ${t.isNew || t.status === 'sched' ? `<div class="loc" style="margin-top:5px">👤 ${esc(t.by)} · ${fmtTs(t.at)}</div>` : ''}
+  </div>`;
+}
+function render() {
+  const T = D.tasks, open = T.filter(isOpen);
+  const late = T.filter(isLate).sort((a, b) => lateMin(b) - lateMin(a));
+  const soon = T.filter(t => lateMin(t) <= 0 && lateMin(t) > -30);
+  const today = ymd(new Date());
+  // alert bar
+  const al = $('#al');
+  const snoozedAll = late.length && late.every(t => (t.snooze || 0) > now());
+  if (late.length) {
+    al.className = 'al';
+    al.innerHTML = `<svg width="26" height="24" viewBox="0 0 24 24"><path d="M12 3L2 21h20z" fill="#d92d2d"/><path d="M12 9v5" stroke="#fff" stroke-width="2.4"/><circle cx="12" cy="17.5" r="1.3" fill="#fff"/></svg>
+     ${late.length} dispatch${late.length > 1 ? 'es are' : ' is'} late ${late.slice(0, 3).map(t => `<span class="p" data-alarm="${t.id}">${t.id} – late ${lateMin(t)} min</span>`).join('')}
+     ${soon.length ? `<span class="sep"></span><span class="t2">and ${soon.length} due in ${-lateMin(soon[0])} min</span>` : ''}
+     ${snoozedAll ? '<span class="t2">· snoozed</span>' : ''}
+     <div class="r"><button class="btn gh" id="alSnz" style="background:#fff">Snooze 15 min</button><button class="btn rd" id="alOpen">${FILTER === 'over' ? 'Show all' : 'Open Overdue'}</button></div>`;
+  } else {
+    al.className = 'al ok';
+    al.innerHTML = `✓ All dispatches are on time${soon.length ? ` · ${soon.length} due in the next 30 min` : ''}`;
+  }
+  // KPIs
+  const K = [
+    ['por', 'Porter Scheduled', T.filter(t => t.type === 'por' && isOpen(t)).length, '#e3edfd', '#5b8de6', '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f5fd1" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>'],
+    ['over', 'Overdue', late.length, '#fde2e2', '#e98a8a', '<svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#e23b3b"/><path d="M12 7v6" stroke="#fff" stroke-width="2.6"/><circle cx="12" cy="16.5" r="1.4" fill="#fff"/></svg>'],
+    ['ready', 'Ready to Dispatch', T.filter(t => t.status === 'ready').length, '#e1f4e8', '#5cbf86', '<svg width="24" height="24" viewBox="0 0 24 24" fill="#16804a"><path d="M3 11l18-8-8 18-2-8z"/></svg>'],
+    ['transit', 'In Transit', T.filter(t => t.status === 'transit').length, '#efe5fc', '#a682e3', '<svg width="26" height="24" viewBox="0 0 26 24" fill="#7b3fd0"><rect x="1" y="6" width="14" height="11" rx="1.5"/><path d="M15 9h5l4 4v4h-9z"/><circle cx="6" cy="19" r="2.3"/><circle cx="19" cy="19" r="2.3"/></svg>'],
+    ['deliv', 'Delivered Today', T.filter(t => t.status === 'delivered' && t.deliveredAt && ymd(new Date(t.deliveredAt)) === today).length, '#e1f4e8', '#5cbf86', '<svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#16a34a"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.6" fill="none"/></svg>'],
+    ['issue', 'Issues / RTO', T.filter(t => t.status === 'issue').length, '#fff1d6', '#f3b44d', '<svg width="26" height="24" viewBox="0 0 24 24"><path d="M12 3L2 21h20z" fill="#f59e0b"/><path d="M12 9v5" stroke="#fff" stroke-width="2.4"/><circle cx="12" cy="17.5" r="1.3" fill="#fff"/></svg>']];
+  const sp = ['M0 30 C20 20 30 34 50 24 S80 10 100 18', 'M0 26 C25 34 40 14 60 24 S85 30 100 14', 'M0 28 C20 24 35 30 55 20 S85 22 100 10', 'M0 22 C20 30 35 18 55 26 S80 12 100 20', 'M0 30 C20 26 35 18 55 22 S85 8 100 12', 'M0 24 C20 30 40 20 60 28 S85 16 100 22'];
+  $('#kp').innerHTML = K.map((k, i) => `<div class="kc ${FILTER === k[0] ? 'on' : ''}" data-k="${k[0]}"><span class="ic" style="background:${k[3]}">${k[5]}</span><div><small>${k[1]}</small><b>${k[2]}</b></div><svg class="sp" viewBox="0 0 100 40" preserveAspectRatio="none"><path d="${sp[i]} L100 40 L0 40Z" fill="${k[3]}"/><path d="${sp[i]}" stroke="${k[4]}" stroke-width="2" fill="none"/></svg></div>`).join('')
+    + `<button class="ct" id="ctBtn"><span class="pl">+</span><b>Create Task</b><span>New dispatch order</span></button>`;
+  // columns
+  $$('.col').forEach(c => {
+    const s = c.dataset.s, S = STATUS[s];
+    let L = T.filter(t => t.status === s && match(t));
+    L.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0) || (s === 'sched' || s === 'ready' ? dueOf(a) - dueOf(b) : b.at - a.at));
+    c.innerHTML = `<div class="ch"><span style="color:${S.txt}">${S.ico}</span>${S.name}<span class="n" style="color:${S.txt}">${L.length}</span></div>` + (L.map(card).join('') || `<div class="empty">${FILTER || Q ? 'Nothing matches' : 'Drop a task here'}</div>`);
+  });
+  // upcoming porter
+  const up = T.filter(t => t.type === 'por' && isOpen(t)).sort((a, b) => dueOf(a) - dueOf(b)).slice(0, 4);
+  $('#upl').innerHTML = up.map(t => { const m = lateMin(t), c = m > 0 ? 'background:#fde2e2;color:#c42020' : m > -60 ? 'background:#fff1d6;color:#a86400' : 'background:#e1f4e8;color:#16804a';
+    const sn = (t.snooze || 0) > now();
+    return `<div class="up" data-id="${t.id}"><span class="t" style="${c}">${t.date === today ? fmtT(t.time).toUpperCase() : fmtD(t.date).slice(0, 6)}</span><div class="i"><b>${t.id}</b><span>${esc(cityOf(t.addr).split(' · ')[0])} · ${esc(t.name)}</span></div>
+      <span class="x2">${m > 0 ? `<button class="btn sm" data-snz="${t.id}" style="background:#e1f4e8;border-color:#e1f4e8;color:#16804a">${sn ? 'Snoozed' : 'Snooze'}</button>` : '🔔'}</span></div>`; }).join('') || '<div class="up note">No Porter dispatches coming up</div>';
+  // details
+  renderDetails();
+  // reminders
+  $$('.ck').forEach(c => c.querySelector('.sw').classList.toggle('off', !D.rem[c.dataset.r]));
+  $('#volC').innerHTML = [['low', 'Low'], ['med', 'Medium'], ['loud', '🔊 Loud']].map(([k, l]) => `<button class="chip ${D.rem.vol === k ? 'on' : ''}" data-vol="${k}" style="padding:5px 10px;font-size:11.5px">${l}</button>`).join('');
+}
+function renderDetails() {
+  const t = byId(SEL) || D.tasks.find(isLate) || D.tasks.find(isOpen) || D.tasks[0];
+  if (!t) { $('#sd').innerHTML = '<div class="note">No tasks yet</div>'; return; }
+  SEL = t.id; const S = STATUS[t.status], ph = String(t.phone || '').replace(/\D/g, '').slice(-10);
+  $('#sd').innerHTML = `<div class="t1"><b>${t.id}</b><span class="st" style="background:${S.bg};color:${S.txt}">${S.name}</span></div>
+   <div class="l">👤 <b>${esc(t.name)}</b>${t.co ? ' · ' + esc(t.co) : ''}</div>
+   <div class="l">📍 ${esc(t.addr)}</div>
+   <div class="l">📞 ${esc(t.phone)}</div>
+   <div class="l">${TYPES[t.type].name} · ${esc(t.qty)} hamper${t.qty === '1' ? '' : 's'}</div>
+   <div class="l">📅 ${fmtD(t.date)}${t.time ? ' · ' + fmtT(t.time) : ''}${t.jc.length ? ' · JC ' + t.jc.join(', ') : ''}</div>
+   ${t.veh ? `<div class="l">🚐 ${esc(t.veh)}${t.drv ? ' · ' + esc(t.drv) : ''}</div>` : ''}
+   <div class="bt"><button class="btn k" data-sd="status">↻ Update Status</button><button class="btn" data-sd="done" ${t.status === 'delivered' ? 'disabled' : ''}>✔ Completed</button>
+    <a class="btn" href="https://wa.me/91${ph}" target="_blank" rel="noopener" style="grid-column:span 2;justify-content:center">💬 WhatsApp</a></div>
+   <h5>Activity Timeline</h5><div class="tl">${t.hist.slice(-4).reverse().map(h => `<div><i style="background:${h.c}"></i><span>${esc(h.txt)} · <b>${esc(h.who)}</b> · ${fmtTs(h.t)}</span></div>`).join('')}</div>`;
+}
+
+/* ---------- board events ---------- */
+document.addEventListener('click', e => {
+  const k = e.target.closest('[data-k]'); if (k) { FILTER = FILTER === k.dataset.k ? null : k.dataset.k; if (['ready', 'issue'].includes(FILTER)) { const s = FILTER; FILTER = null; document.querySelector(`.col[data-s="${s}"]`).scrollIntoView({ behavior: 'smooth', block: 'center' }); } render(); return; }
+  if (e.target.closest('#ctBtn')) { openTask(null); return; }
+  if (e.target.closest('#alOpen')) { FILTER = FILTER === 'over' ? null : 'over'; render(); return; }
+  if (e.target.closest('#alSnz')) { D.tasks.filter(isLate).forEach(t => { t.snooze = now() + 15 * 60000; hist(t, 'Alarm snoozed 15 min', '#a86400'); }); save(); render(); toast('Late alarms snoozed for 15 minutes'); return; }
+  const ap = e.target.closest('[data-alarm]'); if (ap) { showAlarm(byId(ap.dataset.alarm), true); return; }
+  const sz = e.target.closest('[data-snz]'); if (sz) { e.stopPropagation(); const t = byId(sz.dataset.snz); t.snooze = now() + 15 * 60000; hist(t, 'Alarm snoozed 15 min', '#a86400'); save(); render(); toast(t.id + ' snoozed for 15 minutes'); return; }
+  const u = e.target.closest('.up[data-id]'); if (u) { SEL = u.dataset.id; render(); return; }
+  const sd = e.target.closest('[data-sd]'); if (sd) { sd.dataset.sd === 'status' ? openStatus(SEL) : askDone(SEL); return; }
+  if (e.target.closest('#sdOpen')) { openView(SEL); return; }
+  if (e.target.closest('#upAll')) { FILTER = FILTER === 'por' ? null : 'por'; render(); return; }
+  const rc = e.target.closest('.ck[data-r]'); if (rc) { const r = rc.dataset.r; D.rem[r] = !D.rem[r];
+    if (r === 'notify' && D.rem.notify) { if (!('Notification' in window)) { D.rem.notify = false; toast('This browser does not support screen notifications'); }
+      else if (Notification.permission !== 'granted') Notification.requestPermission().then(p => { if (p !== 'granted') { D.rem.notify = false; save(); render(); toast('Notifications blocked · allow them in the browser address bar'); } else toast('Screen notifications on'); }); }
+    save(); render(); return; }
+  const vc = e.target.closest('[data-vol]'); if (vc) { D.rem.vol = vc.dataset.vol; save(); render(); beep(); return; }
+  if (e.target.closest('#volTest')) { if (!D.rem.sound) toast('Turn on Play sound first'); beep(); notify('Test notification', 'This is how a task alarm looks'); return; }
+  const cd = e.target.closest('.cd[data-id]');
+  if (cd) { const id = cd.dataset.id, a = e.target.closest('[data-a]');
+    if (a) { e.stopPropagation(); const act = a.dataset.a; if (act === 'done') askDone(id); else if (act === 'status') openStatus(id); else if (act === 'edit') openTask(id); else if (act === 'dl') downloadFile(byId(id)); return; }
+    const t = byId(id); if (t.isNew) { t.isNew = false; save(); }
+    if (SEL === id) openView(id); else { SEL = id; render(); } }
+});
+$('#q').oninput = e => { Q = e.target.value.trim().toLowerCase(); render(); };
+// drag and drop between columns
+document.addEventListener('dragstart', e => { const c = e.target.closest && e.target.closest('.cd[data-id]'); if (c) { e.dataTransfer.setData('text/plain', c.dataset.id); e.dataTransfer.effectAllowed = 'move'; } });
+$$('.col').forEach(col => {
+  col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('over'); });
+  col.addEventListener('dragleave', () => col.classList.remove('over'));
+  col.addEventListener('drop', e => { e.preventDefault(); col.classList.remove('over'); const id = e.dataTransfer.getData('text/plain'), t = byId(id); if (!t || t.status === col.dataset.s) return;
+    const old = t.status; setStatus(t, col.dataset.s, 'Moved on board'); save(); SEL = id; render();
+    toast(`${id} → ${STATUS[col.dataset.s].name}`, () => { t.status = old; t.hist.pop(); save(); render(); }); });
+});
+function setStatus(t, s, why) { t.status = s; t.isNew = false; if (s === 'delivered') t.deliveredAt = now(); if (s === 'transit' && !t.dispatchedAt) t.dispatchedAt = now();
+  hist(t, `Status → ${STATUS[s].name}${why ? ' (' + why + ')' : ''}`, STATUS[s].col); }
+
+/* ---------- modals ---------- */
+function openOv(id) { $(id).classList.add('on'); }
+function closeOv(el) { el.classList.remove('on'); }
+$$('.ov').forEach(o => o.addEventListener('click', e => { if (e.target === o && o.id === 'ovView') closeOv(o); if (e.target.closest('[data-close]')) closeOv(o); }));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $$('.ov.on').forEach(o => o.id !== 'ovAlarm' && closeOv(o)); });
+
+/* ---------- create / edit ---------- */
+let EDIT = null, JC = [], NEWFILE = null;
+function jcPaint() { $('#jcb').innerHTML = JC.map((j, i) => `<span class="jc">${esc(j)}<button data-jx="${i}">✕</button></span>`).join('') + '<input id="jcIn">'; bindJc(); }
+function bindJc() { const i = $('#jcIn'); i.onkeydown = e => { if ((e.key === 'Enter' || e.key === ',') && i.value.trim()) { e.preventDefault(); i.value.split(/[,\s]+/).filter(Boolean).forEach(v => JC.includes(v) || JC.push(v)); jcPaint(); $('#jcIn').focus(); } else if (e.key === 'Backspace' && !i.value && JC.length) { JC.pop(); jcPaint(); $('#jcIn').focus(); } };
+  i.onblur = () => { if (i.value.trim()) { i.value.split(/[,\s]+/).filter(Boolean).forEach(v => JC.includes(v) || JC.push(v)); jcPaint(); } }; }
+$('#jcb').addEventListener('click', e => { const x = e.target.closest('[data-jx]'); if (x) { JC.splice(+x.dataset.jx, 1); jcPaint(); } else $('#jcIn').focus(); });
+const F = { type: '#fType', date: '#fDate', time: '#fTime', name: '#fName', co: '#fCo', phone: '#fPhone', qty: '#fQty', addr: '#fAddr', est: '#fEst', note: '#fNote' };
+function openTask(id) {
+  EDIT = id ? byId(id) : null; NEWFILE = EDIT && EDIT.file ? Object.assign({}, EDIT.file) : null;
+  const t = EDIT || { type: 'std', date: ymd(new Date()), time: hm(new Date(now() + 3600000)), jc: [] };
+  Object.entries(F).forEach(([k, s]) => { $(s).value = t[k] || ''; $(s).classList.remove('bad'); });
+  JC = (t.jc || []).slice(); jcPaint(); $('#qp').value = ''; $('#afTag').classList.remove('on'); pinNote(); paintFile();
+  $('#tkTitle').textContent = EDIT ? 'Edit Task · ' + EDIT.id : 'Create Task';
+  $('#tkSub').textContent = EDIT ? 'Change any detail · the change is saved in history' : 'Paste the message or fill the details · logistics handles the rest';
+  $('#tkSave').textContent = EDIT ? '✔ Save changes' : '📤 Create Task';
+  $('#tkDel').style.display = EDIT ? '' : 'none';
+  $('#tkBy').textContent = EDIT ? `Created by ${EDIT.by} · ${fmtTs(EDIT.at)}` : `Created by ${ME ? ME.n : ''} · goes to Scheduled`;
+  $$('#ovView,#ovStatus').forEach(closeOv); openOv('#ovTask'); setTimeout(() => (EDIT ? $('#fName') : $('#qp')).focus(), 50);
+}
+function pinNote() { const a = $('#fAddr').value, pin = (a.match(/\b\d{6}\b/) || [])[0];
+  $('#pinNote').innerHTML = !a ? '' : /store\s*pick/i.test(a) ? '🏬 Store pickup · no address needed' : pin ? `📍 Pincode <b>${pin}</b> · ${esc(cityOf(a).split(' · ')[0])}` : '<span style="color:#c42020">⚠ No 6-digit pincode found in the address</span>'; }
+$('#fAddr').oninput = pinNote;
+$('#fType').onchange = () => { if ($('#fType').value === 'pick' && !$('#fAddr').value) { $('#fAddr').value = 'Store pickup'; pinNote(); } };
+
+/* quick fill parser */
+const SAMPLES = [`[10:01 pm, 02/11/2026] Sheetal Sales: Standard Delivery
+Name: Vancy
+Company Name: DOT PROFESSIONALS PRIVATE LIMITED
+Phone: 77386 17219
+Address: Quest Coworks, 5th Floor, Technopolis Knowledge Park, Mahakali Caves Road, Hanuman Nagar, Andheri East, Mumbai 400093 Maharashtra India
+Hamper Qty: 4 hampers
+Estimate: EST-004608 (Dispatch Date: 02/11/2026)
+JC - 4412
+
+@BOXUP LOGISTICS pls dispatch this today are hampers are ready.`, `Company Name: Sobha Realty
+Client Name      : Kushal
+Phone.            :+91 96861 94997
+Address           : Store pickup
+Hamper Qty.      : 53(partial)
+Estimate          :EST-004646
+Dispatch Date  : 02/11/2026
+Delivery mode - Store pickup
+Job card - 4423, 4329, 4328`, `Porter delivery
+Name: Gaurav Kapoor
+Company Name: Zell education
+Phone: 99205 82581
+Address: 1D Cross, 2nd Main Road, East of NGEF Layout, GP Nest, 4th Floor, Bangalore, Karnataka 560043
+Hamper Qty: 2
+Estimate: EST-004661
+Dispatch Date: 03/11/2026 4:30 pm
+JC - 4460`];
+let sampleI = 0;
+$('#qex').onclick = () => { $('#qp').value = SAMPLES[sampleI++ % SAMPLES.length]; };
+$('#qclr').onclick = () => { $('#qp').value = ''; $('#afTag').classList.remove('on'); };
+function parseMsg(txt) {
+  const o = {}; let lines = txt.replace(/\r/g, '').split('\n').map(l => l.replace(/^\[[^\]]*\]\s*[^:]{0,40}:\s*/, '').trim()).filter(Boolean);
+  const KEYS = [['name', /^(client\s*name|customer\s*name|receiver|name)\b/i], ['co', /^(company\s*name|company)\b/i], ['phone', /^(phone|mobile|contact|ph)\b/i],
+    ['addr', /^(address|addr)\b/i], ['qty', /^(hamper\s*qty|hampers?|qty|quantity)\b/i], ['est', /^(estimate|est)\b/i], ['date', /^(dispatch\s*date|date)\b/i],
+    ['jc', /^(job\s*cards?|jc)\b/i], ['mode', /^(delivery\s*mode|mode|type)\b/i]];
+  const clean = lines.join('\n'); let cur = null;
+  lines.forEach(l => {
+    if (/^@/.test(l)) { cur = null; return; }
+    const hit = KEYS.find(([, re]) => re.test(l));
+    if (hit) { const v = l.replace(hit[1], '').replace(/^[\s.]*[:\-–]\s*/, '').trim(); o[hit[0]] = v; cur = hit[0]; return; }
+    if (/standard\s*delivery|store\s*pick|porter|express/i.test(l) && l.length < 40 && !o.mode) { o.mode = l; cur = null; return; }
+    if (cur === 'addr') o.addr += ', ' + l; else cur = null;
+  });
+  const out = {};
+  const m = (o.mode || '') + ' ' + (txt.match(/standard delivery|store pick ?up|porter|express/i) || [''])[0];
+  out.type = /store\s*pick/i.test(m) ? 'pick' : /porter/i.test(m) ? 'por' : /express/i.test(m) ? 'exp' : /standard/i.test(m) ? 'std' : null;
+  if (o.name) out.name = o.name; if (o.co) out.co = o.co;
+  if (o.phone) { const d = o.phone.replace(/\D/g, '').slice(-10); if (d.length === 10) out.phone = '+91 ' + d.slice(0, 5) + ' ' + d.slice(5); }
+  if (o.addr) { let a = o.addr.replace(/\s+/g, ' ').trim(); const pin = (a.match(/\b\d{6}\b/) || [])[0];
+    if (pin) { a = a.replace(/,?\s*india\s*$/i, ''); const st = a.match(new RegExp(pin + '\\s+([A-Za-z ]+)$')); if (st) a = a.replace(st[0], st[1].trim() + ' ' + pin); }
+    out.addr = a; if (/store\s*pick/i.test(a) && !out.type) out.type = 'pick'; }
+  if (o.qty) { const n = o.qty.match(/\d+/); out.qty = n ? n[0] + (/partial/i.test(o.qty) ? ' (partial)' : '') : o.qty; }
+  const est = clean.match(/EST[-\s]?\d{3,}/i); if (est) out.est = est[0].toUpperCase().replace(/\s/, '-');
+  const dt = clean.match(/dispatch\s*date\s*[:\-]?\s*(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})/i) || (o.date || '').match(/(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})/);
+  if (dt) { const y = dt[3].length === 2 ? '20' + dt[3] : dt[3]; out.date = y + '-' + pad(dt[2]) + '-' + pad(dt[1]); }
+  const tm = clean.match(/(\d{1,2})[:.](\d{2})\s*(am|pm)\b/i) || txt.match(/\((\d{1,2})\s*(am|pm)\)/i);
+  if (tm) { let h = +tm[1], mi = tm[3] ? +tm[2] : 0, ap = (tm[3] || tm[2]).toLowerCase(); if (ap === 'pm' && h < 12) h += 12; if (ap === 'am' && h === 12) h = 0; out.time = pad(h) + ':' + pad(mi); }
+  const jc = o.jc || (clean.match(/\b(?:job\s*cards?|jc)\s*[:\-–]?\s*([\d,\s&]+)/i) || [])[1];
+  if (jc) out.jc = jc.split(/[,\s&]+/).filter(x => /^\d+$/.test(x));
+  return out;
+}
+$('#qfill').onclick = () => {
+  const txt = $('#qp').value.trim(); if (!txt) { $('#qp').focus(); toast('Paste the message first'); return; }
+  const o = parseMsg(txt); let n = 0;
+  Object.entries(o).forEach(([k, v]) => { if (v == null || v === '') return; if (k === 'jc') { JC = v; jcPaint(); n++; return; } if (F[k]) { $(F[k]).value = v; $(F[k]).classList.remove('bad'); n++; } });
+  pinNote(); $('#afTag').classList.toggle('on', n > 0); toast(n ? `Filled ${n} fields from the message` : 'Could not read any fields, please fill them in');
+};
+
+/* file upload */
+function paintFile() {
+  const f = NEWFILE; $('#fileBox').innerHTML = !f ? '' : `<div class="file"><span class="xl">${/csv$/i.test(f.name) ? 'CSV' : 'XLS'}</span><div style="min-width:0"><b style="font:800 13px Inter,Segoe UI;word-break:break-all">${esc(f.name)}</b><div class="note">${(f.size / 1024).toFixed(f.size > 102400 ? 0 : 1)} KB${f.rows ? ' · ' + f.rows + ' rows' : ''}</div></div><button class="btn gh sm" id="fRm" style="margin-left:auto">Remove</button></div>`;
+  const r = $('#fRm'); if (r) r.onclick = e => { e.preventDefault(); NEWFILE = null; paintFile(); };
+}
+function readFile(file) {
+  if (!file) return; if (file.size > 20 * 1024 * 1024) { toast('File is over 20 MB'); return; }
+  const rd = new FileReader();
+  rd.onload = () => { const data = rd.result; let rows = 0;
+    try { if (window.XLSX) { const wb = XLSX.read(data.split(',')[1], { type: 'base64' }); const ws = wb.Sheets[wb.SheetNames[0]];
+        rows = XLSX.utils.sheet_to_json(ws, { header: 1, blankrows: false }).filter(r => r.some(c => String(c).trim())).length - 1; } } catch (e) { rows = 0; }
+    if (!rows && /\.csv$/i.test(file.name)) { try { rows = atob(data.split(',')[1]).split(/\r?\n/).filter(l => l.trim()).length - 1; } catch (e) { } }
+    NEWFILE = { name: file.name, size: file.size, rows: Math.max(0, rows), key: 'f' + now(), data };
+    if (rows > 0 && !$('#fQty').value) $('#fQty').value = rows;
+    if (!$('#fAddr').value) { $('#fAddr').value = 'Multiple addresses (see file)'; pinNote(); }
+    paintFile(); toast('File added · ' + (rows ? rows + ' rows found' : 'ready')); };
+  rd.readAsDataURL(file);
+}
+$('#fileIn').onchange = e => { readFile(e.target.files[0]); e.target.value = ''; };
+const dr = $('#drop'); ['dragover', 'dragenter'].forEach(ev => dr.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dr.classList.add('hov'); }));
+['dragleave', 'drop'].forEach(ev => dr.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dr.classList.remove('hov'); }));
+dr.addEventListener('drop', e => readFile(e.dataTransfer.files[0]));
+function downloadFile(t) {
+  if (!t || !t.file) return;
+  if (!t.file.fid) { toast('The file is still uploading, try again in a moment'); return; }
+  toast('Downloading ' + t.file.name + '…');
+  api('file', { id: t.id }).then(r => { const a = document.createElement('a'); a.href = 'data:' + (r.mime || 'application/octet-stream') + ';base64,' + r.data; a.download = r.name || t.file.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => refresh(), 1500); })
+    .catch(e => { if (e.message !== 'auth') toast('⚠ Could not download: ' + e.message); });
+}
+
+/* save task */
+function collect() {
+  const o = {}; Object.entries(F).forEach(([k, s]) => o[k] = $(s).value.trim()); o.jc = JC.slice();
+  { const d = o.phone.replace(/\D/g, '').slice(-10); if (d.length === 10) o.phone = '+91 ' + d.slice(0, 5) + ' ' + d.slice(5); }
+  let bad = []; ['name', 'phone', 'qty', 'addr', 'date'].forEach(k => { const b = !o[k]; $(F[k]).classList.toggle('bad', b); if (b) bad.push(k); });
+  if (o.phone && o.phone.replace(/\D/g, '').length < 10) { $(F.phone).classList.add('bad'); bad.push('phone'); }
+  if (o.type === 'por' && !o.time) { $(F.time).classList.add('bad'); bad.push('time'); }
+  return bad.length ? null : o;
+}
+function saveTask(andPrint) {
+  const o = collect(); if (!o) { toast('Please fill the fields marked in red'); return; }
+  let f = null, fdata = null; if (NEWFILE) { f = { name: NEWFILE.name, size: NEWFILE.size, rows: NEWFILE.rows, fid: NEWFILE.fid };
+    if (NEWFILE.data) fdata = { name: NEWFILE.name, size: NEWFILE.size, rows: NEWFILE.rows, mime: NEWFILE.data.slice(5, NEWFILE.data.indexOf(';')) || 'application/octet-stream', data: NEWFILE.data.split(',')[1] }; }
+  let t;
+  if (EDIT) { t = EDIT; const lbl = { type: 'Type', date: 'Date', time: 'Time', name: 'Name', co: 'Company', phone: 'Phone', qty: 'Hamper Qty', addr: 'Address', est: 'Estimate', note: 'Note' };
+    const ch = Object.keys(lbl).filter(k => String(t[k] || '') !== String(o[k] || '')).map(k => lbl[k]); if ((t.jc || []).join() !== o.jc.join()) ch.push('Job Card');
+    if (((t.file && t.file.name) || '') !== ((f && f.name) || '')) ch.push('File');
+    Object.assign(t, o); if (!f && t.file) t._removeFile = true; t.file = f; if (fdata) t._fileData = fdata; if (ch.includes('Date') || ch.includes('Time')) { t.snooze = 0; t.alarmAt = 0; t.pre = 0; }
+    hist(t, ch.length ? 'Edited: ' + ch.join(', ') : 'Opened and saved (no change)', '#8b5cf6'); toast(ch.length ? `${t.id} updated · ${ch.join(', ')}` : 'No changes');
+  } else { t = Object.assign({ id: 'NEW-' + now(), status: 'sched', by: ME ? ME.n : 'Someone', at: now(), hist: [], _hn: 1, isNew: true }, o, { file: f }); if (fdata) t._fileData = fdata;
+    hist(t, 'Task created' + (f ? ' with file ' + f.name : ''), '#16a34a'); D.tasks.push(t); SEEN.add(t.id); toast('✅ Task created · saving to the sheet…'); }
+  save(); SEL = t.id; FILTER = null; closeOv($('#ovTask')); render(); if (!EDIT) arrived([t]);
+}
+$('#tkSave').onclick = () => saveTask(false);
+$('#tkDel').onclick = () => { const t = EDIT; if (!t) return; const i = D.tasks.indexOf(t); D.tasks.splice(i, 1); save(); closeOv($('#ovTask')); SEL = null; render();
+  toast(`${t.id} deleted`, () => { D.tasks.splice(i, 0, t); save(); render(); }); };
+
+/* ---------- view / ticket ---------- */
+function openView(id) {
+  const t = byId(id); if (!t) return; SEL = id; const S = STATUS[t.status], b = isBulk(t), q = parseInt(t.qty) || 0;
+  $('#vwHead').style.background = b ? '#0e7c7b' : 'var(--g)'; $('#vwIco').textContent = b ? '🎫' : '📦';
+  $('#vwTitle').textContent = t.id + (b ? ' · Bulk order to punch' : ' · ' + t.name);
+  $('#vwSub').textContent = `${TYPES[t.type].name} · ${S.name} · created by ${t.by}, ${fmtTs(t.at)}`;
+  const row = (k, v) => v ? `<div class="f"><label>${k}</label><div style="font:600 13.5px Inter,Segoe UI;padding:2px 0 6px">${v}</div></div>` : '';
+  $('#vwBody').innerHTML = `
+   ${b ? `<div class="sec"><h4>File</h4><div class="file" style="margin:0"><span class="xl">${/csv$/i.test(t.file.name) ? 'CSV' : 'XLS'}</span><div style="min-width:0"><b style="font:800 13.5px Inter,Segoe UI;word-break:break-all">${esc(t.file.name)}</b><div class="note">${(t.file.size / 1024).toFixed(0)} KB${t.file.rows ? ' · ' + t.file.rows + ' rows' : ''} · any format</div></div><button class="btn k" data-v="dl" style="margin-left:auto">⬇ Download</button></div>
+     <div class="note" style="margin-top:8px">☁ Real version: Google Drive › BoxUp Shared Files › Bulk Order Tasks › ${t.id}_${esc(t.file.name)}</div></div>
+    <div class="sec"><h4>Punch progress <span class="note" style="font-weight:600">(from the Label page)</span></h4><div style="display:flex;align-items:center;gap:10px"><div class="prog"><div style="width:${Math.min(100, Math.round((t.printed || 0) / (q || 1) * 100))}%"></div></div><b style="font:800 13px Inter,Segoe UI">${t.printed || 0} of ${q} printed</b></div>
+     <div class="note" style="margin-top:6px">Orders are punched and printed on the Label page only. This count updates from the Label Log, and the ticket moves to Ready to Dispatch when all are printed.</div></div>` : ''}
+   <div class="sec"><h4>Details</h4><div class="g g2">${row('Name', esc(t.name))}${row('Company Name', esc(t.co))}${row('Phone', esc(t.phone))}${row('Hamper Qty', esc(t.qty))}${row('Estimate', esc(t.est))}${row('Dispatch', fmtD(t.date) + (t.time ? ' · ' + fmtT(t.time) : ''))}${row('Job Card', t.jc.map(j => `<span class="jc">${esc(j)}</span>`).join(' '))}${row('Vehicle / driver', esc([t.veh, t.drv, t.dph].filter(Boolean).join(' · ')))}${row('AWB / booking', esc(t.awb))}</div>
+    ${row('Address', esc(t.addr))}${row('Note', esc(t.note))}</div>
+   <div class="sec" style="margin-bottom:0"><h4>History</h4><div class="tl">${t.hist.slice().reverse().map(h => `<div><i style="background:${h.c}"></i><span>${esc(h.txt)} · <b>${esc(h.who)}</b> · ${fmtTs(h.t)}</span></div>`).join('')}</div></div>`;
+  $('#vwFoot').innerHTML = `<button class="btn gh" data-close>Close</button><button class="btn rd" data-v="del">🗑 Delete</button><span style="margin-left:auto"></span><button class="btn" data-v="edit">✎ Edit</button><button class="btn" data-v="done" ${t.status === 'delivered' ? 'disabled' : ''}>✔ Completed</button><button class="btn k" data-v="status">↻ Update Status</button>`;
+  openOv('#ovView'); render();
+}
+$('#ovView').addEventListener('click', e => { const a = e.target.closest('[data-v]'); if (!a) return; const t = byId(SEL); if (!t) return; const v = a.dataset.v;
+  if (v === 'dl') downloadFile(t);
+  else if (v === 'edit') openTask(t.id);
+  else if (v === 'done') askDone(t.id);
+  else if (v === 'status') { closeOv($('#ovView')); openStatus(t.id); }
+  else if (v === 'del') { const i = D.tasks.indexOf(t); D.tasks.splice(i, 1); save(); closeOv($('#ovView')); SEL = null; render(); toast(`${t.id} deleted`, () => { D.tasks.splice(i, 0, t); save(); render(); }); }
+});
+
+/* ---------- status ---------- */
+let ST = null, STS = null;
+function openStatus(id) {
+  ST = byId(id); if (!ST) return; STS = ST.status; SEL = id;
+  $('#stTitle').textContent = 'Update Status · ' + ST.id; $('#stSub').textContent = `${ST.name} · ${cityOf(ST.addr)} · ${TYPES[ST.type].lbl} · ${ST.qty} hamper(s)`;
+  $('#stChips').innerHTML = Object.entries(STATUS).map(([k, s]) => `<button class="chip ${k === STS ? 'on' : ''}" data-st="${k}" style="${k === STS ? `background:${s.col};border-color:${s.col}` : ''}">${s.ico} ${s.name}</button>`).join('');
+  $('#sVeh').value = ST.veh || ''; $('#sDrv').value = ST.drv || ''; $('#sDph').value = ST.dph || ''; $('#sAwb').value = ST.awb || ''; $('#sNote').value = '';
+  $('#stPorter').style.display = ST.type === 'pick' ? 'none' : '';
+  $$('#ovView,#ovAlarm').forEach(closeOv); openOv('#ovStatus');
+}
+$('#stChips').onclick = e => { const c = e.target.closest('[data-st]'); if (!c) return; STS = c.dataset.st;
+  $$('#stChips .chip').forEach(x => { const on = x.dataset.st === STS, s = STATUS[x.dataset.st]; x.classList.toggle('on', on); x.style.cssText = on ? `background:${s.col};border-color:${s.col}` : ''; }); };
+$('#stSave').onclick = () => { const t = ST; if (!t) return; let ch = [];
+  [['veh', '#sVeh', 'Vehicle'], ['drv', '#sDrv', 'Driver'], ['dph', '#sDph', 'Driver phone'], ['awb', '#sAwb', 'AWB']].forEach(([k, s, l]) => { const v = $(s).value.trim(); if (v !== (t[k] || '')) { t[k] = v; ch.push(l); } });
+  const note = $('#sNote').value.trim();
+  if (STS !== t.status) setStatus(t, STS, note); else if (ch.length || note) hist(t, (ch.length ? 'Updated ' + ch.join(', ') : 'Note') + (note ? ': ' + note : ''), '#2f6fe0');
+  if (note && STS !== t.status) { } save(); closeOv($('#ovStatus')); render(); toast(`${t.id} · ${STATUS[t.status].name}`); };
+
+/* ---------- completed ---------- */
+let DONE = null;
+function askDone(id) { DONE = byId(id); if (!DONE) return; SEL = id;
+  $('#dnTxt').innerHTML = `<b style="font:800 18px Inter,Segoe UI">${DONE.id}</b><div style="font:600 13.5px Inter,Segoe UI;margin-top:4px">${esc(DONE.name)}${DONE.co ? ' · ' + esc(DONE.co) : ''}</div><div class="note" style="margin-top:3px">${TYPES[DONE.type].lbl} · ${esc(DONE.qty)} hamper(s) · now: ${STATUS[DONE.status].name}</div>`;
+  $$('#ovView,#ovStatus').forEach(closeOv); openOv('#ovDone'); }
+$('#dnYes').onclick = () => { const t = DONE; if (!t) return; const old = t.status; setStatus(t, 'delivered', 'marked completed'); t.snooze = 0; save(); closeOv($('#ovDone')); render();
+  toast(`✔ ${t.id} completed`, () => { t.status = old; t.hist.pop(); save(); render(); }); };
+$('#dnNo').onclick = () => closeOv($('#ovDone'));
+
+/* ---------- alarms ---------- */
+let AL = null, actx = null;
+const VOL = { low: .15, med: .45, loud: 1 };
+function tone(seq, type) { if (!D.rem.sound) return; try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume();
+  const v = VOL[D.rem.vol] || 1, comp = actx.createDynamicsCompressor(); comp.connect(actx.destination);
+  seq.forEach(([f, d, len]) => { const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.value = f; o.connect(g); g.connect(comp);
+    g.gain.setValueAtTime(.0001, actx.currentTime + d); g.gain.exponentialRampToValueAtTime(v, actx.currentTime + d + .02); g.gain.setValueAtTime(v, actx.currentTime + d + len - .05); g.gain.exponentialRampToValueAtTime(.0001, actx.currentTime + d + len);
+    o.start(actx.currentTime + d); o.stop(actx.currentTime + d + len + .02); }); } catch (e) { } }
+function beep() { const s = []; for (let r = 0; r < 3; r++) [[988, 0], [740, .28], [988, .56], [740, .84]].forEach(([f, d]) => s.push([f, r * 1.4 + d, .26])); tone(s, 'square'); }
+function notify(title, body) { if (!D.rem.notify || !('Notification' in window) || Notification.permission !== 'granted') return;
+  try { const n = new Notification(title, { body, requireInteraction: true, tag: title }); n.onclick = () => { window.focus(); n.close(); }; } catch (e) { } }
+let amRing = null;
+function showAlarm(t, manual) {
+  if (!t) return; AL = t; $('#amId').textContent = t.id; $('#amWho').textContent = `${t.name} · ${cityOf(t.addr)}`;
+  $('#amBy').textContent = `${t.qty} hamper(s) · created by ${t.by}`;
+  $$('#amWhy .chip').forEach(c => c.classList.remove('on')); tickAlarm(); openOv('#ovAlarm');
+  $('#amNote').textContent = '🔔 ' + (D.rem.late ? 'Repeats every 15 min until dispatched. ' : '') + 'Also shown in the red bar on top.';
+  if (!manual) { beep(); clearInterval(amRing); amRing = setInterval(() => $('#ovAlarm').classList.contains('on') ? beep() : clearInterval(amRing), 20000);
+    const m = lateMin(t); notify(m > 0 ? `${t.id} is LATE by ${m} min` : `${t.id} dispatch time now`, `${TYPES[t.type].lbl} · ${t.name}${t.co ? ' · ' + t.co : ''} · ${t.qty} hamper(s)`); }
+}
+function tickAlarm() { if (!AL) return; const ms = now() - dueOf(AL), late = ms > 0, s = Math.abs(Math.floor(ms / 1000));
+  const nm = AL.type === 'por' ? 'Porter dispatch' : 'Dispatch'; $('#amTitle').textContent = !late ? nm + ' due soon' : ms < 60000 ? '⏰ ' + nm + ' time has come' : nm + ' is LATE';
+  $('#ovAlarm .mh').style.background = late && ms >= 60000 ? '#d92d2d' : '#d97706';
+  $('#amSub').textContent = `Due at ${fmtT(AL.time)}${late ? ' · now late ' + Math.floor(s / 60) + ' min' : ' · in ' + Math.ceil(s / 60) + ' min'}`;
+  $('#amCnt').textContent = (late ? '-' : '') + pad(Math.floor(s / 60)) + ':' + pad(s % 60); }
+$('#amWhy').onclick = e => { const c = e.target.closest('.chip'); if (!c) return; $$('#amWhy .chip').forEach(x => x.classList.toggle('on', x === c)); };
+const amReason = () => ($$('#amWhy .chip.on')[0] || {}).textContent;
+$('#amSnz').onclick = () => { const t = AL; t.snooze = now() + 15 * 60000; hist(t, 'Alarm snoozed 15 min' + (amReason() ? ' · ' + amReason() : ''), '#a86400'); save(); closeOv($('#ovAlarm')); AL = null; render(); toast(t.id + ' snoozed for 15 minutes'); };
+$('#amDone').onclick = () => { const t = AL; setStatus(t, 'transit', amReason() ? 'late: ' + amReason() : 'dispatched'); save(); closeOv($('#ovAlarm')); AL = null; SEL = t.id; render(); openStatus(t.id); toast(t.id + ' marked dispatched · vehicle details are optional'); };
+$('#amRes').onclick = () => { const t = AL; if (amReason()) hist(t, 'Late reason: ' + amReason(), '#a86400'); t.snooze = now() + 5 * 60000; save(); closeOv($('#ovAlarm')); AL = null; openTask(t.id); setTimeout(() => $('#fTime').focus(), 80); };
+function checkAlarms() {
+  if (!ME || $('#ovAlarm').classList.contains('on') || $('#ovNew').classList.contains('on')) return;
+  const busy = $$('.ov.on').length > 0;
+  for (const t of D.tasks) { const m = lateMin(t); if (m < -60) continue;
+    if (D.rem.before && m >= -30 && m < 0 && !t.pre) { t.pre = 1; save(); toast(`🔔 ${t.id} ${TYPES[t.type].lbl} due in ${-m} min`); tone([[880, 0, .25], [1175, .3, .35]], 'square'); notify(`${t.id} due in ${-m} min`, `${TYPES[t.type].lbl} · ${t.name}`); }
+    if (m < 0 || busy || (t.snooze || 0) > now()) continue;
+    const first = !t.alarmAt && D.rem.time, again = t.alarmAt && D.rem.late && now() - t.alarmAt > 15 * 60000;
+    if (first || again) { t.alarmAt = now(); save(); showAlarm(t); return; } }
+}
+
+/* ---------- start ---------- */
+$('#today').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+render();
+{ const tok = store.get(TKEY, ''); if (tok && useToken(tok, true)) refresh(true); else needSignIn(''); }
+window.addEventListener('load', startGsi);
+setInterval(() => refresh(false), 15000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(false); });
+setInterval(() => { if (AL) tickAlarm(); }, 1000);
+setInterval(() => { if (!$$('.ov.on').length) render(); checkAlarms(); }, 15000);
+setTimeout(checkAlarms, 2500);
+
+/* ---------- new task arrival alarm (sound repeats until someone presses OK) ---------- */
+let NW = [], nwTimer = null;
+function chime() { const s = []; for (let r = 0; r < 2; r++) [[784, 0], [988, .22], [1319, .44]].forEach(([f, d]) => s.push([f, r * 1.1 + d, .3])); tone(s, 'triangle'); }
+function arrived(list) {
+  if (!D.rem.arrive || !list.length || !ME) return; NW = NW.concat(list);
+  const L = NW; $('#nwSub').textContent = L.length > 1 ? L.length + ' new tasks' : 'Created by ' + L[0].by + ' · ' + fmtTs(L[0].at);
+  $('#nwBody').innerHTML = L.map(t => `<div class="sec" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font:800 18px Inter,Segoe UI">${isBulk(t) ? '🎫 ' : ''}${t.id}</b><span class="tg ${TYPES[t.type].cls}">${TYPES[t.type].lbl}</span></div>
+    <div style="font:600 13.5px Inter,Segoe UI;margin-top:4px">${esc(t.name)}${t.co ? ' · ' + esc(t.co) : ''}</div>
+    <div class="note" style="margin-top:3px">${esc(t.qty)} hamper(s) · ${fmtD(t.date)}${t.time ? ' · ' + fmtT(t.time) : ''}${t.jc.length ? ' · JC ' + t.jc.join(', ') : ''}${isBulk(t) ? ' · file ' + esc(t.file.name) : ''}</div></div>`).join('')
+    + '<div class="note">🔔 The sound repeats every 10 seconds until someone presses OK.</div>';
+  openOv('#ovNew'); chime(); notify(L.length > 1 ? L.length + ' new tasks arrived' : 'New task ' + L[0].id, L.map(t => t.name + ' · ' + t.qty + ' hamper(s)').join('\n')); clearInterval(nwTimer); nwTimer = setInterval(chime, 10000);
+}
+function nwClose(open) { clearInterval(nwTimer); const L = NW; NW = []; closeOv($('#ovNew')); render(); if (open && L[0]) openView(L[0].id); }
+$('#nwOk').onclick = () => nwClose(false);
+$('#nwOpen').onclick = () => nwClose(true);
+
+</script>
+</body></html>
