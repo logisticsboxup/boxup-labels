@@ -761,6 +761,10 @@
   .me-tbl input.bad{border-color:var(--danger);}
   .me-wrap{flex:1;min-height:0;overflow:auto;}
   .me-form{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 12px;font-size:12.5px;}
+  .me-cour{display:flex;gap:6px}.me-cour select{flex:1 1 auto}.me-cour input{flex:1 1 auto}
+  .me-por{background:#f4f4f2;border:1.5px solid #111;border-radius:8px;padding:8px 10px}.me-por>b{display:block;font-size:12.5px;margin-bottom:6px}
+  .me-por>div{display:grid;grid-template-columns:150px 120px 170px 1fr 1fr auto;gap:8px 10px;align-items:end}.me-por .w2{grid-column:span 2}
+  .me-qr{display:flex;gap:6px;align-items:center;font:700 12.5px Inter;white-space:nowrap;margin-bottom:8px}.me-qr input{width:auto!important}
   .me-form .w2{grid-column:span 2;} .me-form .w4{grid-column:span 4;}
   .me-awb{border:1px solid #e4ded0;border-radius:10px;padding:10px 12px;margin-top:12px;}
   .me-awb .me-rd{padding:6px 8px;border:1.5px solid #e4ded0;border-radius:8px;margin:5px 0;}
@@ -1128,7 +1132,7 @@
         <div><div class="me-lb">Total boxes</div><input type="number" id="meAllBoxes" min="1" max="5000" placeholder="keep"></div>
         <div id="meAllAwb"></div>
       </div>
-      <datalist id="meCourierList"><option value="Shree Anjani"><option value="DTDC"><option value="Blue Dart"><option value="Delhivery"><option value="Professional Couriers"><option value="Trackon"><option value="DHL"><option value="India Post"></datalist>
+      <datalist id="meCourierList"><option value="Shree Anjani"><option value="Porter"><option value="In-house"><option value="DTDC"><option value="Blue Dart"><option value="Delhivery"><option value="Professional Couriers"><option value="Trackon"><option value="DHL"><option value="India Post"></datalist>
       <div class="me-wrap" id="meBody"></div>
       <div class="me-foot">
         <label class="ra-chk" id="mePerBoxWrap"><input type="checkbox" id="mePerBox" checked><span>Separate tracking ID for each box (multi-box orders)</span></label>
@@ -3936,7 +3940,7 @@ $('mcGo').addEventListener('click', async () => {
 
 /* ---------- edit & reprint (one order = form, many = table) ---------- */
 var ME = null;
-const ME_NAMES = { name:'recipient', company:'company', phone:'phone', alt:'alt number', address:'address', landmark:'landmark', pincode:'pincode', city:'city', state:'state', sender:'sender company', courier:'courier', mode:'mode', shiptype:'shipment type', totalpkg:'boxes' };
+const ME_NAMES = { pDate:'dispatch date', pTime:'dispatch time', pVeh:'vehicle number', pMap:'map link', pQR:'QR code', name:'recipient', company:'company', phone:'phone', alt:'alt number', address:'address', landmark:'landmark', pincode:'pincode', city:'city', state:'state', sender:'sender company', courier:'courier', mode:'mode', shiptype:'shipment type', totalpkg:'boxes' };
 function meOpen(list){
   list = list.filter(o => o.label);
   if(!list.length){ $('moMsg').innerHTML = '<span style="color:var(--danger)">These orders have no saved label, so they cannot be edited here.</span>'; return; }
@@ -3964,9 +3968,22 @@ function meAwbHtml(){
     ${one ? '' : `<label class="me-rd"><input type="radio" name="meAwb" value="series"><span><b>Auto series</b> from <input type="text" id="meFirst" placeholder="first ID" style="width:120px;display:inline-block;padding:3px 6px" autocomplete="off"><small>Next orders fill +1 in list order</small></span></label>`}
     <label class="me-rd"><input type="radio" name="meAwb" value="type"><span><b>Type a new tracking ID</b>${one ? ` <input type="text" id="meTypeOne" placeholder="New tracking ID (comma between, one per box)" style="width:260px;display:inline-block;padding:3px 6px" autocomplete="off">` : ' <small style="display:inline">in the table</small>'}<small>Shree Anjani AWBs must be in the Shree Anjani tab</small></span></label>`;
 }
+const ME_COURIERS = ['Shree Anjani', 'Porter', 'In-house', 'DTDC', 'Blue Dart', 'Delhivery', 'Professional Couriers', 'Trackon', 'DHL', 'India Post'];
+function meSetCour(i, val){
+  const it = ME.items[i];
+  if(val === '__other'){ it.courOther = true; if(ME_COURIERS.includes(it.v.courier)) it.v.courier = ''; }
+  else { it.courOther = false; it.v.courier = val; }
+  if(isPorter(it.v.courier) && !it.v.pDate) it.v.pDate = todayISO();
+  meRender();
+}
 const meMode = () => (document.querySelector('input[name=meAwb]:checked') || {}).value || 'keep';
 function meInput(i, f, cls, type){
   const it = ME.items[i], val = it.v[f] == null ? '' : it.v[f], ch = String(val) !== String(it.orig[f] == null ? '' : it.orig[f]);
+  if(f === 'courier'){                       // dropdown of couriers; 'Other…' shows a box to type any name
+    const c = String(val || '').trim(), key = ME_COURIERS.find(x => x.toLowerCase() === c.toLowerCase()) || (isSA(c) ? 'Shree Anjani' : isInHouse(c) ? 'In-house' : isPorter(c) ? 'Porter' : '');
+    const other = it.courOther || (c && !key);
+    return `<div class="me-cour"><select data-i="${i}" data-f="__cour" class="${ch ? 'chg' : ''}"><option value=""${!c && !other ? ' selected' : ''}>Not set</option>${ME_COURIERS.map(x => `<option${!other && x === key ? ' selected' : ''}>${x}</option>`).join('')}<option value="__other"${other ? ' selected' : ''}>Other…</option></select>${other ? `<input type="text" data-i="${i}" data-f="courier" value="${esc(c)}" placeholder="Courier name" class="${ch ? 'chg' : ''}" autocomplete="off">` : ''}</div>`;
+  }
   if(type === 'mode') return `<select data-i="${i}" data-f="${f}" class="${ch ? 'chg' : ''}">${['Air Shipping','Surface Shipping','Express Ground'].map(x => `<option ${x === val ? 'selected' : ''}>${x}</option>`).join('')}</select>`;
   if(type === 'type') return `<select data-i="${i}" data-f="${f}" class="${ch ? 'chg' : ''}">${['Forward','Reverse'].map(x => `<option ${x === (val || 'Forward') ? 'selected' : ''}>${x}</option>`).join('')}</select>`;
   return `<input type="${type || 'text'}" data-i="${i}" data-f="${f}" value="${esc(String(val))}" class="${ch ? 'chg' : ''} ${cls || ''}" ${f === 'courier' ? 'list="meCourierList"' : f === 'sender' ? 'list="senderList"' : ''} ${f === 'totalpkg' ? 'min="1" max="5000"' : ''} autocomplete="off" spellcheck="false">`;
@@ -3991,7 +4008,8 @@ function mePlan(){
     return { ids: typed.slice(0, Math.max(need, 1)), err: !typed.length ? 'type the new tracking ID' : (typed.length > 1 && typed.length < boxes ? `${typed.length} of ${boxes} IDs typed` : '') };
   });
 }
-function meChanges(it){ return Object.keys(ME_NAMES).filter(f => String(it.v[f] == null ? '' : it.v[f]) !== String(it.orig[f] == null ? '' : it.orig[f])).map(f => ME_NAMES[f]); }
+const meNorm = x => x == null || x === false ? '' : String(x);
+function meChanges(it){ return Object.keys(ME_NAMES).filter(f => meNorm(it.v[f]) !== meNorm(it.orig[f])).map(f => ME_NAMES[f]); }
 function meRender(){
   const plan = mePlan(), mode = meMode();
   const ae = document.activeElement, fk = ae && ae.dataset && ae.dataset.f ? ae.dataset.i + '|' + ae.dataset.f : null, caret = fk && ae.selectionStart != null ? ae.selectionStart : null;
@@ -4006,6 +4024,9 @@ function meRender(){
       ${fl('Landmark', 'landmark', 'w2')}${fl('Pincode', 'pincode')}${fl('Total boxes', 'totalpkg', '', 'number')}
       ${fl('City', 'city')}${fl('State', 'state')}${fl('Courier', 'courier', 'w2')}
       ${fl('Mode of shipping', 'mode', 'w2', 'mode')}${fl('Shipment type', 'shiptype', 'w2', 'type')}
+      ${isPorter(it.v.courier) ? `<div class="w4 me-por"><b>&#128757; ${isInHouse(it.v.courier) ? 'In-house delivery' : 'Porter dispatch'}</b>
+        <div>${fl('Dispatch date', 'pDate', '', 'date')}${fl('Dispatch time', 'pTime', '', 'time')}${fl('Vehicle number', 'pVeh')}${fl('Map link (optional)', 'pMap', 'w2')}
+        <label class="me-qr"><input type="checkbox" data-i="0" data-f="pQR" ${it.v.pQR ? 'checked' : ''}> Print address QR</label></div></div>` : ''}
     </div>
     <div class="me-awb" id="meAwbBox">${meAwbHtml()}</div>`;
   } else {
@@ -4065,6 +4086,9 @@ $('meModal').addEventListener('input', e => {
   if(t.dataset && t.dataset.f){
     const it = ME.items[+t.dataset.i], f = t.dataset.f;
     if(f === '__typed'){ it.typed = t.value; meRender(); return; }
+    if(f === '__cour'){ meSetCour(+t.dataset.i, t.value); return; }
+    if(t.type === 'checkbox'){ it.v[f] = t.checked; meRender(); return; }
+    if(f === 'pMap' && t.value.trim() && !it.v.pQR) it.v.pQR = true;
     it.v[f] = f === 'totalpkg' ? (t.value === '' ? '' : Math.min(5000, Math.max(1, parseInt(t.value, 10) || 1))) : t.value;
     if(f === 'pincode' || f === 'city'){ if(!it.orig.hubManual){ it.v.hubcode = ''; it.v.hubManual = false; } }
     if(f === 'pincode' && /^\d{6}$/.test(t.value.trim()) && t.value.trim() !== String(it.orig.pincode || '')){
@@ -4082,6 +4106,8 @@ $('meModal').addEventListener('input', e => {
 $('meModal').addEventListener('change', e => {
   const t = e.target; if(!ME) return;
   if(t.name === 'meAwb' || t.id === 'mePerBox' || t.id === 'meFree'){ meRender(); return; }
+  if(t.tagName === 'SELECT' && t.dataset.f === '__cour'){ if(ME.items[+t.dataset.i].v.courier !== t.value || t.value === '__other') meSetCour(+t.dataset.i, t.value); return; }
+  if(t.type === 'checkbox' && t.dataset.f){ ME.items[+t.dataset.i].v[t.dataset.f] = t.checked; meRender(); return; }
   if(t.tagName === 'SELECT' && t.dataset.f){ ME.items[+t.dataset.i].v[t.dataset.f] = t.value; meRender(); return; }
   if(t.tagName === 'SELECT' && t.id && t.id.startsWith('meAll')){ const f = t.id === 'meAllMode' ? 'mode' : 'shiptype'; ME.items.forEach(it => { it.v[f] = t.value || it.orig[f]; }); meRender(); }
 });
