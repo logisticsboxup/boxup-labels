@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Print</title>
+<style id="pageCss">@page{size:4in 6in;margin:0}</style>
+<style>
+:root{--blue:#1a73e8;--ink:#202124;--mu:#5f6368;--ln:#dadce0}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;font:13px/1.4 "Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:#e8eaed}
+.app{display:grid;grid-template-columns:1fr 360px;height:100vh}
+.pv{overflow:auto;padding:24px 20px 40px;display:flex;flex-direction:column;align-items:center;gap:18px;background:#e8eaed}
+.pg{position:relative;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25),0 4px 12px rgba(0,0,0,.12);display:grid;place-items:center;overflow:hidden}
+.pg img{display:block;max-width:100%;max-height:100%}
+.pg.off{opacity:.35}
+.pg .no{position:absolute;bottom:-22px;left:0;right:0;text-align:center;color:var(--mu);font-size:12px}
+.wrapPg{padding-bottom:20px}
+.ld{margin-top:30vh;color:var(--mu);display:flex;flex-direction:column;align-items:center;gap:12px}
+.sp{width:30px;height:30px;border:3px solid #c6c9ce;border-top-color:var(--blue);border-radius:50%;animation:r .8s linear infinite}@keyframes r{to{transform:rotate(360deg)}}
+.side{background:#fff;border-left:1px solid var(--ln);display:flex;flex-direction:column;min-height:0}
+.hd{display:flex;justify-content:space-between;align-items:baseline;padding:20px 20px 10px}
+.hd h1{font-size:22px;font-weight:400;margin:0}.hd span{color:var(--mu)}
+.fm{flex:1;overflow:auto;padding:4px 20px 10px}
+.row{display:grid;grid-template-columns:110px 1fr;align-items:center;gap:10px;min-height:52px}
+.row>label{color:var(--ink)}
+select,input[type=text],input[type=number]{width:100%;height:34px;border:1px solid var(--ln);border-radius:4px;padding:0 8px;font:inherit;color:var(--ink);background:#fff}
+select:focus,input:focus{outline:2px solid var(--blue);outline-offset:-1px;border-color:transparent}
+.sub{grid-column:2;margin-top:-6px}
+.more{border:0;background:none;color:var(--ink);font:inherit;padding:12px 0;cursor:pointer;display:flex;justify-content:space-between;width:100%;border-top:1px solid var(--ln);margin-top:6px}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:14px 0 6px;color:var(--ink)}
+.chk input{margin-top:2px}
+.lnk{display:block;color:var(--blue);text-decoration:none;cursor:pointer;margin:10px 0;border:0;background:none;padding:0;font:inherit;text-align:left}
+.lnk:hover{text-decoration:underline}
+.ft{display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--ln)}
+.btn{height:36px;padding:0 22px;border-radius:4px;border:1px solid var(--ln);background:#fff;color:var(--blue);font:600 13.5px "Segoe UI",Arial;cursor:pointer}
+.btn.p{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn:disabled{opacity:.5;cursor:default}
+.err{color:#d93025;font-size:12.5px;margin:6px 0}
+.tip{color:var(--mu);font-size:12px;margin:2px 0 10px}
+#printArea{display:none}
+@media print{
+  html,body{background:#fff}
+  .app{display:none!important}
+  #printArea{display:block}
+  .sheet{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;page-break-after:always;break-after:page}
+  .sheet:last-child{page-break-after:auto;break-after:auto}
+  .sheet.fit img{width:100%;height:100%;object-fit:contain}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="pv" id="pv"><div class="ld"><div class="sp"></div>Loading preview…</div></div>
+  <div class="side">
+    <div class="hd"><h1>Print</h1><span id="cnt"></span></div>
+    <div class="fm">
+      <div class="row"><label for="dest">Destination</label><select id="dest"><option>Loading printers…</option></select></div>
+      <div class="row"><label for="pages">Pages</label><select id="pages"><option value="all">All</option><option value="odd">Odd pages only</option><option value="even">Even pages only</option><option value="custom">Custom</option></select></div>
+      <div class="row" id="custRow" hidden><span></span><input type="text" id="cust" placeholder="e.g. 1-5, 8, 11-13"></div>
+      <div class="row"><label for="copies">Copies</label><input type="number" id="copies" min="1" max="99" value="1"></div>
+      <div class="row"><label for="layout">Layout</label><select id="layout"><option value="p">Portrait</option><option value="l">Landscape</option></select></div>
+      <button class="more" id="moreBtn" type="button"><span>More settings</span><span id="moreIc">⌃</span></button>
+      <div id="more">
+        <div class="row"><label for="paper">Paper size</label><select id="paper"><option value="4x6">4 x 6 in (10 x 15 cm label)</option><option value="a4">A4</option><option value="a5">A5</option><option value="letter">Letter</option></select></div>
+        <div class="row"><label for="per">Pages per sheet</label><select id="per"><option>1</option><option>2</option><option>4</option><option>6</option><option>9</option><option>16</option></select></div>
+        <div class="row"><label for="scale">Scale</label><select id="scale"><option value="fit">Fit to paper</option><option value="actual">Actual size</option></select></div>
+      </div>
+      <label class="chk"><input type="checkbox" id="rem"><span id="remTxt">Remember this printer and paper for labels</span></label>
+      <div class="tip" id="remTip"></div>
+      <div class="err" id="err" hidden></div>
+      <button class="lnk" id="sys" type="button">Print using system dialog… (Ctrl+Shift+P)</button>
+      <button class="lnk" id="openPdf" type="button">Open the PDF</button>
+    </div>
+    <div class="ft"><button class="btn p" id="go" disabled>Print</button><button class="btn" id="cancel">Cancel</button></div>
+  </div>
+</div>
+<div id="printArea"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const PAPER_IN = { '4x6':[4,6], a4:[8.27,11.69], a5:[5.83,8.27], letter:[8.5,11] };
+let PAGES = [], KIND = 'label', REM = {}, NAME = '';
+
+async function start(){
+  const info = await bxPrint.info();
+  if (!info) { $('pv').innerHTML = '<div class="ld">This file could not be opened.</div>'; return; }
+  NAME = info.name; REM = info.remember || {};
+  document.title = 'Print - ' + NAME;
+  // pdf.js worker: loaded from inside the app, run from a blob so it works from this window
+  try { const w = await (await fetch('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js')).text(); pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([w], { type:'text/javascript' })); } catch (e) {}
+  const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(info.data) }).promise;
+  const first = (await pdf.getPage(1)).getViewport({ scale:1 });
+  const wIn = first.width / 72, hIn = first.height / 72;
+  KIND = (Math.min(wIn, hIn) <= 4.5 && Math.max(wIn, hIn) <= 6.5) ? 'label' : 'a4';
+  $('remTxt').textContent = KIND === 'label' ? 'Remember this printer and paper for labels' : 'Remember this printer and paper for A4 files (manifests, records)';
+  const r = REM[KIND];
+  $('paper').value = r && r.paper ? r.paper : (KIND === 'label' ? '4x6' : 'a4');
+  $('rem').checked = !!r;
+  if (wIn > hIn) $('layout').value = 'l';
+  printers(r);
+  // render every page at print quality (300 dpi for labels, 200 dpi for A4)
+  const dpi = KIND === 'label' ? 300 : 200;
+  $('pv').innerHTML = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i), vp = page.getViewport({ scale: dpi / 72 }), vp1 = page.getViewport({ scale:1 });
+    const c = document.createElement('canvas'); c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+    const url = await new Promise(res => c.toBlob(b => res(URL.createObjectURL(b)), 'image/png'));
+    PAGES.push({ n: i, url, wIn: vp1.width / 72, hIn: vp1.height / 72 });
+    c.width = c.height = 0;
+    if (i === 1 || i % 5 === 0 || i === pdf.numPages) draw();
+  }
+  draw();
+  $('go').disabled = false;
+}
+async function printers(r){
+  const list = await bxPrint.printers();
+  const sel = $('dest');
+  if (!list.length) { sel.innerHTML = '<option value="">No printer found</option>'; return; }
+  sel.innerHTML = list.map(p => `<option value="${p.name.replace(/"/g, '&quot;')}">${p.label.replace(/</g, '&lt;')}${p.def ? ' (default)' : ''}</option>`).join('');
+  const has = n => n && list.some(p => p.name === n);
+  const tsc = (list.find(p => /TE\s?310|TSC/i.test(p.name)) || {}).name;
+  sel.value = (r && has(r.printer)) ? r.printer : (KIND === 'label' && tsc) ? tsc : ((list.find(p => p.def) || list[0]).name);
+  tipRem();
+}
+function chosen(){
+  const all = PAGES.map(p => p.n), m = $('pages').value;
+  if (m === 'odd') return all.filter(n => n % 2);
+  if (m === 'even') return all.filter(n => !(n % 2));
+  if (m !== 'custom') return all;
+  const set = new Set(), t = $('cust').value.trim();
+  if (!t) return all;
+  for (const part of t.split(/[,\s]+/)) {
+    const mm = part.match(/^(\d+)(?:-(\d+))?$/); if (!mm) return null;
+    let a = +mm[1], b = +(mm[2] || mm[1]); if (a > b) [a, b] = [b, a];
+    for (let i = a; i <= b; i++) if (i >= 1 && i <= PAGES.length) set.add(i);
+  }
+  return [...set].sort((x, y) => x - y);
+}
+function draw(){
+  const pick = chosen(), err = $('err');
+  err.hidden = !!pick; if (!pick) err.textContent = 'Pages: use numbers like 1-5, 8, 11-13';
+  const [pw, ph] = PAPER_IN[$('paper').value], land = $('layout').value === 'l';
+  const W = land ? ph : pw, H = land ? pw : ph, scale = Math.min(300 / W, 1.0) * 1, px = 96;
+  const boxW = Math.min(520, W * px * (W > 5 ? 0.62 : 1)), boxH = boxW * H / W;
+  $('pv').innerHTML = PAGES.map(p => {
+    const on = !pick || pick.includes(p.n);
+    const actual = $('scale').value === 'actual';
+    const st = actual ? `width:${boxW * p.wIn / W}px` : `max-width:100%;max-height:100%`;
+    return `<div class="wrapPg"><div class="pg${on ? '' : ' off'}" style="width:${boxW}px;height:${boxH}px"><img src="${p.url}" style="${st}" alt=""><div class="no"></div></div><div style="text-align:center;color:#5f6368;font-size:12px;margin-top:6px">Page ${p.n}${on ? '' : ' · not printed'}</div></div>`;
+  }).join('') || '<div class="ld"><div class="sp"></div>Loading preview…</div>';
+  const n = (pick || []).length, per = +$('per').value, copies = Math.max(1, +$('copies').value || 1);
+  const sheets = Math.ceil(n / per) * copies;
+  $('cnt').textContent = n ? sheets + ' sheet' + (sheets === 1 ? '' : 's') + ' of paper' : '';
+  $('custRow').hidden = $('pages').value !== 'custom';
+  document.getElementById('pageCss').textContent = `@page{size:${W}in ${H}in;margin:0}`;
+}
+function tipRem(){
+  const r = REM[KIND];
+  $('remTip').textContent = r ? 'Saved: ' + r.printer + ' · ' + $('paper').querySelector(`option[value="${r.paper}"]`).textContent : '';
+}
+function buildPrint(){
+  const pick = chosen(); if (!pick || !pick.length) return false;
+  const fit = $('scale').value === 'fit';
+  $('printArea').innerHTML = pick.map(n => { const p = PAGES[n - 1]; return `<div class="sheet${fit ? ' fit' : ''}"><img src="${p.url}" style="${fit ? '' : `width:${p.wIn}in;height:${p.hIn}in`}"></div>`; }).join('');
+  return true;
+}
+async function doPrint(system){
+  if (!buildPrint()) { $('err').hidden = false; $('err').textContent = 'Choose at least one page to print.'; return; }
+  const o = { system, printer: $('dest').value, copies: +$('copies').value || 1, paper: $('paper').value, perSheet: +$('per').value, landscape: $('layout').value === 'l' };
+  if (!system && !o.printer) { $('err').hidden = false; $('err').textContent = 'No printer found. Use the system dialog.'; return; }
+  if ($('rem').checked) REM = await bxPrint.remember({ kind: KIND, on: true, printer: o.printer, paper: o.paper });
+  $('go').disabled = true; $('go').textContent = 'Printing…';
+  // wait for the page images to be ready
+  await Promise.all([...document.querySelectorAll('#printArea img')].map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })));
+  const r = await bxPrint.print(o);
+  $('go').disabled = false; $('go').textContent = 'Print';
+  if (r && r.ok) bxPrint.close();
+  else if (r && r.why && !/cancel/i.test(r.why)) { $('err').hidden = false; $('err').textContent = 'Could not print: ' + r.why; }
+}
+['pages', 'cust', 'copies', 'layout', 'paper', 'per', 'scale'].forEach(id => $(id).addEventListener('input', draw));
+$('rem').onchange = async () => { REM = await bxPrint.remember({ kind: KIND, on: $('rem').checked, printer: $('dest').value, paper: $('paper').value }); tipRem(); };
+$('dest').onchange = $('paper').onchange = async () => { draw(); if ($('rem').checked) { REM = await bxPrint.remember({ kind: KIND, on: true, printer: $('dest').value, paper: $('paper').value }); tipRem(); } };
+$('moreBtn').onclick = () => { const m = $('more'); m.hidden = !m.hidden; $('moreIc').textContent = m.hidden ? '⌄' : '⌃'; };
+$('go').onclick = () => doPrint(false);
+$('sys').onclick = () => doPrint(true);
+$('cancel').onclick = () => bxPrint.close();
+$('openPdf').onclick = () => bxPrint.openPdf();
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !$('go').disabled && e.target.tagName !== 'SELECT') doPrint(false);
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'p') { e.preventDefault(); doPrint(true); }
+});
+start().catch(e => { $('pv').innerHTML = '<div class="ld">Could not show the preview: ' + String(e.message || e).replace(/</g, '&lt;') + '</div>'; });
+</script>
+</body>
+</html>

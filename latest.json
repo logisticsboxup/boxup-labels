@@ -1,16 +1,24 @@
 {
   "app": "1.1.0",
-  "date": "29 Oct 2026",
+  "date": "10 Nov 2026",
   "core": {
-    "version": "1.1.0",
+    "version": "1.2.0",
     "files": [
       {
         "path": "main.js",
-        "sha256": "2fb15b3146b1717b7dd6ffad64c4feee2b34f1ee8392466303fea9a6c209573f"
+        "sha256": "1b3bbf7b9a2786ba1bb3452400db3da41b7268ea549471ef924e34ed26b2f006"
       },
       {
         "path": "preload.js",
-        "sha256": "376728d95f1d99288c5c0f82dbfa0bba3bbd07ff9ef5d5546a9a9f57f8489f52"
+        "sha256": "023e7b0e340e5c4e4312857bfaf20a846d486fa4049c14c3e5a3c0fabcd91efa"
+      },
+      {
+        "path": "print.html",
+        "sha256": "132824898e850fcdf1a9ef34457ed76d5266670571967bf6b63c32c3cf575d3b"
+      },
+      {
+        "path": "print-preload.js",
+        "sha256": "16857dcd0dc3f030113779284263d233ccc339385461cd65b645fd96302549e5"
       }
     ]
   },
@@ -18,6 +26,18 @@
     "url": "https://github.com/logisticsboxup/boxup-labels/releases/latest"
   },
   "notes": [
+    {
+      "title": "Downloads and notifications (☰)",
+      "text": "The ☰ button at the top right of the label preview lists every PDF and Excel file you saved, with Open, Print and Show in folder, and keeps notifications (labels saved, low Shree Anjani AWBs, gate problems, partner updates) until you clear them."
+    },
+    {
+      "title": "BoxUp print preview",
+      "text": "Print opens a Chrome-style preview: choose the printer (TSC TE310 for labels), pages, copies and paper size 4 x 6. Tick Remember to keep the printer and paper for labels."
+    },
+    {
+      "title": "Open PDFs inside the app",
+      "text": "Open shows the PDF in a BoxUp window with the Chrome PDF viewer."
+    },
     {
       "title": "Check for update in the File menu",
       "text": "File > Check for update (Ctrl+U) looks at GitHub and brings down the newest label tool straight away."

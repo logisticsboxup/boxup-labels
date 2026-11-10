@@ -5017,5 +5017,230 @@ $('intlGo').addEventListener('click', async ()=>{
   $('qpWhatsapp').addEventListener('click', () => { open(false); shpOpen('whatsapp'); });
 })();
 </script>
+
+<!-- ============ ☰ DOWNLOADS + NOTIFICATIONS (top right of the preview panel) ============ -->
+<style>
+#bxMenuBtn{position:absolute;top:12px;right:14px;z-index:30;width:42px;height:42px;border-radius:11px;border:1.5px solid rgba(233,211,161,.55);background:rgba(0,0,0,.18);color:#f4f1e6;display:grid;place-items:center;cursor:pointer;padding:0}
+#bxMenuBtn:hover{background:rgba(255,255,255,.08)}
+#bxMenuBtn svg{width:22px;height:22px}
+#bxMenuBtn .bdg{position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:#e53935;color:#fff;font:700 11.5px/20px Inter,Arial,sans-serif;text-align:center;box-shadow:0 0 0 2px #16311f}
+#bxMenu{position:fixed;z-index:9000;width:430px;max-width:calc(100vw - 24px);max-height:calc(100vh - 90px);display:flex;flex-direction:column;background:#fff;color:#1b1f1c;border-radius:16px;box-shadow:0 22px 60px rgba(0,0,0,.4);font:14px/1.4 Inter,Segoe UI,Arial,sans-serif;overflow:hidden}
+#bxMenu[hidden]{display:none}
+#bxMenu .tb{display:flex;border-bottom:1px solid #ece9e0}
+#bxMenu .tb button{flex:1;border:0;background:none;padding:14px 8px 12px;font:600 15px Inter,Arial,sans-serif;color:#8a8f8b;border-bottom:3px solid transparent;cursor:pointer}
+#bxMenu .tb button.on{color:#16311f;border-bottom-color:#16311f}
+#bxMenu .tb i{font-style:normal;display:inline-block;min-width:19px;height:19px;border-radius:10px;background:#e53935;color:#fff;font:700 11px/19px Inter,Arial;margin-left:5px;padding:0 4px;vertical-align:1px}
+#bxMenu .bd{overflow:auto;flex:1;min-height:120px}
+#bxMenu .gh{display:flex;justify-content:space-between;align-items:center;padding:12px 18px 6px;font:700 11.5px Inter,Arial;letter-spacing:.8px;color:#8a8f8b;text-transform:uppercase}
+#bxMenu .gh a,#bxMenu .ft a{color:#1e7b3c;font-weight:700;letter-spacing:0;text-transform:none;cursor:pointer;text-decoration:none;font-size:12.5px}
+#bxMenu .gh .clr{background:#fde8e6;color:#c62828;border:0;border-radius:8px;padding:5px 10px;font:700 12.5px Inter,Arial;cursor:pointer;letter-spacing:0;text-transform:none}
+#bxMenu .dl{display:flex;gap:12px;align-items:center;padding:10px 18px;border-top:1px solid #f3f1ea}
+#bxMenu .ic{width:42px;height:42px;border-radius:8px;display:grid;place-items:center;color:#fff;font:800 11.5px Inter,Arial;flex:none}
+#bxMenu .ic.pdf{background:#d93025}#bxMenu .ic.xlsx{background:#1e7b3c}#bxMenu .ic.oth{background:#777}
+#bxMenu .nm{flex:1;min-width:0}
+#bxMenu .nm b{display:block;font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bxMenu .nm small{color:#7a7f7b;font-size:12.5px}
+#bxMenu .pg{height:5px;background:#eee;border-radius:3px;margin-top:5px;overflow:hidden}#bxMenu .pg>span{display:block;height:100%;background:#1e7b3c}
+#bxMenu .ac{display:flex;gap:5px;flex:none}
+#bxMenu .ac button{border:1px solid #dedbd2;background:#fff;border-radius:7px;padding:5px 9px;font:700 12.5px Inter,Arial;cursor:pointer;color:#1b1f1c}
+#bxMenu .ac button.o{background:#16311f;border-color:#16311f;color:#fff}
+#bxMenu .ac button:disabled{opacity:.4;cursor:default}
+#bxMenu .nt{position:relative;display:flex;gap:12px;padding:12px 16px 12px 18px;border-top:1px solid #f3f1ea;cursor:pointer}
+#bxMenu .nt.new{background:#fff6e5;box-shadow:inset 4px 0 #f59e0b}
+#bxMenu .nt .em{width:36px;height:36px;border-radius:9px;background:#f2f1ec;display:grid;place-items:center;font-size:18px;flex:none}
+#bxMenu .nt b{font-size:14px}#bxMenu .nt.new b:after{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-left:6px;vertical-align:2px}
+#bxMenu .nt p{margin:2px 0 3px;color:#555;font-size:13px;word-break:break-word}#bxMenu .nt small{color:#999;font-size:12px}
+#bxMenu .nt .x{position:absolute;right:12px;top:14px;border:1px solid #e3e0d7;background:#fff;border-radius:7px;width:26px;height:26px;cursor:pointer;color:#888;font:13px/1 Arial,sans-serif;padding:0;margin:0;display:grid;place-items:center;min-width:0;box-shadow:none}
+#bxMenu .nt>div:nth-child(2){flex:1;min-width:0;padding-right:30px}
+#bxMenu .em0{padding:34px 18px;text-align:center;color:#8a8f8b}
+#bxMenu .ft{display:flex;justify-content:space-between;gap:10px;padding:11px 18px;border-top:1px solid #ece9e0;background:#faf9f5;font-size:12.5px;color:#777;align-items:center}
+#bxMenu .ft span{min-width:0}
+</style>
+<script>
+(function(){
+  'use strict';
+  const H = window.boxupApp && window.boxupApp.dl ? window.boxupApp : null;   // installed app with the downloads core
+  const LOG = typeof LOG_URL !== 'undefined' ? LOG_URL : 'https://script.google.com/macros/s/AKfycbxkWlpzmubWJwgFQF7cCDAegDHDFpst-j2AnoLVrk3rVnZL9CuOukEIC_GR43gUlL7e/exec';
+  const e = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const ls = { get(k, d){ try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch(x){ return d; } }, set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(x){} } };
+  const tm = t => new Date(t).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+  const dayOf = t => { const d = new Date(t), n = new Date(); const a = new Date(d.getFullYear(), d.getMonth(), d.getDate()), b = new Date(n.getFullYear(), n.getMonth(), n.getDate()); const g = Math.round((b - a) / 864e5); return g === 0 ? 'Today' : g === 1 ? 'Yesterday' : d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }); };
+  const kb = n => !n ? '' : n < 1024 * 1024 ? Math.max(1, Math.round(n / 1024)) + ' KB' : (n / 1048576).toFixed(1) + ' MB';
+  const kind = n => /\.pdf$/i.test(n) ? 'pdf' : /\.xlsx?$/i.test(n) ? 'xlsx' : 'oth';
+
+  /* ---------- downloads ---------- */
+  let DL = [], BLOBS = new Map(), DLDIR = '';
+  const DKEY = 'boxup.dl.list';
+  if (!H) {
+    // in a browser: remember each file this page saves, so it can be opened or printed from the list
+    DL = ls.get(DKEY, []).map(x => Object.assign(x, { state: x.state === 'progress' ? 'done' : x.state }));
+    const made = new Map();
+    const oc = URL.createObjectURL;
+    URL.createObjectURL = function(b){ const u = oc.apply(URL, arguments); try { if (b instanceof Blob && (/pdf|sheet|excel|octet|zip/i.test(b.type) || b.size > 20000)) { made.set(u, b); if (made.size > 40) made.delete(made.keys().next().value); } } catch(x){} return u; };
+    const seen = new WeakSet();
+    const grab = a => {
+      try {
+        if (!a || seen.has(a) || !a.hasAttribute || !a.hasAttribute('download')) return;
+        seen.add(a);
+        const name = a.getAttribute('download') || 'download';
+        let blob = made.get(a.href) || null;
+        const id = 'b' + Date.now() + Math.random().toString(36).slice(2, 6);
+        if (blob) BLOBS.set(id, blob);
+        DL.unshift({ id, name, size: blob ? blob.size : 0, at: Date.now(), state: 'done' });
+        DL = DL.slice(0, 100); ls.set(DKEY, DL);
+        badge(); if (OPEN && TAB === 'dl') render();
+      } catch(x){}
+    };
+    const ck = HTMLAnchorElement.prototype.click;
+    HTMLAnchorElement.prototype.click = function(){ grab(this); return ck.apply(this, arguments); };
+    const de = EventTarget.prototype.dispatchEvent;
+    EventTarget.prototype.dispatchEvent = function(ev){ if (this instanceof HTMLAnchorElement && ev && ev.type === 'click') grab(this); return de.apply(this, arguments); };
+  } else {
+    H.dl.list().then(r => { DL = r.list || []; DLDIR = r.dir || ''; badge(); if (OPEN) render(); }).catch(() => {});
+    H.dl.on(d => {
+      if (d.type === 'list') { DL = d.list || []; if (d.dir) DLDIR = d.dir; }
+      else if (d.type === 'progress') { const x = DL.find(y => y.id === d.id); if (x) { x.recv = d.recv; x.size = d.total || x.size; } else return; if (OPEN && TAB === 'dl') { const el = document.querySelector('#bxMenu [data-pg="' + d.id + '"]'); if (el) { el.style.width = (d.total ? Math.round(d.recv / d.total * 100) : 30) + '%'; const s = el.closest('.nm').querySelector('small'); if (s) s.textContent = 'Downloading… ' + (d.total ? Math.round(d.recv / d.total * 100) + '%' : kb(d.recv)); } } return; }
+      else if (d.type === 'note') { note(d.kind || 'upd', d.title, d.text); return; }
+      if (OPEN && TAB === 'dl') render();
+    });
+  }
+  function dlOpen(x){
+    if (H) return H.dl.open(x.path);
+    const b = BLOBS.get(x.id); if (!b) return;
+    window.open(URL.createObjectURL(b), '_blank');
+  }
+  function dlPrint(x){
+    if (H) return H.dl.print(x.path);
+    const b = BLOBS.get(x.id); if (!b) return;
+    const f = document.createElement('iframe'); f.style.cssText = 'position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0';
+    f.src = URL.createObjectURL(b); document.body.appendChild(f);
+    f.onload = () => { setTimeout(() => { try { f.contentWindow.focus(); f.contentWindow.print(); } catch(x){ window.open(f.src, '_blank'); } }, 400); setTimeout(() => f.remove(), 120000); };
+  }
+
+  /* ---------- notifications: stay until ✕ or Clear all ---------- */
+  const NKEY = 'boxup.notes';
+  let NT = ls.get(NKEY, []);
+  const EMO = { saved:'✅', bad:'❗', awb:'⚠️', gate:'🚨', partner:'📦', upd:'⬆️', info:'🔔' };
+  function note(k, title, text){
+    NT.unshift({ id: Date.now() + Math.random().toString(36).slice(2, 5), k, title: String(title || ''), text: String(text || ''), at: Date.now(), seen: false });
+    NT = NT.slice(0, 150); ls.set(NKEY, NT); badge();
+    if (OPEN && TAB === 'nt') render();
+  }
+  window.bxNotify = note;
+
+  /* ---------- the button and the panel ---------- */
+  let OPEN = false, TAB = 'nt';
+  const panel = document.querySelector('.preview-panel');
+  if (!panel) return;
+  const btn = document.createElement('button');
+  btn.id = 'bxMenuBtn'; btn.type = 'button'; btn.title = 'Downloads and notifications';
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span class="bdg" hidden></span>';
+  panel.appendChild(btn);
+  const box = document.createElement('div'); box.id = 'bxMenu'; box.hidden = true; document.body.appendChild(box);
+  const unseen = () => NT.filter(n => !n.seen).length;
+  function badge(){ const n = unseen(), b = btn.querySelector('.bdg'); b.hidden = !n; b.textContent = n > 99 ? '99+' : n; }
+  function place(){ const r = btn.getBoundingClientRect(); box.style.top = (r.bottom + 8) + 'px'; box.style.right = Math.max(12, window.innerWidth - r.right) + 'px'; }
+  function groups(list, f){ let out = '', last = ''; list.forEach(x => { const d = dayOf(x.at); if (d !== last) { out += f(d, last === ''); last = d; } out += x.__h; }); return out; }
+  function render(){
+    const nu = unseen();
+    let body = '', foot = '';
+    if (TAB === 'dl') {
+      DL.forEach(x => {
+        const k = kind(x.name), busy = x.state === 'progress', failed = x.state === 'failed' || x.state === 'cancelled';
+        const pct = x.size ? Math.round((x.recv || 0) / x.size * 100) : 30;
+        const can = H ? !!x.path && !busy && !failed && x.exists !== false : BLOBS.has(x.id);
+        x.__h = `<div class="dl" data-id="${e(x.id)}"><div class="ic ${k}">${k === 'oth' ? 'FILE' : k.toUpperCase()}</div><div class="nm"><b title="${e(x.name)}">${e(x.name)}</b>${busy ? `<small>Downloading… ${x.size ? pct + '%' : ''}</small><div class="pg"><span data-pg="${e(x.id)}" style="width:${pct}%"></span></div>` : `<small>${failed ? 'Download failed' : tm(x.at) + (x.size ? ' · ' + kb(x.size) : '') + (H && x.exists === false ? ' · moved or deleted' : '')}${!H && !can && !failed ? ' · open it from your Downloads folder' : ''}</small>`}</div>
+          ${busy || failed ? '' : `<div class="ac"><button class="o" data-a="open" ${can ? '' : 'disabled'}>Open</button>${k === 'pdf' ? `<button data-a="print" ${can ? '' : 'disabled'}>Print</button>` : ''}${H ? `<button data-a="dir" title="Show in folder" ${can ? '' : 'disabled'}>📁</button>` : ''}</div>`}</div>`;
+      });
+      body = DL.length ? groups(DL, (d, first) => `<div class="gh"><span>${e(d)}</span>${first && H ? '<a data-a="opendir">Open Downloads folder</a>' : ''}</div>`) : `<div class="em0">No downloads yet.<br>Label PDFs, manifests and Excel files you save show up here.</div>`;
+      foot = `<div class="ft"><a data-a="clrdl">Clear list</a>${H ? `<span>Downloads save to: <a data-a="pick" title="Change folder">${e(DLDIR || 'Downloads')} ✎</a></span>` : '<span>Files save to your browser\'s Downloads folder</span>'}</div>`;
+    } else {
+      NT.forEach(n => { n.__h = `<div class="nt${n.seen ? '' : ' new'}" data-n="${e(n.id)}"><div class="em">${EMO[n.k] || '🔔'}</div><div><b>${e(n.title)}</b>${n.text ? `<p>${e(n.text)}</p>` : ''}<small>${dayOf(n.at) === 'Today' ? tm(n.at) : dayOf(n.at) + ' · ' + tm(n.at)}</small></div><button class="x" data-a="del" title="Remove">✕</button></div>`; });
+      body = NT.length ? groups(NT, (d, first) => `<div class="gh"><span>${e(d)}${first && nu ? ' · ' + nu + ' not seen' : ''}</span>${first ? '<button class="clr" data-a="clrnt">🗑 Clear all</button>' : ''}</div>`) : `<div class="em0">No notifications.</div>`;
+      foot = `<div class="ft"><span>Highlighted = not seen yet. Click one to mark it seen. Notifications stay here until you press ✕ or Clear all.</span></div>`;
+    }
+    box.innerHTML = `<div class="tb"><button data-t="dl" class="${TAB === 'dl' ? 'on' : ''}">Downloads</button><button data-t="nt" class="${TAB === 'nt' ? 'on' : ''}">Notifications${nu ? `<i>${nu}</i>` : ''}</button></div><div class="bd">${body}</div>${foot}`;
+  }
+  function show(v){ OPEN = v; box.hidden = !v; if (v) { if (H) H.dl.list().then(r => { DL = r.list || []; DLDIR = r.dir || DLDIR; if (OPEN) render(); }).catch(() => {}); place(); render(); } }
+  btn.onclick = ev => { ev.stopPropagation(); show(!OPEN); };
+  window.addEventListener('resize', () => OPEN && place());
+  document.addEventListener('mousedown', ev => { if (OPEN && !box.contains(ev.target) && !btn.contains(ev.target)) show(false); });
+  document.addEventListener('keydown', ev => { if (OPEN && ev.key === 'Escape') show(false); });
+  box.addEventListener('click', ev => {
+    const t = ev.target.closest('[data-t]'); if (t) { TAB = t.dataset.t; render(); return; }
+    const a = ev.target.closest('[data-a]'), act = a && a.dataset.a;
+    const row = ev.target.closest('.dl'), x = row && DL.find(y => y.id === row.dataset.id);
+    const nr = ev.target.closest('.nt'), n = nr && NT.find(y => y.id === nr.dataset.n);
+    if (act === 'open' && x) return dlOpen(x);
+    if (act === 'print' && x) return dlPrint(x);
+    if (act === 'dir' && x && H) return H.dl.folder(x.path);
+    if (act === 'opendir' && H) return H.dl.openFolder();
+    if (act === 'pick' && H) { H.dl.pickDir().then(r => { if (r && r.dir) { DLDIR = r.dir; render(); } }); return; }
+    if (act === 'clrdl') { if (H) H.dl.clear().then(() => { DL = DL.filter(y => y.state === 'progress'); render(); }); else { DL = []; BLOBS.clear(); ls.set(DKEY, DL); render(); } return; }
+    if (act === 'clrnt') { NT = []; ls.set(NKEY, NT); badge(); render(); return; }
+    if (act === 'del' && n) { NT = NT.filter(y => y !== n); ls.set(NKEY, NT); badge(); render(); return; }
+    if (n && !n.seen) { n.seen = true; ls.set(NKEY, NT); badge(); render(); }
+  });
+  badge();
+
+  /* ---------- sources ---------- */
+  // 1. labels saved / not saved (the status lines under the buttons)
+  const watch = (id, re) => {
+    const el = document.getElementById(id); if (!el) return;
+    let last = '';
+    new MutationObserver(() => {
+      const ok = el.querySelector('.ok'), bad = el.querySelector('.bad');
+      let txt = (el.textContent || '').trim();
+      if (!txt || txt === last) return;
+      if (ok || /^✓|saved to the label log|saved \d+ order|updated and reprinted|downloaded .* and saved/i.test(txt)) { last = txt; const m = txt.match(/(\d+)\s+order/i); note('saved', m ? m[1] + ' label' + (m[1] === '1' ? '' : 's') + ' saved' : 'Labels saved', txt.replace(/^✓\s*/, '')); }
+      else if (bad || /could not|failed|not saved|error/i.test(txt)) { last = txt; note('bad', 'Labels not saved to the Label Log', txt); }
+    }).observe(el, { childList:true, subtree:true, characterData:true });
+  };
+  ['logStatus', 'moMsg', 'intlMsg'].forEach(id => watch(id));
+
+  // 2. Shree Anjani AWBs running low (checked when the free list changes)
+  const LOW = 25;
+  setInterval(() => {
+    try {
+      if (typeof saFree === 'undefined' || !saFree) return;
+      const n = saFree.length, last = ls.get('boxup.notes.awb', null);
+      if (n >= LOW) { if (last !== null) ls.set('boxup.notes.awb', null); return; }
+      if (last === null || n <= last - 10 || (n === 0 && last !== 0)) {
+        note('awb', n ? 'Shree Anjani AWBs running low' : 'No free Shree Anjani AWB left', n ? 'Only ' + n + ' free AWB number' + (n === 1 ? '' : 's') + ' left in the Shree Anjani tab' : 'Add more AWB numbers in the Shree Anjani tab');
+        ls.set('boxup.notes.awb', n);
+      }
+    } catch(x){}
+  }, 15000);
+
+  // 3. gate problems (ALREADY OUT, NOT FOUND, MISMATCH) from today's gate scans
+  async function gate(){
+    try {
+      const r = await fetch(LOG + '?action=gatetoday&t=' + Date.now()); const d = await r.json();
+      if (!d || !d.ok) return;
+      const seen = ls.get('boxup.notes.gate', null), now = {};
+      (d.list || []).forEach(s => { if (!/ALREADY OUT|NOT FOUND|MISMATCH/.test(s.status)) return; const k = s.orderid + '|' + s.at + '|' + s.status; now[k] = 1;
+        if (seen && !seen[k]) note('gate', 'Gate: ' + s.status, (s.orderid || '') + (s.status === 'ALREADY OUT' ? ' scanned again at the gate' : s.status === 'NOT FOUND' ? ' not in the Label Log, box stopped at the gate' : ' does not match the label') + (s.by ? ' · ' + s.by : '') + (s.at ? ' · ' + s.at : '')); });
+      ls.set('boxup.notes.gate', Object.assign({}, seen && new Date().toDateString() === ls.get('boxup.notes.gateday', '') ? seen : {}, now)); ls.set('boxup.notes.gateday', new Date().toDateString());
+    } catch(x){}
+  }
+  // 4. partner updates from the Shree Anjani partner page
+  let PV = '';
+  async function partner(){
+    try {
+      const r = await fetch(LOG, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ action:'pt', op:'list', since: PV }) });
+      const d = await r.json(); if (!d || !d.ok || d.same) return;
+      PV = d.v || '';
+      const snap = ls.get('boxup.notes.pt', null), now = {};
+      (d.orders || []).forEach(o => { if (!o.pup) return; now[o.id] = o.pup + '|' + (o.ps || '') + '|' + (o.pod ? 1 : 0);
+        if (snap && snap[o.id] !== now[o.id]) note('partner', 'Partner update', 'Shree Anjani marked ' + (o.awb || o.id) + (o.ps ? ' ' + o.ps : '') + (o.pod && !(snap[o.id] || '').endsWith('|1') ? ' · POD added' : '') + (o.recv ? ' · received by ' + o.recv : '')); });
+      ls.set('boxup.notes.pt', now);
+    } catch(x){}
+  }
+  const tick = () => { if (document.hidden) return; gate(); partner(); };
+  setTimeout(tick, 8000); setInterval(tick, 180000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
+})();
+</script>
+
 </body>
 </html>

@@ -7,12 +7,16 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 
-const CORE_VERSION = '1.1.0';                  // the part that can update itself, without reinstalling
+const CORE_VERSION = '1.2.0';                  // the part that can update itself, without reinstalling
 const SITE_BUILT = 1793214649153;             // when the copy inside this app was made
 const LIVE_URL = 'https://logisticsboxup.github.io/boxup-labels/';
 const FEED = 'https://logisticsboxup.github.io/boxup-labels/latest.json';
-const BUNDLED_SITE = path.join(__dirname, 'site', 'index.html');
-const VENDOR = path.join(__dirname, 'vendor');
+// the files that came with the installer (site, vendor, icon). A newer core runs from <userData>/core/<version>,
+// so these are found through the app package, not next to this file.
+const APP_DIR = (() => { try { return app.getAppPath(); } catch (e) { return __dirname; } })();
+const BUNDLED_SITE = path.join(APP_DIR, 'site', 'index.html');
+const VENDOR = path.join(APP_DIR, 'vendor');
+const ICON = path.join(APP_DIR, 'build', 'icon.png');
 let win = null;
 
 /* ---------------- small helpers ---------------- */
@@ -103,7 +107,7 @@ function saveSite(buf, from) {
   const dir = path.join(app.getPath('userData'), 'site');
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), buf);
-  saveSet({ siteSavedAt: Date.now(), siteFrom: from || 'GitHub', siteSha: sha256(buf) });
+  saveSet({ siteSavedAt: Date.now(), siteFrom: from || 'GitHub', siteSha: sha256(buf), pendingNote: { title: 'Update installed', text: 'The newest label tool was downloaded from GitHub' } });
 }
 async function installCore(core) {
   const dir = path.join(app.getPath('userData'), 'core', String(core.version)), tmp = dir + '.part';
@@ -117,7 +121,7 @@ async function installCore(core) {
   }
   fs.rmSync(dir, { recursive: true, force: true });
   fs.renameSync(tmp, dir);
-  saveSet({ coreVersion: String(core.version) });
+  saveSet({ coreVersion: String(core.version), pendingNote: { title: 'Update installed', text: 'BoxUp Labels app core ' + core.version + ': downloads list, Open and the BoxUp print preview' } });
 }
 let updateShown = false, checking = false;
 async function checkForUpdate(manual) {
@@ -222,7 +226,7 @@ function handleAppLink(argv) {
     const u = new URL(link);
     const p = u.searchParams.get('p');
     if (!p) return true;
-    if (u.hostname === 'folder') shell.showItemInFolder(p); else shell.openPath(p);
+    if (u.hostname === 'folder') shell.showItemInFolder(p); else if (app.isReady()) openFileInApp(p); else app.whenReady().then(() => openFileInApp(p));
   } catch (e) { /* ignore a bad link */ }
   return true;
 }
@@ -243,7 +247,7 @@ function uniquePath(dir, name) {
 function createWindow() {
   win = new BrowserWindow({
     width: 1440, height: 900, minWidth: 1100, minHeight: 650,
-    title: 'BoxUp Labels', icon: path.join(__dirname, 'build', 'icon.png'),
+    title: 'BoxUp Labels', icon: ICON,
     backgroundColor: '#16311F', show: false,
     webPreferences: { contextIsolation: true, nodeIntegration: false, spellcheck: false, preload: path.join(__dirname, 'preload.js') }
   });
@@ -255,6 +259,11 @@ function createWindow() {
   // the tool opens from the copy inside the app (instant); updates are checked in the background
   win.loadURL(LIVE_URL + '?app=1');
   win.webContents.once('did-finish-load', () => setTimeout(() => checkForUpdate(false), 4000));
+  // tell the ☰ panel about an update that was just installed (shown once)
+  win.webContents.on('did-finish-load', () => setTimeout(() => {
+    const n = getSet().pendingNote;
+    if (n && win) { send({ type: 'note', kind: 'upd', title: n.title, text: n.text }); saveSet({ pendingNote: null }); }
+  }, 2500));
 }
 
 // PDFs and Excel files go straight to the Downloads folder, and a "Saved" pop-up shows in the app
@@ -294,7 +303,7 @@ function notifyIcon() {
   if (iconOnDisk && fs.existsSync(iconOnDisk)) return iconOnDisk;
   try {
     iconOnDisk = path.join(app.getPath('userData'), 'notify-icon.png');
-    fs.writeFileSync(iconOnDisk, fs.readFileSync(path.join(__dirname, 'build', 'icon.png')));
+    fs.writeFileSync(iconOnDisk, fs.readFileSync(ICON));
   } catch (e) { iconOnDisk = ''; }
   return iconOnDisk;
 }
@@ -323,28 +332,107 @@ function notifyDownload(file, ok) {
 </toast>`;
     n = new Notification({ toastXml });
   } else {
-    n = new Notification({ title, body: ok ? name + '\nClick to open' : name, icon: path.join(__dirname, 'build', 'icon.png') });
+    n = new Notification({ title, body: ok ? name + '\nClick to open' : name, icon: ICON });
     n.on('click', () => { if (ok) shell.openPath(file); });
   }
   n.on('failed', () => toast(file, ok));
   try { n.show(); } catch (e) { toast(file, ok); }
 }
 
+/* ---------------- downloads list (☰ panel in the label tool) ---------------- */
+const send = (d) => { try { if (win && !win.isDestroyed()) win.webContents.send('dl-event', d); } catch (e) {} };
+const dlDir = () => { const d = getSet().dlDir; return d && fs.existsSync(d) ? d : path.resolve(app.getPath('downloads')); };
+let DLS = null;
+function dlAll() { if (!DLS) { DLS = (getSet().downloads || []).map(x => Object.assign(x, { state: x.state === 'progress' ? 'failed' : x.state })); } return DLS; }
+let dlSaveT = null;
+function dlSave() { clearTimeout(dlSaveT); dlSaveT = setTimeout(() => saveSet({ downloads: dlAll().slice(0, 200) }), 300); }
+function dlPublic() { return dlAll().map(x => Object.assign({}, x, { exists: x.state === 'done' ? fs.existsSync(x.path) : undefined })); }
+function sendList() { send({ type: 'list', list: dlPublic(), dir: dlDir() }); }
+
 function setupDownloads() {
-  ipcMain.on('open-file', (e, p) => { if (p) shell.openPath(p); });
+  ipcMain.on('open-file', (e, p) => { if (p) openFileInApp(p); });
   ipcMain.on('show-in-folder', (e, p) => { if (p) shell.showItemInFolder(p); });
+  ipcMain.handle('dl-list', () => ({ list: dlPublic(), dir: dlDir() }));
+  ipcMain.handle('dl-open', (e, p) => { if (p && fs.existsSync(p)) openFileInApp(p); });
+  ipcMain.handle('dl-print', (e, p) => { if (p && fs.existsSync(p)) openPrintPreview(p); });
+  ipcMain.handle('dl-folder', (e, p) => { if (p) shell.showItemInFolder(p); });
+  ipcMain.handle('dl-open-folder', () => shell.openPath(dlDir()));
+  ipcMain.handle('dl-clear', () => { DLS = dlAll().filter(x => x.state === 'progress'); dlSave(); sendList(); return true; });
+  ipcMain.handle('dl-pick-dir', async () => {
+    const r = await dialog.showOpenDialog(win, { title: 'Save downloads to', defaultPath: dlDir(), properties: ['openDirectory', 'createDirectory'] });
+    if (r.canceled || !r.filePaths[0]) return { dir: dlDir() };
+    saveSet({ dlDir: r.filePaths[0] }); sendList(); return { dir: r.filePaths[0] };
+  });
   session.defaultSession.on('will-download', (event, item) => {
-    const target = uniquePath(path.resolve(app.getPath('downloads')), item.getFilename());
+    const target = uniquePath(dlDir(), item.getFilename());
     item.setSavePath(target);
+    const rec = { id: 'd' + Date.now() + Math.random().toString(36).slice(2, 6), name: path.basename(target), path: target, size: item.getTotalBytes() || 0, recv: 0, at: Date.now(), state: 'progress' };
+    dlAll().unshift(rec); sendList();
+    let last = 0;
     item.on('updated', () => {
       const total = item.getTotalBytes();
-      if (win && total > 0) win.setProgressBar(item.getReceivedBytes() / total);
+      rec.recv = item.getReceivedBytes(); if (total) rec.size = total;
+      if (win && total > 0) win.setProgressBar(rec.recv / total);
+      if (Date.now() - last > 150) { last = Date.now(); send({ type: 'progress', id: rec.id, recv: rec.recv, total: rec.size }); }
     });
     item.once('done', (e, state) => {
       if (win) win.setProgressBar(-1);
+      rec.state = state === 'completed' ? 'done' : (state === 'cancelled' ? 'cancelled' : 'failed');
+      try { if (rec.state === 'done') rec.size = fs.statSync(target).size; } catch (x) {}
+      delete rec.recv; dlSave(); sendList();
       notifyDownload(target, state === 'completed');
     });
   });
+}
+
+/* ---------------- Open: PDFs in a BoxUp window with Chrome's PDF viewer ---------------- */
+function openFileInApp(p) {
+  if (!/\.pdf$/i.test(p)) { shell.openPath(p); return; }
+  const v = new BrowserWindow({ width: 1100, height: 860, title: path.basename(p) + ' - BoxUp Labels', icon: ICON, backgroundColor: '#525659', autoHideMenuBar: true,
+    webPreferences: { plugins: true, contextIsolation: true, nodeIntegration: false } });
+  v.setMenu(Menu.buildFromTemplate([
+    { label: 'File', submenu: [
+      { label: 'Print…', accelerator: 'Ctrl+P', click: () => openPrintPreview(p) },
+      { label: 'Show in folder', click: () => shell.showItemInFolder(p) },
+      { label: 'Open with the default PDF app', click: () => shell.openPath(p) },
+      { type: 'separator' }, { role: 'close' } ] },
+    { label: 'View', submenu: [{ role: 'zoomIn' }, { role: 'zoomOut' }, { role: 'resetZoom' }, { type: 'separator' }, { role: 'togglefullscreen' }] }
+  ]));
+  v.webContents.on('page-title-updated', (e) => e.preventDefault());
+  v.webContents.on('before-input-event', (e, inp) => { if (inp.type === 'keyDown' && (inp.control || inp.meta) && inp.key.toLowerCase() === 'p') { e.preventDefault(); openPrintPreview(p); } });
+  v.loadURL(require('url').pathToFileURL(p).href).catch(() => { shell.openPath(p); v.close(); });
+}
+
+/* ---------------- Print: Chrome-style preview with BoxUp settings ---------------- */
+const PP = new Map();   // print window id -> pdf path
+function openPrintPreview(p) {
+  const w = new BrowserWindow({ width: 1180, height: 820, minWidth: 900, minHeight: 600, title: 'Print - ' + path.basename(p), icon: ICON, backgroundColor: '#e8eaed', autoHideMenuBar: true, show: false,
+    webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, 'print-preload.js') } });
+  w.setMenu(null);
+  PP.set(w.webContents.id, p);
+  w.on('closed', () => PP.delete(w.webContents.id));
+  w.once('ready-to-show', () => w.show());
+  w.webContents.on('before-input-event', (e, inp) => { if (inp.type === 'keyDown' && inp.key === 'Escape') w.close(); });
+  w.loadFile(path.join(__dirname, 'print.html'));
+}
+function setupPrint() {
+  const fileOf = (e) => PP.get(e.sender.id);
+  ipcMain.handle('pp-info', (e) => {
+    const p = fileOf(e); if (!p) return null;
+    return { name: path.basename(p), data: fs.readFileSync(p), remember: getSet().printPrefs || {} };
+  });
+  ipcMain.handle('pp-printers', async (e) => {
+    try { return (await e.sender.getPrintersAsync()).map(x => ({ name: x.name, label: x.displayName || x.name, def: !!x.isDefault })); } catch (x) { return []; }
+  });
+  ipcMain.handle('pp-remember', (e, o) => { const pr = getSet().printPrefs || {}; if (o && o.kind) { if (o.on) pr[o.kind] = { printer: o.printer, paper: o.paper }; else delete pr[o.kind]; saveSet({ printPrefs: pr }); } return pr; });
+  ipcMain.handle('pp-open-pdf', (e) => { const p = fileOf(e); if (p) openFileInApp(p); });
+  ipcMain.handle('pp-close', (e) => { const w = BrowserWindow.fromWebContents(e.sender); if (w) w.close(); });
+  ipcMain.handle('pp-print', (e, o) => new Promise((resolve) => {
+    const PAPER = { '4x6': { width: 101600, height: 152400 }, 'a4': 'A4', 'a5': 'A5', 'letter': 'Letter' };
+    const opts = { silent: !o.system, printBackground: true, deviceName: o.system ? undefined : o.printer, copies: Math.max(1, Math.min(99, +o.copies || 1)),
+      margins: { marginType: 'none' }, pageSize: PAPER[o.paper] || 'A4', landscape: !!o.landscape, pagesPerSheet: +o.perSheet || 1 };
+    e.sender.print(opts, (ok, why) => resolve({ ok, why: why || '' }));
+  }));
 }
 
 function buildMenu() {
@@ -354,7 +442,7 @@ function buildMenu() {
       { type: 'separator' },
       { label: 'Order Tracker', click: () => shell.openExternal('https://logisticsboxup.github.io/boxup-sales/') },
       { type: 'separator' },
-      { label: 'Open Downloads folder', click: () => shell.openPath(app.getPath('downloads')) },
+      { label: 'Open Downloads folder', click: () => shell.openPath(dlDir()) },
       { type: 'separator' },
       { role: 'quit', label: 'Exit' } ] },
     { label: 'View', submenu: [
@@ -374,6 +462,6 @@ function buildMenu() {
 app.whenReady().then(() => {
   handleAppLink(process.argv);
   if (process.env.BOXUP_DL_DIR) app.setPath('downloads', process.env.BOXUP_DL_DIR);
-  dropStaleSaved(); setupLocalFiles(); setupDownloads(); buildMenu(); createWindow();
+  dropStaleSaved(); setupLocalFiles(); setupDownloads(); setupPrint(); buildMenu(); createWindow();
 });
 app.on('window-all-closed', () => app.quit());
