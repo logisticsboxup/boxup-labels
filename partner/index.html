@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1e4a2c">
+<title>BoxUp × Shree Anjani · Partner desk</title>
+<link rel="icon" href="boxup-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+:root{
+  --g:#1e4a2c; --g2:#2e6b40; --gl:#e6f2e9; --bg:#f4f1e8; --card:#fff; --ink:#1b1f1c; --mu:#6b716c; --ln:#e3e0d6;
+  --or:#ff7043; --am:#b26a00; --aml:#fff3d6; --bl:#1d5c96; --bll:#e2eefa; --rd:#b3261e; --rdl:#fbe4e2; --gr:#1e7b3c; --grl:#e3f4e8;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+a{color:var(--g2)}
+
+/* ---------- header ---------- */
+.hd{background:var(--g);color:#fff;padding:12px 16px 14px;position:sticky;top:0;z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.hrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;max-width:1400px;margin:0 auto}
+.lg{display:inline-flex;align-items:center;gap:9px;background:#fff;border-radius:12px;padding:6px 12px;box-shadow:0 2px 8px rgba(0,0,0,.18);flex:none}
+.lg img{display:block}.lg .bx{height:30px}.lg .sa{height:26px}
+.lg i{font:800 15px Inter;color:var(--g);font-style:normal}
+.lg .satx{font:800 12px Inter;color:#c1272d;letter-spacing:.3px;line-height:1.05}
+.ttl{font:600 12.5px Inter;opacity:.9;line-height:1.25}
+.ttl b{display:block;font-size:14px;opacity:1}
+.sp{flex:1}
+.hbtn{border:1px solid rgba(255,255,255,.55);background:transparent;color:#fff;border-radius:10px;padding:8px 12px;font-weight:700;font-size:13px;white-space:nowrap}
+.hbtn:active{background:rgba(255,255,255,.12)}
+
+/* search */
+.sw{position:relative;flex:1 1 100%;order:5}
+.sb{display:flex;align-items:center;background:#fff;color:var(--ink);border-radius:14px;padding:4px 4px 4px 12px;border:2px solid transparent}
+.sb:focus-within{border-color:var(--or)}
+.sb .ic{opacity:.55;margin-right:8px}
+.sb input{flex:1;border:0;outline:0;padding:10px 4px;min-width:0;font-size:16px;background:transparent}
+.sb .clr{border:0;background:transparent;font-size:20px;color:var(--mu);padding:0 8px}
+.scan{border:0;background:var(--g);color:#fff;border-radius:10px;width:46px;height:42px;display:grid;place-items:center;flex:none}
+.scan svg{width:24px;height:24px}
+.dd{position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;color:var(--ink);border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.22);overflow:hidden;max-height:min(70vh,520px);overflow-y:auto;z-index:30}
+.dd .it{padding:11px 14px;border-bottom:1px solid var(--ln);cursor:pointer}
+.dd .it:last-child{border-bottom:0}
+.dd .it.on,.dd .it:hover{background:var(--gl)}
+.dd .it b{font-weight:700}
+.dd .it small{display:block;color:var(--mu);font-size:12px;margin-top:2px}
+.dd mark{background:#ffe58a;color:inherit;border-radius:3px;padding:0 1px}
+.dd .none{padding:16px;color:var(--mu);text-align:center}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1400px;margin:0 auto;padding:14px 16px 90px}
+.cols{display:block}
+.lc{min-width:0}
+.rc{display:none}
+.kp{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.kp button{background:var(--card);border:2px solid transparent;border-radius:14px;padding:10px 4px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.kp button b{display:block;font:800 22px Inter;color:var(--g)}
+.kp button span{font-size:11.5px;color:var(--mu);font-weight:600}
+.kp button.on{border-color:var(--g)}
+.kp .pp b{color:var(--am)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;border:1px solid var(--ln);background:#fff;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;color:var(--mu)}
+.chips button.on{background:var(--g);border-color:var(--g);color:#fff}
+.lh{display:flex;align-items:center;justify-content:space-between;margin:4px 2px 8px;font:800 11.5px Inter;letter-spacing:.6px;color:var(--mu);text-transform:uppercase}
+.lh span{font-weight:600;letter-spacing:0;text-transform:none}
+.row{display:flex;gap:10px;align-items:flex-start;background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:8px;border-left:4px solid var(--ln);box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:pointer;width:100%;text-align:left;border-top:0;border-right:0;border-bottom:0}
+.row.sel{background:var(--gl)}
+.row .m{flex:1;min-width:0}
+.row .t{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .t span{font-weight:500}
+.row small{display:block;color:var(--mu);font-size:12px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.more{display:block;width:100%;border:1px dashed var(--ln);background:transparent;border-radius:12px;padding:10px;color:var(--mu);font-weight:600}
+.empty{padding:28px 10px;text-align:center;color:var(--mu)}
+.st-booked{border-left-color:#c9c4b4}.st-transit{border-left-color:var(--bl)}.st-ofd{border-left-color:#e0a43a}
+.st-delivered{border-left-color:var(--gr)}.st-problem{border-left-color:var(--rd)}
+
+.chip{display:inline-block;border-radius:999px;padding:3px 9px;font-size:11.5px;font-weight:700;white-space:nowrap;background:#eeebe2;color:#5d5a50}
+.chip.transit{background:var(--bll);color:var(--bl)}.chip.ofd{background:var(--aml);color:var(--am)}
+.chip.delivered{background:var(--grl);color:var(--gr)}.chip.problem{background:var(--rdl);color:var(--rd)}
+.chip.pod{background:var(--grl);color:var(--gr)}
+.chips2{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
+
+.status-line{display:flex;align-items:center;gap:8px;margin:2px 2px 12px;color:var(--mu);font-size:12.5px}
+.dot{width:8px;height:8px;border-radius:50%;background:#c9c4b4;flex:none}
+.err{background:var(--rdl);color:var(--rd);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:13.5px}
+
+/* ---------- detail ---------- */
+.det{position:fixed;inset:0;background:var(--bg);z-index:40;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.dhd{background:var(--g);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px}
+.dhd button{border:0;background:transparent;color:#fff;font-size:26px;line-height:1;padding:0 6px 0 0}
+.dhd b{display:block;font-size:17px}
+.dhd small{opacity:.85;font-size:12px}
+.dbody{padding:14px 16px 110px;max-width:860px}
+.card{background:var(--card);border-radius:16px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:14px}
+.card h3{margin:0 0 2px;font-size:18px}
+.card .co{color:var(--mu);font-size:13.5px}
+.card .ln{margin-top:8px;display:flex;gap:8px;font-size:14px}
+.card .ln span:first-child{flex:none;width:20px;text-align:center}
+.card .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.awbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.awbs a,.awbs span{font:600 12.5px Inter;background:#f2efe6;border-radius:8px;padding:4px 8px;text-decoration:none;color:var(--ink)}
+.sec{font:800 11.5px Inter;letter-spacing:.6px;color:var(--mu);text-transform:uppercase;margin:16px 2px 8px}
+.sbt{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.sbt button{border:1.5px solid var(--ln);background:#fff;border-radius:12px;padding:12px 6px;font-weight:700;font-size:14px}
+.sbt button.on{background:var(--g);border-color:var(--g);color:#fff}
+.sbt button.on.bad{background:var(--rd);border-color:var(--rd)}
+.fld{display:block;margin-top:12px}
+.fld span{display:block;font-size:12.5px;font-weight:600;color:var(--mu);margin-bottom:5px}
+.fld input,.fld textarea,.fld select{width:100%;border:1.5px solid var(--ln);background:#fff;border-radius:12px;padding:11px 12px;font-size:16px;outline:0}
+.fld input:focus,.fld textarea:focus,.fld select:focus{border-color:var(--g2)}
+.podbox{border:2px dashed #b9cdb9;background:#f3f8f2;border-radius:14px;padding:12px;margin-top:4px}
+.podbtns{display:flex;gap:8px;flex-wrap:wrap}
+.podbtns label{flex:1;min-width:130px;text-align:center;background:#fff;border:1.5px solid var(--ln);border-radius:12px;padding:11px 8px;font-weight:700;font-size:14px;cursor:pointer}
+.podbtns input{display:none}
+.podprev{display:flex;gap:12px;align-items:center;margin-top:10px}
+.podprev img{width:72px;height:92px;object-fit:cover;border-radius:8px;border:1px solid var(--ln);background:#fff;flex:none}
+.podprev .x{border:0;background:transparent;color:var(--rd);font-weight:700;padding:4px 0}
+.ok{color:var(--gr);font-weight:700;font-size:13px}
+.warn{color:var(--am);font-weight:700;font-size:13px}
+.bad{color:var(--rd)}
+.podlinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.podlinks a{font-weight:700;font-size:13px;background:var(--grl);color:var(--gr);border-radius:8px;padding:5px 9px;text-decoration:none}
+.hist{font-size:12.5px;color:var(--mu);margin-top:8px}
+.savebar{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 30%);z-index:3}
+.big{display:block;width:100%;border:0;background:var(--g);color:#fff;border-radius:14px;padding:15px;font-weight:800;font-size:16px;box-shadow:0 4px 14px rgba(30,74,44,.35)}
+.big:disabled{opacity:.55}
+.big.sec2{background:#fff;color:var(--g);border:1.5px solid var(--g);box-shadow:none}
+
+/* ---------- modal (scanner, bulk) ---------- */
+.mod{position:fixed;inset:0;z-index:60;background:#000;display:flex;flex-direction:column;color:#fff}
+.mod.light{background:var(--bg);color:var(--ink)}
+.mtop{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(0,0,0,.6)}
+.mod.light .mtop{background:var(--g);color:#fff}
+.mtop .x{border:0;background:transparent;color:#fff;font-size:26px;line-height:1;padding:0 4px}
+.mtop b{flex:1;font-size:16px}
+.tabs{display:flex;background:#222;border-radius:12px;padding:4px;margin:10px 14px 0;gap:4px}
+.tabs button{flex:1;border:0;background:transparent;color:#ddd;border-radius:9px;padding:10px;font-weight:700;font-size:14px}
+.tabs button.on{background:#fff;color:#111}
+.cam{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.cam video{width:100%;height:100%;object-fit:cover}
+.frame{position:absolute;left:8%;right:8%;top:32%;height:28%;border:3px solid #48d17a;border-radius:16px;box-shadow:0 0 0 2000px rgba(0,0,0,.35)}
+.frame::after{content:"";position:absolute;left:6%;right:6%;top:50%;height:2px;background:#ff5252;animation:sl 1.6s ease-in-out infinite}
+@keyframes sl{0%,100%{transform:translateY(-35px)}50%{transform:translateY(35px)}}
+.hint{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:13.5px;opacity:.9;padding:0 20px}
+.photo{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:14px;text-align:center}
+.photo img{max-width:100%;max-height:45vh;border-radius:12px}
+.photo label{background:#fff;color:#111;border-radius:14px;padding:14px 22px;font-weight:800;cursor:pointer}
+.photo input{display:none}
+.found{background:#fff;color:var(--ink);border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+.found .h{display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px}
+.found .s{color:var(--mu);font-size:13.5px;margin:4px 0 12px}
+.found .b2{display:flex;gap:8px}
+.found .b2 button{flex:1;border-radius:12px;padding:13px 8px;font-weight:800;border:1.5px solid var(--g);background:#fff;color:var(--g)}
+.found .b2 button.p{background:var(--gr);border-color:var(--gr);color:#fff}
+.found .pick{display:flex;flex-direction:column;gap:6px;max-height:40vh;overflow:auto}
+.found .pick button{text-align:left;border:1.5px solid var(--ln);background:#fff;border-radius:12px;padding:10px 12px}
+.busy{display:inline-block;width:16px;height:16px;border:2.5px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .8s linear infinite;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.bulk{flex:1;overflow-y:auto;padding:14px 16px 120px;max-width:860px;width:100%;margin:0 auto}
+.drop{display:block;border:2px dashed var(--g2);background:#f3f8f2;border-radius:16px;padding:22px 14px;text-align:center;cursor:pointer}
+.drop b{display:block;font-size:16px;color:var(--g)}
+.drop small{color:var(--mu)}
+.drop input{display:none}
+.drop.over{background:var(--gl)}
+.bi{display:flex;gap:12px;align-items:center;background:#fff;border-radius:14px;padding:10px 12px;margin-top:8px;border:1.5px solid transparent}
+.bi.nf{border-color:#f0b3ad}
+.bi img{width:52px;height:66px;object-fit:cover;border-radius:6px;border:1px solid var(--ln);flex:none;background:#eee}
+.bi .m{flex:1;min-width:0}
+.bi .m b{font-weight:700}
+.bi .m small{display:block;color:var(--mu);font-size:12px}
+.bi .m input{margin-top:6px;width:100%;border:1.5px solid var(--ln);border-radius:10px;padding:8px 10px;font-size:15px}
+.bi .rm{border:0;background:transparent;color:var(--mu);font-size:20px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#1b1f1c;color:#fff;padding:11px 16px;border-radius:12px;font-weight:600;font-size:14px;z-index:90;box-shadow:0 6px 20px rgba(0,0,0,.3);max-width:92vw;text-align:center}
+
+@media (max-width:560px){.ttl{display:none}.lg .bx{height:26px}.lg .sa{height:22px}}
+/* ---------- laptop ---------- */
+@media (min-width:900px){
+  .hd{padding:10px 20px}
+  .sw{order:0;flex:0 1 560px;margin-left:auto}
+  .sp{display:none}
+  .wrap{padding:16px 20px 30px}
+  .cols{display:grid;grid-template-columns:minmax(360px,440px) 1fr;gap:18px;align-items:start}
+  .lc{position:sticky;top:84px;max-height:calc(100vh - 100px);overflow-y:auto;padding-right:4px}
+  .rc{display:block}
+  .det{position:static;background:transparent;z-index:auto;overflow:visible}
+  .det .dhd{display:none}
+  .dbody{padding:0;max-width:none}
+  .sbt{grid-template-columns:repeat(3,1fr)}
+  .savebar{position:static;background:none;padding:14px 0 0}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  .mod.light .bulk{padding-bottom:40px}
+  .mod:not(.light){inset:5vh 20vw;border-radius:18px;overflow:hidden;box-shadow:0 0 0 100vmax rgba(0,0,0,.55)}
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hrow">
+    <span class="lg" aria-label="BoxUp x Shree Anjani">
+      <img class="bx" src="boxup-logo.png" alt="BoxUp">
+      <i>X</i>
+      <img class="sa" src="https://shreeanjani.co.in/logo.svg" alt="Shree Anjani" onerror="this.outerHTML='<span class=satx>SHREE<br>ANJANI</span>'">
+    </span>
+    <div class="ttl"><b>Partner update desk</b>Shree Anjani orders only</div>
+    <div class="sp"></div>
+    <button class="hbtn" id="bulkBtn" type="button">&#11014; Bulk POD</button>
+    <div class="sw">
+      <div class="sb">
+        <span class="ic">&#128269;</span>
+        <input id="q" type="search" placeholder="Search AWB, name or order ID…" autocomplete="off" enterkeyhint="search">
+        <button class="clr" id="qx" type="button" hidden aria-label="Clear">&times;</button>
+        <button class="scan" id="scanBtn" type="button" aria-label="Scan barcode or POD">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8v8M10 8v8M13 8v8M16 8v8"/></svg>
+        </button>
+      </div>
+      <div class="dd" id="dd" hidden></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="cols">
+    <section class="lc">
+      <div class="status-line"><i class="dot" id="dot"></i><span id="upd">Loading orders…</span></div>
+      <div class="err" id="err" hidden></div>
+      <div class="kp" id="kp">
+        <button type="button" data-f="booked"><b id="kBooked">–</b><span>Booked</span></button>
+        <button type="button" data-f="transit"><b id="kTransit">–</b><span>In transit</span></button>
+        <button type="button" data-f="delivered"><b id="kDel">–</b><span>Delivered</span></button>
+        <button type="button" data-f="podpending" class="pp"><b id="kPod">–</b><span>POD pending</span></button>
+      </div>
+      <div class="chips" id="chips">
+        <button type="button" data-f="all" class="on">All</button>
+        <button type="button" data-f="booked">Booked</button>
+        <button type="button" data-f="transit">In transit</button>
+        <button type="button" data-f="ofd">Out for delivery</button>
+        <button type="button" data-f="delivered">Delivered</button>
+        <button type="button" data-f="podpending">POD pending</button>
+        <button type="button" data-f="problem">Failed / RTO</button>
+        <button type="button" data-f="updated">Updated by you</button>
+      </div>
+      <div class="lh"><span id="lhT">Orders</span><span id="lhN"></span></div>
+      <div id="list"></div>
+    </section>
+    <section class="rc" id="rc">
+      <div class="card empty" id="rcEmpty">Search or pick an order on the left to update its status and add the POD.</div>
+    </section>
+  </div>
+</main>
+
+<!-- order detail (full screen on phone, right column on laptop) -->
+<div class="det" id="det" hidden>
+  <div class="dhd"><button type="button" id="detBack" aria-label="Back">&#8249;</button><div><b id="dAwb"></b><small id="dSub"></small></div></div>
+  <div class="dbody">
+    <div class="two">
+      <div>
+        <div class="card" id="dCard"></div>
+      </div>
+      <div>
+        <div class="sec">Update status</div>
+        <div class="sbt" id="sbt">
+          <button type="button" data-st="picked">&#128230; Picked up</button>
+          <button type="button" data-st="transit">&#128666; In transit</button>
+          <button type="button" data-st="ofd">&#128757; Out for delivery</button>
+          <button type="button" data-st="delivered">&#9989; Delivered</button>
+          <button type="button" data-st="failed" class="b">&#9888; Attempt failed</button>
+          <button type="button" data-st="rto" class="b">&#8617; RTO</button>
+        </div>
+        <label class="fld" id="recvF" hidden><span>Received by</span><input id="recv" placeholder="Name of the person who took the parcel" autocomplete="off"></label>
+        <label class="fld"><span id="noteL">Note (optional)</span><input id="note" placeholder="e.g. Office closed, will try tomorrow" autocomplete="off"></label>
+        <div class="sec">Proof of delivery (POD)</div>
+        <div class="podbox">
+          <div class="podbtns">
+            <label>&#128247; Take photo<input type="file" id="podCam" accept="image/*" capture="environment"></label>
+            <label>&#128193; Choose file<input type="file" id="podFile" accept="image/*,application/pdf"></label>
+          </div>
+          <div class="podprev" id="podPrev" hidden></div>
+          <div class="podlinks" id="podLinks"></div>
+        </div>
+        <label class="fld"><span>Your name (saved on this phone)</span><input id="who" placeholder="Who is updating" autocomplete="name"></label>
+        <div class="hist" id="dHist"></div>
+        <div class="savebar"><button class="big" id="saveBtn" type="button" disabled>&#10004; Save update</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- scanner -->
+<div class="mod" id="scanMod" hidden>
+  <div class="mtop"><button class="x" type="button" id="scanX" aria-label="Close">&times;</button><b>Scan</b></div>
+  <div class="tabs"><button type="button" data-t="live" class="on">&#9783; Scan barcode</button><button type="button" data-t="photo">&#128247; Photo of POD</button></div>
+  <div class="cam" id="camBox"><video id="vid" playsinline muted></video><div class="frame"></div><div class="hint" id="camHint">Point at the barcode on the label or the POD paper</div></div>
+  <div class="photo" id="photoBox" hidden>
+    <img id="phImg" alt="" hidden>
+    <div id="phMsg">Take a clear photo of the signed POD paper. The AWB or order number on it is read automatically.</div>
+    <label>&#128247; Take photo<input type="file" id="phIn" accept="image/*" capture="environment"></label>
+    <label style="background:transparent;color:#fff;border:1.5px solid #fff">&#128193; Choose from gallery<input type="file" id="phIn2" accept="image/*,application/pdf"></label>
+  </div>
+  <div class="found" id="found" hidden></div>
+</div>
+
+<!-- bulk POD -->
+<div class="mod light" id="bulkMod" hidden>
+  <div class="mtop"><button class="x" type="button" id="bulkX" aria-label="Close">&times;</button><b>Bulk POD upload</b></div>
+  <div class="bulk">
+    <label class="drop" id="drop"><b>&#11014; Upload POD pages</b><small>Photos (JPG, PNG) or a scanned PDF with many pages · up to 60 pages at once</small><input type="file" id="bulkIn" accept="image/*,application/pdf" multiple></label>
+    <div class="lh" style="margin-top:16px"><span id="bkT">No pages yet</span><span id="bkN"></span></div>
+    <div id="bkList"></div>
+    <div id="bkFoot" hidden>
+      <label class="fld"><span>Set status for all matched</span>
+        <select id="bkSt"><option value="delivered">&#9989; Delivered</option><option value="">POD only (no status change)</option></select>
+      </label>
+      <div class="savebar" style="position:static;padding:14px 0 0;background:none"><button class="big" id="bkSave" type="button">Save</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+'use strict';
+const API = 'https://script.google.com/macros/s/AKfycbxkWlpzmubWJwgFQF7cCDAegDHDFpst-j2AnoLVrk3rVnZL9CuOukEIC_GR43gUlL7e/exec';
+const CACHE_KEY = 'boxup.partner.v1', WHO_KEY = 'boxup.partner.who', MINE_KEY = 'boxup.partner.mine';
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const wide = () => matchMedia('(min-width:900px)').matches;
+const store = { get(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } },
+                set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} } };
+
+let ORDERS = [], VER = '', FILTER = 'all', SEL = null, SHOWN = 120;
+let IDX = new Map();            // AWB / order id (upper case) -> order
+let MINE = new Set(store.get(MINE_KEY, []));
+
+/* ---------- talking to the Google Sheet ---------- */
+async function api(body, ms){
+  const ac = new AbortController(), tm = setTimeout(() => ac.abort(), ms || 60000);
+  try {
+    const r = await fetch(API, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(Object.assign({action:'pt'}, body)), signal: ac.signal });
+    const d = await r.json();
+    return d;
+  } finally { clearTimeout(tm); }
+}
+
+/* ---------- status logic (partner status is separate from BoxUp's own tracking) ---------- */
+const PS = { 'Picked up':'picked', 'In transit':'transit', 'Out for delivery':'ofd', 'Delivered':'delivered', 'Attempt failed':'failed', 'RTO':'rto' };
+const ST_TXT = { picked:'Picked up', transit:'In transit', ofd:'Out for delivery', delivered:'Delivered', failed:'Attempt failed', rto:'RTO' };
+function awbs(o){ return String(o.awb || '').split(/[,\s]+/).filter(Boolean); }
+function sysStatus(o){                       // BoxUp / courier tracking, read only
+  const os = String(o.os || '');
+  if (/^(delivered|out for delivery|in transit|at destination|dispatched)$/i.test(os)) return os;
+  if (o.pr === 'RTO') return 'RTO';
+  const cs = String(o.cs || '').split(' ·')[0].trim();
+  if (cs && !/no booking/i.test(cs)) return cs.replace(/\(.*?\)/g, '').trim().toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase());
+  if (/^dispatched|^partly/i.test(o.ds || '')) return o.ds;
+  return 'Booked';
+}
+function group(o){                           // one bucket per order for KPIs, chips and colours
+  const p = PS[o.ps];
+  if (p === 'delivered') return 'delivered';
+  if (p === 'failed' || p === 'rto') return 'problem';
+  if (p === 'ofd') return 'ofd';
+  if (p === 'picked' || p === 'transit') return 'transit';
+  const s = sysStatus(o).toLowerCase();
+  if (/deliver/.test(s) && !/out for/.test(s)) return 'delivered';
+  if (/rto|return|closed/.test(s)) return 'problem';
+  if (/out for/.test(s)) return 'ofd';
+  if (s !== 'booked') return 'transit';
+  return 'booked';
+}
+function chipCls(g){ return g === 'booked' ? '' : g; }
+function partnerChip(o){ return o.ps ? `<span class="chip ${chipCls(group(o))}">${esc(o.ps)}</span>` : ''; }
+function sysChip(o){ const s = sysStatus(o), g = /deliver/i.test(s) && !/out for/i.test(s) ? 'delivered' : /out for/i.test(s) ? 'ofd' : /rto|return/i.test(s) ? 'problem' : s === 'Booked' ? '' : 'transit'; return `<span class="chip ${g}">${esc(s)}</span>`; }
+
+/* ---------- index for search and for matching scans ---------- */
+function buildIndex(){
+  IDX = new Map();
+  ORDERS.forEach(o => {
+    awbs(o).forEach(a => IDX.set(a.toUpperCase(), o));
+    if (o.id) IDX.set(o.id.toUpperCase(), o);
+  });
+}
+/* finds the order in any text: a scanned barcode value or OCR text from a photo */
+function matchText(raw){
+  const t = String(raw || '').toUpperCase();
+  if (!t.trim()) return null;
+  const direct = IDX.get(t.trim()); if (direct) return { o: direct, by: /^\d+$/.test(t.trim()) ? 'awb' : 'id', key: t.trim() };
+  // numbers (AWBs): any 8 to 14 digit run, also when OCR split it with spaces
+  const digits = t.replace(/[OQD]/g, '0').replace(/[IL|]/g, '1').replace(/[S]/g, '5').replace(/B/g, '8');
+  const runs = (digits.match(/\d[\d \-]{6,20}\d/g) || []).map(s => s.replace(/[ \-]/g, ''));
+  for (const r of runs) {
+    if (IDX.has(r)) return { o: IDX.get(r), by:'awb', key:r };
+    for (let L = 10; L >= 8; L--) for (let i = 0; i + L <= r.length; i++) { const k = r.slice(i, i + L); const o = IDX.get(k); if (o && awbs(o).includes(k)) return { o, by:'awb', key:k }; }
+  }
+  // order IDs like 4726-01H-26
+  const compact = t.replace(/\s+/g, '');
+  for (const o of ORDERS) { const id = (o.id || '').toUpperCase(); if (id.length >= 6 && compact.includes(id)) return { o, by:'id', key:id }; }
+  return null;
+}
+
+/* ---------- loading ---------- */
+let loading = false;
+async function load(force){
+  if (loading) return; loading = true;
+  try {
+    const d = await api(force || !VER ? { op:'list' } : { op:'list', since: VER }, 60000);
+    if (!d || !d.ok) throw new Error((d && d.error) || 'Could not read the orders');
+    if (!d.same) { setOrders(d.orders || [], d.v || ''); store.set(CACHE_KEY, { at: Date.now(), v: d.v || '', orders: d.orders || [] }); }
+    $('err').hidden = true; $('dot').style.background = '#2e7d32';
+    $('upd').textContent = 'Live · ' + ORDERS.length + ' Shree Anjani orders · checked ' + new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  } catch (e) {
+    $('dot').style.background = '#e0a43a';
+    $('upd').textContent = ORDERS.length ? 'Showing saved list · could not refresh' : 'Not loaded';
+    $('err').hidden = false;
+    $('err').textContent = e.name === 'AbortError' ? 'The BoxUp sheet is slow right now. It will try again.' : (e.message === 'Failed to fetch' ? 'No internet connection. Showing the last saved list.' : e.message);
+  } finally { loading = false; }
+}
+function setOrders(list, v){
+  ORDERS = list; VER = v || '';
+  buildIndex();
+  if (SEL) { const n = IDX.get(SEL.id.toUpperCase()); if (n) SEL = n; }
+  renderAll();
+}
+
+/* ---------- list ---------- */
+function filtered(){
+  return ORDERS.filter(o => {
+    const g = group(o);
+    if (FILTER === 'all') return true;
+    if (FILTER === 'podpending') return g === 'delivered' && !o.pod;
+    if (FILTER === 'transit') return g === 'transit' || g === 'ofd';
+    if (FILTER === 'updated') return MINE.has(o.id);
+    return g === FILTER;
+  });
+}
+function renderAll(){
+  let b = 0, t = 0, dl = 0, pp = 0;
+  ORDERS.forEach(o => { const g = group(o); if (g === 'booked') b++; else if (g === 'transit' || g === 'ofd') t++; else if (g === 'delivered') { dl++; if (!o.pod) pp++; } });
+  $('kBooked').textContent = b; $('kTransit').textContent = t; $('kDel').textContent = dl; $('kPod').textContent = pp;
+  document.querySelectorAll('#kp button').forEach(x => x.classList.toggle('on', x.dataset.f === FILTER));
+  document.querySelectorAll('#chips button').forEach(x => x.classList.toggle('on', x.dataset.f === FILTER));
+  renderList();
+  if (SEL) renderDetail(false);
+}
+function rowHtml(o){
+  const g = group(o), a = awbs(o);
+  return `<button type="button" class="row st-${g}${SEL === o ? ' sel' : ''}" data-id="${esc(o.id)}">
+    <div class="m"><div class="t">${esc(a[0] || o.id)} <span>· ${esc(o.name || o.co || '')}</span></div>
+    <small>${esc([o.city, o.pin].filter(Boolean).join(' ') )} · ${esc(o.id)}${a.length > 1 ? ' · ' + a.length + ' boxes' : ''}</small>
+    <small>${esc(o.co || '')}</small></div>
+    <div class="chips2">${o.ps ? partnerChip(o) : sysChip(o)}${o.pod ? '<span class="chip pod">POD &#10003;</span>' : ''}</div></button>`;
+}
+function renderList(){
+  const L = filtered();
+  const names = { all:'All orders', booked:'Booked (not picked up yet)', transit:'In transit', ofd:'Out for delivery', delivered:'Delivered', podpending:'Delivered, POD not uploaded', problem:'Attempt failed / RTO', updated:'Updated from this phone' };
+  $('lhT').textContent = names[FILTER] || 'Orders';
+  $('lhN').textContent = L.length + ' orders';
+  $('list').innerHTML = L.length ? L.slice(0, SHOWN).map(rowHtml).join('') + (L.length > SHOWN ? `<button type="button" class="more" id="moreBtn">Show more (${L.length - SHOWN} left)</button>` : '')
+    : `<div class="empty">${ORDERS.length ? 'No orders here.' : 'Loading…'}</div>`;
+}
+$('list').addEventListener('click', e => {
+  if (e.target.id === 'moreBtn') { SHOWN += 200; renderList(); return; }
+  const r = e.target.closest('.row'); if (r) openOrder(IDX.get(r.dataset.id.toUpperCase()));
+});
+function setFilter(f){ FILTER = f; SHOWN = 120; renderAll(); if (!wide()) window.scrollTo({top:0, behavior:'smooth'}); }
+$('chips').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setFilter(b.dataset.f); });
+$('kp').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setFilter(FILTER === b.dataset.f ? 'all' : b.dataset.f); });
+
+/* ---------- search with dropdown ---------- */
+let ddSel = 0, ddList = [];
+function hl(s, q){ s = String(s || ''); if (!q) return esc(s); const i = s.toLowerCase().indexOf(q); return i < 0 ? esc(s) : esc(s.slice(0, i)) + '<mark>' + esc(s.slice(i, i + q.length)) + '</mark>' + esc(s.slice(i + q.length)); }
+function search(q){
+  q = q.trim().toLowerCase(); if (!q) return [];
+  const qd = q.replace(/\s+/g, '');
+  const out = [];
+  for (const o of ORDERS) {
+    let score = 0;
+    if (awbs(o).some(a => a === qd)) score = 100; else if (o.id.toLowerCase() === q) score = 95;
+    else if (awbs(o).some(a => a.includes(qd))) score = 60; else if (o.id.toLowerCase().includes(q)) score = 55;
+    else if ((o.name || '').toLowerCase().includes(q)) score = 40; else if ((o.co || '').toLowerCase().includes(q)) score = 30;
+    else if ((o.ph || '').replace(/\D/g, '').includes(qd) && qd.length >= 4) score = 25;
+    else if ((o.pin || '') === qd || (o.city || '').toLowerCase().startsWith(q)) score = 15;
+    if (score) out.push([score, o]);
+    if (out.length > 400) break;
+  }
+  return out.sort((a, b) => b[0] - a[0]).slice(0, 12).map(x => x[1]);
+}
+function renderDD(){
+  const q = $('q').value.trim(); $('qx').hidden = !q;
+  if (!q) { $('dd').hidden = true; return; }
+  ddList = search(q); ddSel = 0;
+  const ql = q.toLowerCase();
+  $('dd').innerHTML = ddList.length ? ddList.map((o, i) => {
+    const a = awbs(o), aw = a.find(x => x.includes(ql.replace(/\s+/g, ''))) || a[0] || '';
+    return `<div class="it${i === 0 ? ' on' : ''}" data-i="${i}"><b>${hl(aw, ql)}</b> · ${hl(o.name || o.co, ql)}
+      <small>Order ${hl(o.id, ql)} · ${esc([o.city, o.pin].filter(Boolean).join(' '))} · ${esc(o.ps || sysStatus(o))}</small></div>`;
+  }).join('') : `<div class="none">No Shree Anjani order matches “${esc(q)}”</div>`;
+  $('dd').hidden = false;
+}
+$('q').addEventListener('input', renderDD);
+$('q').addEventListener('focus', renderDD);
+$('q').addEventListener('keydown', e => {
+  if ($('dd').hidden || !ddList.length) return;
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); ddSel = (ddSel + (e.key === 'ArrowDown' ? 1 : -1) + ddList.length) % ddList.length; document.querySelectorAll('#dd .it').forEach((x, i) => x.classList.toggle('on', i === ddSel)); }
+  if (e.key === 'Enter') { e.preventDefault(); pickDD(ddSel); }
+  if (e.key === 'Escape') $('dd').hidden = true;
+});
+$('dd').addEventListener('mousedown', e => { const it = e.target.closest('.it'); if (it) { e.preventDefault(); pickDD(+it.dataset.i); } });
+function pickDD(i){ const o = ddList[i]; if (!o) return; $('dd').hidden = true; $('q').blur(); openOrder(o); }
+$('qx').addEventListener('click', () => { $('q').value = ''; renderDD(); $('q').focus(); });
+document.addEventListener('click', e => { if (!e.target.closest('.sw')) $('dd').hidden = true; });
+
+/* ---------- order detail + status update ---------- */
+let ST = '', POD = null;      // POD = {blob, url, mime, name, read}
+function openOrder(o, opts){
+  if (!o) return;
+  SEL = o; ST = ''; clearPod();
+  $('recv').value = ''; $('note').value = '';
+  renderDetail(true);
+  document.querySelectorAll('.row').forEach(r => r.classList.toggle('sel', r.dataset.id === o.id));
+  if (opts && opts.st) setSt(opts.st);
+  if (opts && opts.pod) setPod(opts.pod);
+}
+function renderDetail(scroll){
+  const o = SEL; if (!o) return;
+  const det = $('det');
+  if (wide()) { $('rc').appendChild(det); $('rcEmpty').hidden = true; } else document.body.appendChild(det);
+  det.hidden = false;
+  if (!wide()) document.body.style.overflow = 'hidden';
+  if (scroll) det.scrollTop = 0;
+  const a = awbs(o);
+  $('dAwb').textContent = a[0] || o.id;
+  $('dSub').textContent = 'Order ' + o.id + (a.length > 1 ? ' · ' + a.length + ' boxes' : o.box ? ' · ' + o.box + ' box' + (o.box == 1 ? '' : 'es') : '');
+  $('dCard').innerHTML = `
+    <h3>${esc(a[0] || '')}${a[0] ? ' · ' : ''}${esc(o.name || '')}</h3>
+    <div class="co">${esc(o.co || '')}${o.co ? ' · ' : ''}Order ${esc(o.id)}${o.box ? ' · ' + esc(o.box) + ' box' + (o.box == 1 ? '' : 'es') : ''}</div>
+    <div class="ln"><span>&#128205;</span><span>${esc([o.addr, o.city, o.st, o.pin].filter(Boolean).join(', '))}</span></div>
+    ${o.ph ? `<div class="ln"><span>&#128222;</span><a href="tel:${esc(o.ph.replace(/[^\d+]/g, ''))}">${esc(o.ph)}</a></div>` : ''}
+    ${a.length ? `<div class="awbs">${a.map(x => `<a href="https://shreeanjani.co.in/tracking/?awb=${encodeURIComponent(x)}" target="_blank" rel="noopener">${esc(x)}</a>`).join('')}</div>` : ''}
+    <div class="tags"><span class="chip">BoxUp: ${esc(sysStatus(o))}</span>${o.ps ? `<span class="chip ${chipCls(group(o))}">Partner: ${esc(o.ps)}</span>` : '<span class="chip">Partner: not updated yet</span>'}</div>
+    <div class="hist">Booked ${esc(o.at || '')}${o.dd ? ' · dispatched ' + esc(o.dd) : ''}</div>`;
+  $('podLinks').innerHTML = String(o.pod || '').split(/\s*,\s*/).filter(Boolean).map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener">&#128196; POD ${i + 1} uploaded</a>`).join('');
+  $('dHist').textContent = o.pup ? 'Last partner update: ' + o.pup + (o.ps ? ' · ' + o.ps : '') + (o.recv ? ' · received by ' + o.recv : '') + (o.pnote ? ' · ' + o.pnote : '') : '';
+  document.querySelectorAll('#sbt button').forEach(b => b.classList.toggle('on', b.dataset.st === ST));
+  refreshSave();
+}
+function closeDetail(){
+  $('det').hidden = true; document.body.style.overflow = '';
+  if (wide()) $('rcEmpty').hidden = false;
+  SEL = null; clearPod();
+  document.querySelectorAll('.row.sel').forEach(r => r.classList.remove('sel'));
+}
+$('detBack').addEventListener('click', closeDetail);
+function setSt(st){
+  ST = ST === st ? '' : st;
+  document.querySelectorAll('#sbt button').forEach(b => { b.classList.toggle('on', b.dataset.st === ST); b.classList.toggle('bad', b.dataset.st === ST && (ST === 'failed' || ST === 'rto')); });
+  $('recvF').hidden = ST !== 'delivered';
+  $('noteL').textContent = ST === 'failed' ? 'Reason (why it could not be delivered)' : ST === 'rto' ? 'Reason for RTO' : 'Note (optional)';
+  refreshSave();
+}
+$('sbt').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setSt(b.dataset.st); });
+function refreshSave(){
+  const b = $('saveBtn');
+  b.disabled = !SEL || (!ST && !POD);
+  b.innerHTML = !ST && POD ? '&#10004; Save POD' : ST === 'delivered' && POD ? '&#10004; Save · Delivered + POD' : ST ? '&#10004; Save · ' + ST_TXT[ST] : '&#10004; Save update';
+}
+$('who').value = store.get(WHO_KEY, '');
+$('who').addEventListener('change', () => store.set(WHO_KEY, $('who').value.trim()));
+
+/* POD picked in the detail view */
+async function podFromFile(file){
+  if (!file) return;
+  const prev = $('podPrev'); prev.hidden = false; prev.innerHTML = '<span class="busy"></span> Reading the photo…';
+  try {
+    const pages = await fileToCanvases(file, 1);
+    const cv = pages[0];
+    const blob = await canvasBlob(cv);
+    const read = await readPaper(cv);
+    setPod({ blob, url: URL.createObjectURL(blob), mime:'image/jpeg', name: file.name, read });
+  } catch (e) { prev.innerHTML = '<span class="bad">Could not open this file: ' + esc(e.message) + '</span>'; }
+}
+function setPod(p){
+  POD = p;
+  const prev = $('podPrev'); prev.hidden = false;
+  let msg = '';
+  if (p.read && p.read.o === SEL) msg = `<div class="ok">&#10003; ${p.read.by === 'awb' ? 'AWB ' + esc(p.read.key) : 'Order ' + esc(p.read.key)} read from the paper</div>`;
+  else if (p.read && p.read.o) msg = `<div class="warn">&#9888; This paper shows ${esc(p.read.key)}, which is order ${esc(p.read.o.id)} (${esc(p.read.o.name || '')}). <button type="button" class="x" id="podSwitch" style="color:var(--g2)">Open that order</button></div>`;
+  else msg = `<div class="warn">Could not read the AWB on the photo. Check it is the right paper.</div>`;
+  prev.innerHTML = `<img src="${p.url}" alt="POD"><div><div style="font-weight:700;font-size:13.5px">${esc(p.name || 'POD photo')}</div>${msg}<button type="button" class="x" id="podDel">Remove</button></div>`;
+  $('podDel').onclick = clearPod;
+  if ($('podSwitch')) $('podSwitch').onclick = () => { const o = p.read.o; const keep = POD; POD = null; openOrder(o, { st: ST, pod: keep }); };
+  refreshSave();
+}
+function clearPod(){ if (POD && POD.url) URL.revokeObjectURL(POD.url); POD = null; $('podPrev').hidden = true; $('podPrev').innerHTML = ''; $('podCam').value = ''; $('podFile').value = ''; refreshSave(); }
+$('podCam').addEventListener('change', e => podFromFile(e.target.files[0]));
+$('podFile').addEventListener('change', e => podFromFile(e.target.files[0]));
+
+async function saveOne(o, st, pod, extra){
+  const body = { op:'set', id: o.id, awb: awbs(o)[0] || '', st: st || '', recv: (extra && extra.recv) || '', note: (extra && extra.note) || '',
+                 via: ((extra && extra.via) || 'Partner page') + ($('who').value.trim() ? ' · ' + $('who').value.trim() : '') };
+  if (pod) body.pod = { name: pod.name || 'pod.jpg', mime: pod.mime || 'image/jpeg', data: await blobB64(pod.blob) };
+  const d = await api(body, 90000);
+  if (!d || !d.ok) throw new Error((d && d.error) || 'Not saved');
+  Object.assign(o, { ps: d.ps, pup: d.pup, pod: d.pod });
+  if (st) Object.assign(o, { recv: d.recv, pnote: d.pnote });
+  MINE.add(o.id); store.set(MINE_KEY, [...MINE].slice(-500));
+  VER = '';                                 // next refresh downloads the new list
+  return d;
+}
+$('saveBtn').addEventListener('click', async () => {
+  const o = SEL; if (!o || (!ST && !POD)) return;
+  if (ST === 'failed' && !$('note').value.trim()) { $('note').focus(); toast('Add the reason for the failed attempt'); return; }
+  store.set(WHO_KEY, $('who').value.trim());
+  const b = $('saveBtn'); b.disabled = true; b.innerHTML = '<span class="busy"></span> Saving…';
+  try {
+    await saveOne(o, ST, POD, { recv: $('recv').value.trim(), note: $('note').value.trim() });
+    toast('&#10004; Saved · ' + (awbs(o)[0] || o.id) + (ST ? ' · ' + ST_TXT[ST] : '') + (POD ? ' · POD uploaded' : ''));
+    ST = ''; clearPod(); $('recv').value = ''; $('note').value = ''; setSt('');
+    renderAll();
+    if (!wide()) setTimeout(closeDetail, 600);
+  } catch (e) {
+    toast('Not saved: ' + esc(e.name === 'AbortError' ? 'the sheet is slow, try again' : e.message));
+    refreshSave();
+  }
+});
+
+/* ---------- images, PDFs and reading the paper ---------- */
+function loadScript(src){ return new Promise((res, rej) => { if (document.querySelector(`script[src="${src}"]`)) return res(); const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Could not load a tool, check the internet')); document.head.appendChild(s); }); }
+const LIB = {
+  zxing: 'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js',
+  pdf: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+  pdfw: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+  ocr: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js'
+};
+function imgFromBlob(blob){ return new Promise((res, rej) => { const u = URL.createObjectURL(blob), im = new Image(); im.onload = () => { res(im); setTimeout(() => URL.revokeObjectURL(u), 1000); }; im.onerror = () => rej(new Error('not an image')); im.src = u; }); }
+function toCanvas(src, w, h, max){ const k = Math.min(1, max / Math.max(w, h)); const c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k); const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(src, 0, 0, c.width, c.height); return c; }
+/* a photo -> 1 canvas; a PDF -> 1 canvas per page */
+async function fileToCanvases(file, maxPages){
+  if (/pdf/i.test(file.type) || /\.pdf$/i.test(file.name)) {
+    await loadScript(LIB.pdf); pdfjsLib.GlobalWorkerOptions.workerSrc = LIB.pdfw;
+    const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+    const out = [];
+    for (let i = 1; i <= Math.min(pdf.numPages, maxPages || 60); i++) {
+      const pg = await pdf.getPage(i), vp0 = pg.getViewport({ scale: 1 }), sc = Math.min(2.5, 2000 / Math.max(vp0.width, vp0.height)), vp = pg.getViewport({ scale: sc });
+      const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height;
+      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
+      await pg.render({ canvasContext: x, viewport: vp }).promise;
+      c._page = i; c._of = pdf.numPages; out.push(c);
+    }
+    return out;
+  }
+  let src;
+  try { src = await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch (e) { src = await imgFromBlob(file); }
+  return [toCanvas(src, src.width, src.height, 2000)];
+}
+function canvasBlob(c){                       // upload copy: max 1600 px, JPEG
+  const k = Math.min(1, 1600 / Math.max(c.width, c.height));
+  const d = k < 1 ? toCanvas(c, c.width, c.height, 1600) : c;
+  return new Promise(res => d.toBlob(b => res(b), 'image/jpeg', 0.82));
+}
+function blobB64(b){ return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(b); }); }
+
+async function barcodes(cv){
+  const vals = [];
+  if ('BarcodeDetector' in window) {
+    try { const det = new BarcodeDetector(); (await det.detect(cv)).forEach(b => vals.push(b.rawValue)); } catch (e) {}
+    if (vals.length) return vals;
+  }
+  try {
+    await loadScript(LIB.zxing);
+    const hints = new Map(); hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+    const rd = new ZXing.MultiFormatReader(); rd.setHints(hints);
+    const one = c => { try { const r = rd.decode(new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(new ZXing.HTMLCanvasElementLuminanceSource(c)))); return r ? r.getText() : ''; } catch (e) { return ''; } };
+    // a barcode is small on a full POD page: scan it in overlapping strips, upright and turned
+    for (const src of [cv, rot90(cv)]) {
+      const v = one(src); if (v) { vals.push(v); return vals; }
+      const W = src.width, H = src.height, sh = Math.round(H / 5), step = Math.round(sh / 2);
+      for (let y = 0; y < H; y += step) {
+        const hh = Math.min(sh, H - y);
+        for (const [x, w] of [[0, W], [0, Math.round(W * .6)], [Math.round(W * .4), W - Math.round(W * .4)]]) {
+          const t = one(crop(src, x, y, w, hh)); if (t) { vals.push(t); return vals; }
+        }
+      }
+    }
+  } catch (e) {}
+  return vals;
+}
+function crop(c, x, y, w, h){ const o = document.createElement('canvas'); o.width = w; o.height = h; o.getContext('2d').drawImage(c, x, y, w, h, 0, 0, w, h); return o; }
+function rot90(c){ const r = document.createElement('canvas'); r.width = c.height; r.height = c.width; const x = r.getContext('2d'); x.translate(r.width, 0); x.rotate(Math.PI / 2); x.drawImage(c, 0, 0); return r; }
+let OCR = null;
+async function ocrText(cv){
+  await loadScript(LIB.ocr);
+  if (!OCR) OCR = Tesseract.createWorker('eng');
+  const w = await OCR;
+  const small = toCanvas(cv, cv.width, cv.height, 1800);
+  const r = await w.recognize(small);
+  return (r && r.data && r.data.text) || '';
+}
+/* barcode first; if that finds nothing, read the printed text */
+async function readPaper(cv, onStep){
+  const bc = await barcodes(cv);
+  for (const v of bc) { const m = matchText(v); if (m) return Object.assign(m, { how: 'Barcode read' }); }
+  if (onStep) onStep('Reading the text on the paper…');
+  try { const t = await ocrText(cv); const m = matchText(t); if (m) return Object.assign(m, { how: m.by === 'awb' ? 'AWB text read' : 'Order no. read' }); } catch (e) {}
+  return null;
+}
+
+/* ---------- scanner ---------- */
+let stream = null, scanTimer = null, zxCtl = null, scanMode = 'live', lastPhoto = null;
+function openScan(){
+  $('scanMod').hidden = false; document.body.style.overflow = 'hidden';
+  $('found').hidden = true; setScanTab(scanMode);
+}
+function closeScan(){ stopCam(); $('scanMod').hidden = true; if ($('det').hidden || wide()) document.body.style.overflow = ''; }
+$('scanBtn').addEventListener('click', openScan);
+$('scanX').addEventListener('click', closeScan);
+document.querySelectorAll('#scanMod .tabs button').forEach(b => b.addEventListener('click', () => setScanTab(b.dataset.t)));
+function setScanTab(t){
+  scanMode = t; $('found').hidden = true;
+  document.querySelectorAll('#scanMod .tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  $('camBox').hidden = t !== 'live'; $('photoBox').hidden = t !== 'photo';
+  if (t === 'live') startCam(); else { stopCam(); $('phImg').hidden = true; $('phMsg').textContent = 'Take a clear photo of the signed POD paper. The AWB or order number on it is read automatically.'; }
+}
+async function startCam(){
+  stopCam();
+  $('camHint').textContent = 'Starting camera…';
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+    const v = $('vid'); v.srcObject = stream; await v.play();
+    $('camHint').textContent = 'Point at the barcode on the label or the POD paper';
+    if ('BarcodeDetector' in window) {
+      const det = new BarcodeDetector();
+      const tick = async () => {
+        if (!stream) return;
+        try { const r = await det.detect(v); for (const b of r) { if (onCode(b.rawValue)) return; } } catch (e) {}
+        scanTimer = setTimeout(tick, 220);
+      };
+      tick();
+    } else {
+      await loadScript(LIB.zxing);
+      const rd = new ZXing.BrowserMultiFormatReader();
+      zxCtl = rd;
+      rd.decodeFromVideoElementContinuously ? rd.decodeFromVideoElementContinuously(v, (res) => { if (res) onCode(res.getText()); })
+        : rd.decodeFromStream(stream, v, (res) => { if (res) onCode(res.getText()); });
+    }
+  } catch (e) {
+    $('camHint').innerHTML = 'Camera not available (' + esc(e.name || e.message) + '). Allow the camera for this site, or use <b>Photo of POD</b>.';
+  }
+}
+function stopCam(){
+  clearTimeout(scanTimer); scanTimer = null;
+  if (zxCtl) { try { zxCtl.reset(); } catch (e) {} zxCtl = null; }
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+}
+let lastMiss = '';
+function onCode(val){
+  const m = matchText(val);
+  if (!m) { if (val !== lastMiss) { lastMiss = val; $('camHint').textContent = 'Read “' + val + '” but it is not a Shree Anjani order in the list'; } return false; }
+  if (navigator.vibrate) navigator.vibrate(80);
+  stopCam(); showFound(m, null);
+  return true;
+}
+function showFound(m, photo){
+  const f = $('found'); f.hidden = false;
+  if (!m) {
+    f.innerHTML = `<div class="h">&#9888; AWB not found on the photo</div><div class="s">Try again with the barcode or AWB number clearly in the photo, or type the AWB below.</div>
+      <div class="fld" style="margin:0 0 10px"><input id="fTyped" inputmode="numeric" placeholder="Type AWB or order ID"></div>
+      <div class="b2"><button type="button" id="fRetry">Retake</button><button type="button" class="p" id="fGo">Find</button></div>`;
+    $('fRetry').onclick = () => setScanTab(scanMode);
+    $('fGo').onclick = () => { const mm = matchText($('fTyped').value); if (mm) showFound(mm, photo); else toast('No Shree Anjani order with that number'); };
+    return;
+  }
+  const o = m.o;
+  f.innerHTML = `<div class="h"><span class="chip delivered">&#10003; Found</span> ${esc(awbs(o)[0] || o.id)}</div>
+    <div class="s">${esc(o.name || '')} · ${esc(o.co || '')} · Order ${esc(o.id)} · ${esc(m.how || (m.by === 'awb' ? 'AWB read' : 'Order no. read'))}<br>Now: ${esc(o.ps ? 'Partner ' + o.ps : 'BoxUp ' + sysStatus(o))}</div>
+    <div class="b2">${photo ? '<button type="button" class="p" id="fDel">&#9989; Delivered + save photo as POD</button>' : ''}<button type="button" id="fOpen">${photo ? 'Other status' : 'Open order'}</button>${photo ? '' : '<button type="button" class="p" id="fNext">Scan next</button>'}</div>`;
+  $('fOpen').onclick = () => { closeScan(); openOrder(o, photo ? { pod: photo } : null); };
+  if ($('fNext')) $('fNext').onclick = () => { closeScan(); openOrder(o); };
+  if ($('fNext')) $('fNext').textContent = 'Update status';
+  if ($('fDel')) $('fDel').onclick = async () => {
+    const b = $('fDel'); b.disabled = true; b.innerHTML = '<span class="busy"></span> Saving…';
+    try { await saveOne(o, 'delivered', photo, { via: 'Scanner' }); toast('&#10004; ' + (awbs(o)[0] || o.id) + ' · Delivered · POD uploaded'); renderAll(); setScanTab('photo'); }
+    catch (e) { toast('Not saved: ' + esc(e.message)); b.disabled = false; b.textContent = 'Try again'; }
+  };
+}
+async function photoIn(file){
+  if (!file) return;
+  $('found').hidden = true; $('phMsg').innerHTML = '<span class="busy"></span> Reading the photo…';
+  try {
+    const cv = (await fileToCanvases(file, 1))[0];
+    const blob = await canvasBlob(cv);
+    const url = URL.createObjectURL(blob);
+    $('phImg').src = url; $('phImg').hidden = false;
+    const m = await readPaper(cv, s => { $('phMsg').innerHTML = '<span class="busy"></span> ' + s; });
+    $('phMsg').textContent = '';
+    lastPhoto = { blob, url, mime:'image/jpeg', name: file.name, read: m };
+    showFound(m, lastPhoto);
+  } catch (e) { $('phMsg').textContent = 'Could not open this file: ' + e.message; }
+  $('phIn').value = ''; $('phIn2').value = '';
+}
+$('phIn').addEventListener('change', e => photoIn(e.target.files[0]));
+$('phIn2').addEventListener('change', e => photoIn(e.target.files[0]));
+
+/* ---------- bulk POD ---------- */
+let BK = [];                                  // [{blob, url, label, m, typed}]
+$('bulkBtn').addEventListener('click', () => { $('bulkMod').hidden = false; document.body.style.overflow = 'hidden'; renderBulk(); });
+$('bulkX').addEventListener('click', () => { $('bulkMod').hidden = true; if ($('det').hidden || wide()) document.body.style.overflow = ''; });
+$('bulkIn').addEventListener('change', e => { addBulk([...e.target.files]); e.target.value = ''; });
+['dragover','dragenter'].forEach(ev => $('drop').addEventListener(ev, e => { e.preventDefault(); $('drop').classList.add('over'); }));
+['dragleave','drop'].forEach(ev => $('drop').addEventListener(ev, e => { e.preventDefault(); $('drop').classList.remove('over'); }));
+$('drop').addEventListener('drop', e => addBulk([...e.dataTransfer.files]));
+let bkBusy = false;
+async function addBulk(files){
+  if (bkBusy) return; bkBusy = true;
+  try {
+    for (const f of files) {
+      if (BK.length >= 60) { toast('Up to 60 pages at once'); break; }
+      $('bkT').innerHTML = '<span class="busy"></span> Opening ' + esc(f.name) + '…';
+      let pages = [];
+      try { pages = await fileToCanvases(f, 60 - BK.length); } catch (e) { toast('Could not open ' + esc(f.name)); continue; }
+      for (const cv of pages) {
+        const it = { label: f.name + (cv._of > 1 ? ' · page ' + cv._page : ''), m: null, reading: true };
+        it.blob = await canvasBlob(cv); it.url = URL.createObjectURL(it.blob);
+        BK.push(it); renderBulk();
+        $('bkT').innerHTML = '<span class="busy"></span> Reading page ' + BK.length + '…';
+        it.m = await readPaper(cv); it.reading = false; renderBulk();
+      }
+    }
+  } finally { bkBusy = false; renderBulk(); }
+}
+function renderBulk(){
+  const n = BK.length, ok = BK.filter(x => x.m && !x.done).length;
+  $('bkT').textContent = n ? n + ' pages · read automatically' : 'No pages yet';
+  $('bkN').textContent = n ? ok + ' matched' : '';
+  $('bkList').innerHTML = BK.map((it, i) => {
+    const o = it.m && it.m.o;
+    const right = it.done ? '<span class="chip delivered">Saved &#10003;</span>' : it.err ? '<span class="chip problem">Not saved</span>' : it.reading ? '<span class="busy"></span>' : o ? '<span class="chip delivered">Matched</span>' : '<span class="chip problem">Type AWB</span>';
+    return `<div class="bi${!o && !it.reading ? ' nf' : ''}" data-i="${i}"><img src="${it.url}" alt="">
+      <div class="m">${o ? `<b>${esc(awbs(o)[0] || o.id)}</b> ${esc(o.name || '')}<small>${esc(it.m.how || '')} · ${esc(it.label)}${it.err ? ' · ' + esc(it.err) : ''}</small>`
+        : `<b>${it.reading ? 'Reading…' : 'Not read'}</b><small>${esc(it.label)}</small>${it.reading ? '' : `<input data-i="${i}" placeholder="Type AWB or order ID" inputmode="numeric" value="${esc(it.typed || '')}">`}`}</div>
+      ${right}${it.done ? '' : `<button type="button" class="rm" data-rm="${i}" aria-label="Remove">&times;</button>`}</div>`;
+  }).join('');
+  $('bkFoot').hidden = !n;
+  const st = $('bkSt').value;
+  $('bkSave').textContent = ok ? `✔ Save ${ok} POD${ok > 1 ? 's' : ''}${st ? ' · mark Delivered' : ''}` : 'Nothing to save yet';
+  $('bkSave').disabled = !ok || bkBusy;
+}
+$('bkSt').addEventListener('change', renderBulk);
+$('bkList').addEventListener('click', e => { const r = e.target.closest('[data-rm]'); if (r) { const it = BK.splice(+r.dataset.rm, 1)[0]; if (it) URL.revokeObjectURL(it.url); renderBulk(); } });
+$('bkList').addEventListener('change', e => {
+  const inp = e.target.closest('input[data-i]'); if (!inp) return;
+  const it = BK[+inp.dataset.i]; it.typed = inp.value;
+  const m = matchText(inp.value);
+  if (m) { it.m = Object.assign(m, { how: 'Typed' }); renderBulk(); } else toast('No Shree Anjani order with “' + esc(inp.value) + '”');
+});
+$('bkSave').addEventListener('click', async () => {
+  const st = $('bkSt').value, todo = BK.filter(x => x.m && !x.done);
+  if (!todo.length) return;
+  bkBusy = true; let ok = 0;
+  for (let i = 0; i < todo.length; i++) {
+    const it = todo[i];
+    $('bkSave').innerHTML = `<span class="busy"></span> Saving ${i + 1} of ${todo.length}…`; $('bkSave').disabled = true;
+    try { await saveOne(it.m.o, st, { blob: it.blob, mime:'image/jpeg', name: it.label }, { via: 'Bulk POD' }); it.done = true; it.err = ''; ok++; }
+    catch (e) { it.err = e.message; }
+  }
+  bkBusy = false; renderBulk(); renderAll();
+  toast(`&#10004; ${ok} POD${ok === 1 ? '' : 's'} saved` + (ok < todo.length ? ` · ${todo.length - ok} not saved, try again` : ''));
+});
+
+/* ---------- small things ---------- */
+let toastT = null;
+function toast(html){ const t = $('toast'); t.innerHTML = html; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
+window.addEventListener('resize', () => { if (SEL) renderDetail(false); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if (!$('scanMod').hidden) closeScan(); else if (!$('bulkMod').hidden) $('bulkX').click(); else if (SEL) closeDetail(); }
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') { e.preventDefault(); $('q').focus(); }
+});
+window.addEventListener('popstate', () => { if (!$('scanMod').hidden) closeScan(); else if (SEL && !wide()) closeDetail(); });
+
+/* start: show the last saved list at once, then refresh */
+(function(){
+  const c = store.get(CACHE_KEY, null);
+  if (c && c.orders && c.orders.length) { setOrders(c.orders, c.v); $('upd').textContent = 'Saved list from ' + new Date(c.at).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'}) + ' · refreshing…'; }
+  else renderAll();
+  // a link like .../partner/?awb=1989756412 opens that order
+  const p = new URLSearchParams(location.search).get('awb') || new URLSearchParams(location.search).get('q');
+  load().then(() => { if (p) { const m = matchText(p); if (m) openOrder(m.o); else { $('q').value = p; renderDD(); } } });
+})();
+setInterval(() => { if (!document.hidden && $('scanMod').hidden && $('bulkMod').hidden) load(); }, 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+</script>
+</body>
+</html>
