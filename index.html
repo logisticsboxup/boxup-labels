@@ -3964,6 +3964,7 @@ function meAwbHtml(){
   const one = ME.single, it = ME.items[0], cur = one ? moTrk(it.orig).join(', ') : '';
   return `<div class="me-lb">Tracking ID / AWB</div>
     <label class="me-rd on"><input type="radio" name="meAwb" value="keep" checked><span><b>Keep the same AWB</b>${one && cur ? ' ' + esc(cur) : ''}<small>Reprint with the old tracking ID</small></span></label>
+    <label class="me-rd" id="meNoRd"><input type="radio" name="meAwb" value="none"><span><b>No tracking ID</b><small>For Porter and In-house delivery: the old tracking ID is removed</small></span></label>
     <label class="me-rd" id="meSaRd"><input type="radio" name="meAwb" value="sa"><span><b>New Shree Anjani AWB${one ? '' : 's'} (automatic)</b><small>Next free AWB from the Shree Anjani tab</small></span></label>
     ${one ? '' : `<label class="me-rd"><input type="radio" name="meAwb" value="series"><span><b>Auto series</b> from <input type="text" id="meFirst" placeholder="first ID" style="width:120px;display:inline-block;padding:3px 6px" autocomplete="off"><small>Next orders fill +1 in list order</small></span></label>`}
     <label class="me-rd"><input type="radio" name="meAwb" value="type"><span><b>Type a new tracking ID</b>${one ? ` <input type="text" id="meTypeOne" placeholder="New tracking ID (comma between, one per box)" style="width:260px;display:inline-block;padding:3px 6px" autocomplete="off">` : ' <small style="display:inline">in the table</small>'}<small>Shree Anjani AWBs must be in the Shree Anjani tab</small></span></label>`;
@@ -3974,6 +3975,10 @@ function meSetCour(i, val){
   if(val === '__other'){ it.courOther = true; if(ME_COURIERS.includes(it.v.courier)) it.v.courier = ''; }
   else { it.courOther = false; it.v.courier = val; }
   if(isPorter(it.v.courier) && !it.v.pDate) it.v.pDate = todayISO();
+  // Porter / In-house have no tracking ID: pick "No tracking ID" by itself; going back to a courier puts "Keep" back
+  const allPor = ME.items.every(x => isPorter(x.v.courier)), m = meMode();
+  const pick = allPor && m !== 'none' ? 'none' : (!allPor && m === 'none' ? 'keep' : '');
+  if(pick){ const r = document.querySelector(`input[name=meAwb][value=${pick}]`); if(r) r.checked = true; }
   meRender();
 }
 const meMode = () => (document.querySelector('input[name=meAwb]:checked') || {}).value || 'keep';
@@ -3998,6 +4003,7 @@ function mePlan(){
       const ids = moTrk(it.orig), per = it.orig.trackPer && it.orig.trackPer.length > 1;
       return { ids, keep: true, err: per && ids.length !== boxes ? 'boxes changed, so pick new tracking IDs' : '' };
     }
+    if(mode === 'none') return { ids: [], none: true, err: isPorter(it.v.courier) ? '' : 'courier is not Porter or In-house' };
     if(mode === 'sa') return { ids: [], auto: true, err: isSA(it.v.courier) ? '' : 'courier is not Shree Anjani' };
     if(mode === 'series'){
       const ids = [];
@@ -4034,6 +4040,7 @@ function meRender(){
     ME.items.forEach((it, i) => {
       const p = plan[i];
       const trk = mode === 'type' ? `<input type="text" data-i="${i}" data-f="__typed" value="${esc(it.typed)}" class="${p.err ? 'bad' : 'chg'}" placeholder="Type tracking ID" autocomplete="off" spellcheck="false">`
+        : mode === 'none' ? `<small style="color:var(--muted);font-weight:600">${p.err ? '<span style="color:var(--danger)">' + esc(p.err) + '</span>' : 'no tracking ID'}</small>`
         : mode === 'sa' ? `<small style="color:#1D5C96;font-weight:600">${p.err ? '<span style="color:var(--danger)">' + esc(p.err) + '</span>' : 'next free Shree Anjani AWB'}</small>`
         : `<div class="awb">${esc(p.ids.join(', ') || '—')}</div>${p.err ? `<small style="color:var(--danger)">${esc(p.err)}</small>` : (mode === 'keep' ? '<small>same as before</small>' : '')}`;
       h += `<tr><td><b>${esc(it.o.orderid)}</b><small>${esc(it.o.sender || '')}</small></td><td>${meInput(i,'name')}</td><td>${meInput(i,'phone')}</td><td>${meInput(i,'address')}</td><td>${meInput(i,'pincode')}</td><td>${meInput(i,'city')}</td><td>${meInput(i,'courier')}</td><td>${meInput(i,'mode','', 'mode')}</td><td>${meInput(i,'totalpkg','','number')}</td><td>${trk}</td></tr>`;
@@ -4055,8 +4062,10 @@ function meSummary(plan){
   document.querySelectorAll('input[name=meAwb]').forEach(x => x.closest('.me-rd').classList.toggle('on', x.checked));
   const saRd = document.querySelector('input[name=meAwb][value=sa]');
   if(saRd){ saRd.disabled = !allSa; saRd.closest('.me-rd').classList.toggle('dis', !allSa); }
+  const allPor = ME.items.every(it => isPorter(it.v.courier)), noRd = document.querySelector('input[name=meAwb][value=none]');
+  if(noRd){ noRd.disabled = !allPor && mode !== 'none'; noRd.closest('.me-rd').classList.toggle('dis', !allPor); }
   const anyMulti = ME.items.some(it => (parseInt(it.v.totalpkg, 10) || 1) > 1);
-  $('mePerBoxWrap').style.display = mode !== 'keep' && anyMulti ? '' : 'none';
+  $('mePerBoxWrap').style.display = mode !== 'keep' && mode !== 'none' && anyMulti ? '' : 'none';
   const anyOldSa = ME.items.some(it => isSA(it.orig.courier) && moTrk(it.orig).length);
   $('meFreeWrap').style.display = mode !== 'keep' && anyOldSa ? '' : 'none';
   const errs = [], changes = ME.items.map(meChanges);
@@ -4066,13 +4075,14 @@ function meSummary(plan){
     if(!/^\d{6}$/.test(String(it.v.pincode || '').trim()) && !it.v.intl) errs.push(it.o.orderid + ': pincode must be 6 digits');
     if(plan[i].err) errs.push(it.o.orderid + ': ' + plan[i].err);
   });
+  if(mode === 'none' && !allPor) errs.unshift('No tracking ID is only for Porter and In-house: set the courier to Porter or In-house for every order');
   if(mode === 'sa' && !allSa) errs.unshift('New Shree Anjani AWBs need the courier to be Shree Anjani for every order');
   const ids = [].concat(...plan.map(p => p.ids || [])); const dup = ids.filter((x, i) => ids.indexOf(x) !== i);
   if(mode !== 'keep' && dup.length) errs.push('the same tracking ID is used twice: ' + [...new Set(dup)].slice(0, 3).join(', '));
   const nCh = changes.reduce((a, c) => a + c.length, 0), labels = ME.items.reduce((a, it) => a + (parseInt(it.v.totalpkg, 10) || 1), 0);
   const sum = $('meSum');
   sum.className = 'ra-sum' + (errs.length ? ' bad' : '');
-  sum.innerHTML = `<b>${ME.items.length} order${ME.items.length > 1 ? 's' : ''} · ${labels} label${labels > 1 ? 's' : ''} · ${nCh} change${nCh === 1 ? '' : 's'}${mode !== 'keep' ? ' + new tracking ID' + (ME.items.length > 1 ? 's' : '') : ''}</b><br>` +
+  sum.innerHTML = `<b>${ME.items.length} order${ME.items.length > 1 ? 's' : ''} · ${labels} label${labels > 1 ? 's' : ''} · ${nCh} change${nCh === 1 ? '' : 's'}${mode === 'none' ? ' + tracking ID removed' : mode !== 'keep' ? ' + new tracking ID' + (ME.items.length > 1 ? 's' : '') : ''}</b><br>` +
     (errs.length ? `<span style="font-weight:600">To fix: ${esc(errs.slice(0, 4).join(' · '))}${errs.length > 4 ? ' …' : ''}</span>`
       : `<small>${ME.single && changes[0].length ? 'Changed: ' + esc(changes[0].join(', ')) + '. ' : ''}Orange = changed. The old Label Log line is struck through (grey) and a new line is added.</small>`);
   $('meGo').disabled = MO.busy || errs.length > 0;
@@ -4124,6 +4134,7 @@ $('meGo').addEventListener('click', async () => {
       v.tracklink = ''; v.trackAuto = false;
       if(isSA(v.courier)) v.courier = SA_NAME;
       if(mode === 'keep'){ v.trackid = it.orig.trackid || ''; v.trackPer = it.orig.trackPer || null; v.awbSeries = !!it.orig.awbSeries; }
+      else if(mode === 'none'){ v.trackid = ''; v.trackPer = null; v.awbSeries = false; }
       else if(mode === 'sa'){ v.trackid = ''; v.trackPer = null; v.trackAuto = true; v.awbSeries = perBox && v.totalpkg > 1; }
       else if(p.ids.length > 1){ v.trackPer = p.ids.slice(0, v.totalpkg); v.trackid = p.ids[0]; v.awbSeries = true; }
       else { v.trackid = p.ids[0] || ''; v.trackPer = null; v.awbSeries = false; if(v.totalpkg > 1) v.trkAllLabels = true; }
@@ -4137,7 +4148,7 @@ $('meGo').addEventListener('click', async () => {
     payload.bulk = false;
     payload.replace = items.map(it => ({ row: it.o.row, orderid: it.o.orderid }));
     payload.orders.forEach((po, i) => {
-      const ch = meChanges(items[i]).concat(mode !== 'keep' ? ['tracking ID'] : []);
+      const ch = meChanges(items[i]).concat(mode === 'none' ? ['tracking ID removed'] : mode !== 'keep' ? ['tracking ID'] : []);
       po.editNote = 'Active · edited ' + when + (ch.length ? ': ' + ch.join(', ') : '') + (reason ? ' · ' + reason : '');
       po.note = 'edited (was row ' + items[i].o.row + ')';
     });
