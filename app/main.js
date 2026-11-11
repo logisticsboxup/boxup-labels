@@ -7,7 +7,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 
-const CORE_VERSION = '1.2.0';                  // the part that can update itself, without reinstalling
+const CORE_VERSION = '1.2.1';                  // the part that can update itself, without reinstalling
 const SITE_BUILT = 1793214649153;             // when the copy inside this app was made
 const LIVE_URL = 'https://logisticsboxup.github.io/boxup-labels/';
 const FEED = 'https://logisticsboxup.github.io/boxup-labels/latest.json';
@@ -409,8 +409,9 @@ function openPrintPreview(p) {
   const w = new BrowserWindow({ width: 1180, height: 820, minWidth: 900, minHeight: 600, title: 'Print - ' + path.basename(p), icon: ICON, backgroundColor: '#e8eaed', autoHideMenuBar: true, show: false,
     webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, 'print-preload.js') } });
   w.setMenu(null);
-  PP.set(w.webContents.id, p);
-  w.on('closed', () => PP.delete(w.webContents.id));
+  const wcId = w.webContents.id;   // keep the id: after the window closes its webContents is gone
+  PP.set(wcId, p);
+  w.on('closed', () => PP.delete(wcId));
   w.once('ready-to-show', () => w.show());
   w.webContents.on('before-input-event', (e, inp) => { if (inp.type === 'keyDown' && inp.key === 'Escape') w.close(); });
   w.loadFile(path.join(__dirname, 'print.html'));

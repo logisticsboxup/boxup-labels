@@ -2,11 +2,11 @@
   "app": "1.1.0",
   "date": "10 Nov 2026",
   "core": {
-    "version": "1.2.0",
+    "version": "1.2.1",
     "files": [
       {
         "path": "main.js",
-        "sha256": "1b3bbf7b9a2786ba1bb3452400db3da41b7268ea549471ef924e34ed26b2f006"
+        "sha256": "a5324fdc9df7dcfe1a0c0ec04aee0c4f389e9b58e044c7e6715680d49ebd9fd7"
       },
       {
         "path": "preload.js",
@@ -27,6 +27,10 @@
   },
   "notes": [
     {
+      "title": "Print preview fix",
+      "text": "Closing the BoxUp print preview no longer shows \"A JavaScript error occurred in the main process\"."
+    },
+    {
       "title": "Downloads and notifications (☰)",
       "text": "The ☰ button at the top right of the label preview lists every PDF and Excel file you saved, with Open, Print and Show in folder, and keeps notifications (labels saved, low Shree Anjani AWBs, gate problems, partner updates) until you clear them."
     },
@@ -45,10 +49,6 @@
     {
       "title": "The old template no longer comes back",
       "text": "The app now keeps the newest copy of the tool, not the last one it happened to download."
-    },
-    {
-      "title": "About shows both versions",
-      "text": "Help > About BoxUp Labels lists what is installed here and what is on GitHub right now, and says whether they match."
     }
   ]
 }
