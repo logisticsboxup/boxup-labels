@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · BoxUp Labels</title>
+<link rel="icon" href="favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{color-scheme:light}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:radial-gradient(ellipse at top,#26502f 0%,#14301d 55%,#0d1f13 100%);font-family:Inter,Arial,sans-serif}
+  .c{background:#fff;border-radius:22px;width:min(420px,100%);padding:30px 28px 24px;box-shadow:0 30px 80px rgba(0,0,0,.45);text-align:center;color:#161512}
+  .b{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7a6a3c}
+  .b i{width:9px;height:9px;border-radius:50%;background:#C8A64B;display:inline-block}
+  h1{font-family:'Playfair Display',Georgia,serif;font-size:25px;margin:12px 0 6px;color:#16311F}
+  p{font-size:13.5px;line-height:1.5;color:#5d5a52;margin:0 0 18px}
+  #g{display:flex;justify-content:center;min-height:44px}
+  .ok{width:60px;height:60px;border-radius:50%;background:#E3F3E8;color:#1a7f45;display:grid;place-items:center;font-size:30px;margin:6px auto 4px}
+  .err{color:#b3261e;font-size:13px;margin:12px 0 0}
+  small{display:block;font-size:11.5px;color:#8a867b;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="c" id="c">
+  <div class="b"><i></i>BoxUp Luxury Gifting</div>
+  <h1>Sign in to BoxUp Labels</h1>
+  <p>Choose your Google account. Logistics then gives you access.</p>
+  <div id="g"></div>
+  <div class="err" id="e"></div>
+  <small>Only your name, email and Google photo are shared with BoxUp logistics.</small>
+</div>
+<script>
+  var CLIENT_ID = '903732909130-0k6hvp0gsqehmpgniftpo98khh7m8jph.apps.googleusercontent.com';
+  var LOG_URL = 'https://script.google.com/macros/s/AKfycbxkWlpzmubWJwgFQF7cCDAegDHDFpst-j2AnoLVrk3rVnZL9CuOukEIC_GR43gUlL7e/exec';
+  var nonce = (new URLSearchParams(location.search).get('n') || '').replace(/[^a-f0-9]/gi, '').slice(0, 64);
+  function err(t){ document.getElementById('e').textContent = t; }
+  function done(name){
+    document.getElementById('c').innerHTML = '<div class="b"><i></i>BoxUp Luxury Gifting</div><div class="ok">&#10003;</div><h1>You are signed in</h1><p>' +
+      (name ? 'Thanks, ' + name.replace(/[<>&]/g, '') + '. ' : '') + 'Go back to BoxUp Labels. It continues by itself.<br>You can close this window.</p>';
+    setTimeout(function(){ try{ window.close(); }catch(e){} }, 1500);
+  }
+  function onCred(r){
+    err('');
+    document.getElementById('g').style.opacity = .4;
+    fetch(LOG_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ action:'auth', op:'signin', nonce: nonce, cred: r.credential }) })
+      .then(function(x){ return x.json(); })
+      .then(function(d){ document.getElementById('g').style.opacity = 1; if(d.ok) done(d.name); else err(d.error || 'Sign-in failed. Please try again.'); })
+      .catch(function(){ document.getElementById('g').style.opacity = 1; err('Could not reach BoxUp. Check the internet and try again.'); });
+  }
+  function start(){
+    if(!nonce){ err('Open this page from BoxUp Labels (press "Sign in with Google" there).'); return; }
+    google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onCred, ux_mode: 'popup' });
+    google.accounts.id.renderButton(document.getElementById('g'), { theme:'outline', size:'large', text:'signin_with', shape:'rectangular', width: 340, logo_alignment:'center' });
+  }
+</script>
+<script src="https://accounts.google.com/gsi/client" async onload="start()" onerror="err('Google sign-in could not load. Check the internet.')"></script>
+</body>
+</html>
