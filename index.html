@@ -5338,7 +5338,9 @@ html.au-locked #auLock{display:flex}
 .au-pop.wide{width:min(1020px,100%)}
 .au-pop h3{font-family:'Playfair Display',Georgia,serif;font-size:21px;margin:0 0 4px;color:#16311F}
 .au-pop .sub{font-size:12.5px;color:#7d796f;margin:0 0 16px}
-.au-x{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:10px;border:0;background:#F3EFE3;cursor:pointer;font-size:18px;color:#3b3a35}
+.au-pop .au-x{position:absolute;top:16px;right:16px;width:34px;height:34px;min-width:0;min-height:0;margin:0;padding:0;box-sizing:border-box;border-radius:10px;border:0;background:#F3EFE3;cursor:pointer;color:#3b3a35;display:flex;align-items:center;justify-content:center;line-height:0;box-shadow:none}
+.au-pop .au-x:hover{background:#E9E2CF}
+.au-pop .au-x svg{width:16px;height:16px;display:block;flex:none}
 .au-row2{display:flex;gap:10px}
 .au-row2 .au-btn{flex:1}
 .au-apps{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 14px}
@@ -5616,7 +5618,7 @@ html.au-locked #auLock{display:flex}
   function askMore(type){
     const p = pop('auAsk');
     const missing = APPS.filter(x => !(ME.apps || []).includes(x));
-    p.innerHTML = `<button class="au-x" data-x>✕</button>
+    p.innerHTML = `<button class="au-x" data-x title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       <h3>${type === 'awbs' ? 'Request more AWBs' : 'Request access to an app'}</h3>
       <div class="sub">Logistics gets this in their notifications and by email.</div>
       ${type === 'awbs' ? `<span class="au-lbl">How many Shree Anjani AWBs?</span>
@@ -5674,7 +5676,7 @@ html.au-locked #auLock{display:flex}
   }
   async function openAdmin(){
     const p = pop('auAdm', true);
-    p.innerHTML = `<button class="au-x" data-x>✕</button><h3>Users &amp; Access</h3><div class="sub">Only logistics sees this page.</div><div class="au-spin"></div>`;
+    p.innerHTML = `<button class="au-x" data-x title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h3>Users &amp; Access</h3><div class="sub">Only logistics sees this page.</div><div class="au-spin"></div>`;
     p.querySelector('[data-x]').onclick = () => close('auAdm');
     try{ LIST = await api('list'); }catch(e){ LIST = { ok:false, error:'Could not load. Check the internet.' }; }
     drawAdmin();
@@ -5682,9 +5684,9 @@ html.au-locked #auLock{display:flex}
   function drawAdmin(){
     const p = $i('auAdm') && $i('auAdm').firstElementChild; if(!p) return;
     const d = LIST;
-    if(!d || !d.ok){ p.innerHTML = `<button class="au-x" data-x>✕</button><h3>Users &amp; Access</h3><div class="au-err">${esc((d && d.error) || 'Could not load.')}</div>`; p.querySelector('[data-x]').onclick = () => close('auAdm'); return; }
+    if(!d || !d.ok){ p.innerHTML = `<button class="au-x" data-x title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h3>Users &amp; Access</h3><div class="au-err">${esc((d && d.error) || 'Could not load.')}</div>`; p.querySelector('[data-x]').onclick = () => close('auAdm'); return; }
     const reqs = d.reqs || [], users = (d.users || []).slice().sort((a, b) => (b.admin - a.admin) || String(a.name || a.email).localeCompare(String(b.name || b.email)));
-    p.innerHTML = `<button class="au-x" data-x>✕</button>
+    p.innerHTML = `<button class="au-x" data-x title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       <h3>Users &amp; Access</h3>
       <div class="sub">Only logistics sees this page. People get only the apps you switch on, never more than you have. <span class="au-pool">📦 ${d.pool.free} AWBs free to give${d.pool.next ? ' · next ' + esc(d.pool.next) : ''}</span></div>
       <div class="au-sec">Waiting requests ${reqs.length ? `<span>${reqs.length}</span>` : ''}</div>
@@ -5722,7 +5724,7 @@ html.au-locked #auLock{display:flex}
     const showApps = mode !== 'add', showAwb = true;
     const p = pop('auRev');
     const title = mode === 'add' ? 'Give more AWBs' : mode === 'edit' ? 'Edit access' : 'Review and give access';
-    p.innerHTML = `<button class="au-x" data-x>✕</button><h3>${title}</h3>
+    p.innerHTML = `<button class="au-x" data-x title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h3>${title}</h3>
       <div class="au-who" style="margin-top:8px">${avatar(who)}<div><b>${esc(who.name || who.email)}</b><small>${esc(who.email)}${req ? ' · asks for ' + esc(reqText(req)) : ''}</small>${req && req.note ? `<small style="display:block;font-style:italic">“${esc(req.note)}”</small>` : ''}</div></div>
       ${showApps ? `<div class="au-apphd"><span class="au-lbl">Apps they can use</span><span><button class="au-same" id="auSame">Same as me (all ${APPS.length})</button><button class="au-none" id="auNone">None</button></span></div>
         <div class="au-apps" id="auApps">${APPS.map(a => `<div class="au-app${apps.has(a) ? ' on' : ''}" data-a="${a}">${esc(NAMES[a])}<span class="sw"></span></div>`).join('')}</div>
@@ -5768,14 +5770,14 @@ html.au-locked #auLock{display:flex}
   }
   async function decline(r){
     const p = pop('auRev');
-    p.innerHTML = `<button class="au-x" data-x>✕</button><h3>Decline request?</h3><div class="sub">${esc(r.name || r.email)} asks for ${esc(reqText(r))}. They can ask again later.</div>
+    p.innerHTML = `<button class="au-x" data-x title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h3>Decline request?</h3><div class="sub">${esc(r.name || r.email)} asks for ${esc(reqText(r))}. They can ask again later.</div>
       <div class="au-row2"><button class="au-btn ghost" data-x>Cancel</button><button class="au-btn red" id="auOk">Decline</button></div>`;
     p.querySelectorAll('[data-x]').forEach(b => b.onclick = () => close('auRev'));
     $i('auOk').onclick = async () => { $i('auOk').disabled = true; try{ await api('decline', { id: r.id, email: r.email }); }catch(e){} close('auRev'); toast('Request declined'); reloadAdmin(); };
   }
   function removeUser(u){
     const p = pop('auRev');
-    p.innerHTML = `<button class="au-x" data-x>✕</button><h3>Remove ${esc(u.name || u.email)}?</h3><div class="sub">They lose access to BoxUp Labels. Their ${u.awbs && u.awbs.left || 0} unused AWBs go back to the free AWBs. Used AWBs stay in the log.</div>
+    p.innerHTML = `<button class="au-x" data-x title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h3>Remove ${esc(u.name || u.email)}?</h3><div class="sub">They lose access to BoxUp Labels. Their ${u.awbs && u.awbs.left || 0} unused AWBs go back to the free AWBs. Used AWBs stay in the log.</div>
       <div class="au-row2"><button class="au-btn ghost" data-x>Cancel</button><button class="au-btn red" id="auOk">Remove</button></div>`;
     p.querySelectorAll('[data-x]').forEach(b => b.onclick = () => close('auRev'));
     $i('auOk').onclick = async () => { $i('auOk').disabled = true; let d = {}; try{ d = await api('remove', { email: u.email }); }catch(e){} close('auRev'); toast(d.ok ? 'Removed. ' + (d.released || 0) + ' AWBs back in the free AWBs' : (d.error || 'Could not remove')); reloadAdmin(); };
