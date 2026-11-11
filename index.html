@@ -5353,6 +5353,9 @@ html.au-locked #auLock{display:flex}
 .au-apphd .au-lbl{margin:0}
 .au-same{border:1.5px solid #C8A64B;background:#FFF9E8;color:#6b5414;border-radius:9px;height:30px;padding:0 10px;font:700 12px Inter,Arial,sans-serif;cursor:pointer}
 .au-none{border:1.5px solid #ddd6c4;background:#fff;color:#5d5a52;border-radius:9px;height:30px;padding:0 10px;font:600 12px Inter,Arial,sans-serif;cursor:pointer;margin-left:6px}
+.au-rg{display:flex;align-items:flex-end;gap:8px;margin-top:6px}.au-rg>div{flex:1;min-width:0}.au-rg .ar{padding-bottom:16px;color:#8a867b;font-weight:700}
+.au-ed{border-color:#C8A64B;background:#FFFCF3}
+.au-fr{font-size:12px;color:#4b4942;background:#F7F5EF;border-radius:10px;padding:8px 10px;margin:0 0 14px;line-height:1.5}
 .au-hint{font-size:12px;color:#6d6a61;margin:0 0 14px;text-align:left}
 .au-req{display:flex;gap:12px;align-items:flex-start;border:1.5px solid #f3d9a8;background:#FFFBF2;border-radius:14px;padding:12px 14px;margin:0 0 10px}
 .au-req .t{flex:1;min-width:0;font-size:13px;line-height:1.45}
@@ -5724,43 +5727,90 @@ html.au-locked #auLock{display:flex}
     const showApps = mode !== 'add', showAwb = true;
     const p = pop('auRev');
     const title = mode === 'add' ? 'Give more AWBs' : mode === 'edit' ? 'Edit access' : 'Review and give access';
+    const cur = (user || ((LIST && LIST.users) || []).find(u => u.email === who.email) || {}).awbs || null;
+    const curTxt = cur && cur.total ? ' · has ' + (cur.left || 0) + ' left' + (cur.ranges && cur.ranges.length ? ' (' + cur.ranges.join(', ') + ')' : '') : '';
     p.innerHTML = `<button class="au-x" data-x title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h3>${title}</h3>
-      <div class="au-who" style="margin-top:8px">${avatar(who)}<div><b>${esc(who.name || who.email)}</b><small>${esc(who.email)}${req ? ' · asks for ' + esc(reqText(req)) : ''}</small>${req && req.note ? `<small style="display:block;font-style:italic">“${esc(req.note)}”</small>` : ''}</div></div>
+      <div class="au-who" style="margin-top:8px">${avatar(who)}<div><b>${esc(who.name || who.email)}</b><small>${esc(who.email)}${esc(curTxt)}${req ? ' · asks for ' + esc(reqText(req)) : ''}</small>${req && req.note ? `<small style="display:block;font-style:italic">“${esc(req.note)}”</small>` : ''}</div></div>
       ${showApps ? `<div class="au-apphd"><span class="au-lbl">Apps they can use</span><span><button class="au-same" id="auSame">Same as me (all ${APPS.length})</button><button class="au-none" id="auNone">None</button></span></div>
         <div class="au-apps" id="auApps">${APPS.map(a => `<div class="au-app${apps.has(a) ? ' on' : ''}" data-a="${a}">${esc(NAMES[a])}<span class="sw"></span></div>`).join('')}</div>
         <div class="au-hint">Single labels always work. You can only give the apps you have.</div>` : ''}
-      ${showAwb ? `<span class="au-lbl">${mode === 'req' && req.type !== 'app' ? 'Shree Anjani AWBs to give' : 'Give more AWBs (optional)'}</span>
+      ${showAwb ? `<span class="au-lbl">${mode === 'add' ? 'How many AWBs' : mode === 'req' && req.type !== 'app' ? 'Shree Anjani AWBs to give' : 'Give more AWBs (optional)'}</span>
         <div class="au-chips" id="auAw3">${[0,100,200,500].map(v => `<button type="button" data-v="${v}">${v || 'None'}</button>`).join('')}</div>
         <input class="au-num" id="auAwN" type="number" min="0" max="5000" step="1">
-        <div class="au-hint" id="auAwH"></div>` : ''}
+        <div class="au-rg" id="auRg"><div><span class="au-lbl">From AWB</span><input class="au-num au-ed" id="auFrom" inputmode="numeric" autocomplete="off"></div><span class="ar">→</span><div><span class="au-lbl">Till AWB</span><input class="au-num au-ed" id="auTill" inputmode="numeric" autocomplete="off"></div></div>
+        <div class="au-hint" id="auAwH"></div>
+        <div class="au-fr" id="auFr"></div>` : ''}
       <div class="au-err" id="auErr3"></div>
       <div class="au-row2"><button class="au-btn ghost" data-x>Cancel</button><button class="au-btn" id="auOk"></button></div>`;
     p.querySelectorAll('[data-x]').forEach(b => b.onclick = () => close('auRev'));
-    const pool = (LIST && LIST.pool) || { free: 0, next: '' };
-    const sync = () => {
-      const n = Math.max(0, Math.min(5000, parseInt($i('auAwN').value, 10) || 0)); aw = n;
+    const pool = (LIST && LIST.pool) || { free: 0, next: '', awbs: [] };
+    // free AWBs nobody has, sorted by number
+    const num = x => /^\d+$/.test(x) ? Number(x) : NaN;
+    const FREE = (pool.awbs || []).slice().sort((x, y) => (num(x) - num(y)) || String(x).localeCompare(String(y)));
+    const cmp = (x, y) => { const a = num(x), b = num(y); return (!isNaN(a) && !isNaN(b)) ? a - b : String(x).localeCompare(String(y)); };
+    const between = (f, t) => FREE.filter(x => cmp(x, f) >= 0 && cmp(x, t) <= 0);
+    const ranges = list => { const out = []; list.forEach(x => { const l = out[out.length - 1]; if(l && !isNaN(num(x)) && num(x) === num(l.b) + 1){ l.b = x; l.n++; } else out.push({ a:x, b:x, n:1 }); }); return out; };
+    const rtxt = r => (r.a === r.b ? r.a : r.a + ' - ' + r.b) + ' (' + r.n + ')';
+    $i('auFr').innerHTML = FREE.length ? '<b>Free to give:</b> ' + esc(ranges(FREE).slice(0, 8).map(rtxt).join(' · ')) + (ranges(FREE).length > 8 ? ' …' : '') : '<span class="au-low">No free AWBs to give. Add more to the Shree Anjani tab first.</span>';
+    let pick = [];   // the AWBs that will be given
+    const draw = () => {
+      const n = pick.length; aw = n;
       [...$i('auAw3').children].forEach(x => x.classList.toggle('on', +x.dataset.v === n));
-      $i('auAwH').innerHTML = n ? (n > pool.free ? `<span class="au-low">Only ${pool.free} AWBs are free to give. Add more to the Shree Anjani tab first.</span>` : `They get the next ${n} free AWBs${pool.next ? ', starting at <b>' + esc(pool.next) + '</b>' : ''}. ${pool.free - n} stay free.`) : (user && user.awbs ? 'They have ' + (user.awbs.left || 0) + ' left now.' : 'No AWBs (they can ask later).');
+      const f = $i('auFrom').value.trim(), t = $i('auTill').value.trim();
+      let h = '';
+      if(!f && !t) h = cur ? 'No more AWBs now. They have ' + (cur.left || 0) + ' left.' : 'No AWBs (they can ask later).';
+      else if(!f || !t) h = '<span class="au-low">Type both From and Till.</span>';
+      else if(cmp(f, t) > 0) h = '<span class="au-low">From must be smaller than Till.</span>';
+      else if(!n) h = `<span class="au-low">No free AWBs between these numbers: ${esc(f)} - ${esc(t)} are used or already given to someone.</span>`;
+      else {
+        const rs = ranges(pick);
+        const span = (!isNaN(num(f)) && !isNaN(num(t))) ? num(t) - num(f) + 1 : n;
+        h = `<b>${n} AWBs</b>` + (rs.length === 1 ? ` from ${esc(rs[0].a)} to ${esc(rs[0].b)}.` : ': ' + esc(rs.slice(0, 4).map(rtxt).join(', ')) + (rs.length > 4 ? ' …' : '') + '.')
+          + (span > n ? ` ${span - n} used AWBs or ones given to others are skipped.` : ' All free.');
+      }
+      $i('auAwH').innerHTML = h;
       const k = showApps ? [...p.querySelectorAll('#auApps .au-app.on')].length : 0;
       $i('auOk').textContent = mode === 'add' ? `Give ${n} AWBs` : mode === 'edit' ? `Save: ${k} apps${n ? ' + ' + n + ' AWBs' : ''}` : `Approve: ${k} apps${n ? ' + ' + n + ' AWBs' : ''}`;
-      $i('auOk').disabled = (mode === 'add' && !n) || (n > pool.free);
+      const bad = (f || t) && !n;
+      $i('auOk').disabled = (mode === 'add' && !n) || bad;
     };
-    $i('auAwN').value = aw;
-    $i('auAw3').onclick = e => { const b = e.target.closest('button'); if(!b) return; $i('auAwN').value = b.dataset.v; sync(); };
-    $i('auAwN').oninput = sync;
+    // a number: From stays (or the first free one), Till moves to the n-th free AWB
+    const byCount = n => {
+      n = Math.max(0, Math.min(5000, n || 0));
+      if(!n || !FREE.length){ pick = []; $i('auFrom').value = ''; $i('auTill').value = ''; if(n && !FREE.length) $i('auFrom').value = ''; draw(); return; }
+      let f = $i('auFrom').value.trim();
+      let list = f ? FREE.filter(x => cmp(x, f) >= 0) : FREE;
+      if(!list.length) list = FREE;
+      pick = list.slice(0, n);
+      $i('auFrom').value = pick[0]; $i('auTill').value = pick[pick.length - 1];
+      draw();
+      if(pick.length < n) $i('auAwH').innerHTML += ` <span class="au-low">Only ${pick.length} free from here.</span>`;
+    };
+    // From / Till typed: the number follows
+    const byRange = () => {
+      const f = $i('auFrom').value.trim(), t = $i('auTill').value.trim();
+      pick = (f && t && cmp(f, t) <= 0) ? between(f, t).slice(0, 5000) : [];
+      $i('auAwN').value = pick.length;
+      draw();
+    };
+    $i('auAw3').onclick = e => { const b = e.target.closest('button'); if(!b) return; $i('auAwN').value = b.dataset.v; $i('auFrom').value = ''; byCount(+b.dataset.v); };
+    $i('auAwN').oninput = () => byCount(parseInt($i('auAwN').value, 10) || 0);
+    $i('auFrom').oninput = byRange; $i('auTill').oninput = byRange;
     if(showApps){
-      $i('auApps').onclick = e => { const t = e.target.closest('.au-app'); if(t){ t.classList.toggle('on'); sync(); } };
-      $i('auSame').onclick = () => { p.querySelectorAll('#auApps .au-app').forEach(x => x.classList.add('on')); sync(); };
-      $i('auNone').onclick = () => { p.querySelectorAll('#auApps .au-app').forEach(x => x.classList.remove('on')); sync(); };
+      $i('auApps').onclick = e => { const t = e.target.closest('.au-app'); if(t){ t.classList.toggle('on'); draw(); } };
+      $i('auSame').onclick = () => { p.querySelectorAll('#auApps .au-app').forEach(x => x.classList.add('on')); draw(); };
+      $i('auNone').onclick = () => { p.querySelectorAll('#auApps .au-app').forEach(x => x.classList.remove('on')); draw(); };
     }
-    sync();
+    $i('auAwN').value = aw;
+    byCount(aw);
     $i('auOk').onclick = async () => {
       const list = showApps ? [...p.querySelectorAll('#auApps .au-app.on')].map(x => x.dataset.a) : [];
       const all = showApps && list.length === APPS.length;
       $i('auOk').disabled = true; $i('auOk').textContent = 'Saving…';
       try{
         const op = mode === 'add' ? 'addawbs' : mode === 'edit' ? 'setapps' : (req.type === 'awbs' && req.active ? 'addawbs' : 'approve');
-        const d = await api(op, { id: req ? req.id : '', email: who.email, apps: list, all, awbs: aw });
+        const f = pick.length ? pick[0] : '', t = pick.length ? pick[pick.length - 1] : '';
+        const d = await api(op, { id: req ? req.id : '', email: who.email, apps: list, all, awbs: aw, from: f, to: t });
         if(!d.ok){ $i('auErr3').textContent = d.error || 'Could not save.'; sync(); return; }
         close('auRev');
         toast((mode === 'add' ? '' : 'Saved. ') + (d.given ? d.given + ' AWBs given (' + (d.ranges || []).join(', ') + ')' : 'Access updated') + (d.error ? '. ' + d.error : ''), 5000);
