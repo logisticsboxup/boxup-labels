@@ -765,6 +765,16 @@
   .mo-b.dl{background:#fff1f0;color:#b3261e;border-color:#f3c4bf;} .mo-b.rs{background:#eef4fb;color:#1D5C96;border-color:#b9cfe6;}
   .mo-b:disabled{opacity:.35;cursor:not-allowed;}
   .mo-b.oi{background:#16311F;color:#fff;border-color:#16311F;}
+  .rs-hd{background:linear-gradient(135deg,#7a3e08,#a8550c);color:#fff;margin:-1px -1px 0;border-radius:inherit;border-bottom-left-radius:0;border-bottom-right-radius:0}
+  .rs-hd h3{color:#fff !important}.rs-hd div{color:rgba(255,255,255,.85) !important}
+  .rs-from{background:#fff6ea;border:1px solid #f0c27a;border-radius:10px;padding:9px 12px;font-size:12.5px;color:#7a4e12;margin-bottom:10px}
+  .rs-grid{display:grid;grid-template-columns:140px 1fr;gap:6px 12px;font-size:13px}
+  .rs-grid b{color:#6b665a;font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding-top:2px}
+  .rs-band{margin-top:12px;border:1.5px solid #111;border-radius:6px;overflow:hidden}
+  .rs-band div{background:#000;color:#fff;font:900 20px 'Arial Black',Arial,sans-serif;text-align:center;padding:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rs-band.off div{background:#f1efe8;color:#9a9483;font:600 12px 'Inter',sans-serif}
+  .rs-band small{display:block;font-size:8px;text-align:center;padding:3px;color:#222}
+  #rsGo{background:#a8550c !important;border-color:#a8550c !important}
   .oi-box{border:2px solid #16311F;border-radius:12px;padding:10px 12px;background:#f5f9f6;}
   .oi-row{display:flex;gap:10px;align-items:flex-end;}
   .oi-row>div:not(.oi-ar){flex:1;min-width:0;}
@@ -1217,6 +1227,19 @@
       <div class="ra-sum" id="oiSum" style="margin-top:10px;display:none"></div>
     </div>
     <div class="sec-ft"><button type="button" id="oiBack">Back</button><button type="button" class="go" id="oiGo"># Change Order ID</button></div>
+  </div>
+</div>
+
+<div class="sec-bg" id="rsModal" hidden>
+  <div class="sec" role="dialog" aria-modal="true" aria-labelledby="rsTitle" style="max-width:620px">
+    <div class="sec-hd rs-hd"><h3 id="rsTitle">&#8635; Reship order</h3><div id="rsSub">Made in the Order Tracker. Check it and print.</div></div>
+    <div class="sec-bd">
+      <div class="rs-from" id="rsFrom"></div>
+      <div class="rs-grid" id="rsGrid"></div>
+      <div class="rs-band" id="rsBand"><div></div><small>THIS IS AN AUTO-GENERATED LABEL AND DOES NOT NEED SIGNATURE.</small></div>
+      <div class="ra-sum" id="rsSum" style="margin-top:12px"></div>
+    </div>
+    <div class="sec-ft"><button type="button" id="rsBack">Cancel</button><button type="button" class="go" id="rsGo">&#8635; Print reship label</button></div>
   </div>
 </div>
 
@@ -1790,7 +1813,7 @@ function buildLabelHTML(v, boxIndex, cat){
   let landmarkRow = v.landmark ? `<div class="kv"><span class="k">Landmark:</span><span class="v">${esc(v.landmark)}</span></div>` : '';
 
   const printDate = v.shipDate || new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
-  const hubSender = hubSenderHTML(v.intl), hubD = hubLabelDetails(), fest = hubFestText();
+  const hubSender = hubSenderHTML(v.intl), hubD = hubLabelDetails(), fest = typeof v.labelNote === 'string' ? v.labelNote.trim().toUpperCase() : hubFestText();   // labelNote: this label only (Reship)
 
   return `
     <div class="blk blk12${v.intl ? ' intl12' : ''}">
@@ -4342,6 +4365,111 @@ $('meGo').addEventListener('click', async () => {
     MO.busy = false; btn.innerHTML = label; if(ME) meSummary();
   }
 });
+
+/* ================= RESHIP: an order made in the Order Tracker (Reship button) is printed here ================= */
+var RSP = null;
+function rsRead(){
+  let P = null;
+  try { const h = location.hash.match(/^#reship=([A-Za-z0-9+/=]*)/); if(h && h[1]) P = JSON.parse(decodeURIComponent(escape(atob(h[1])))); } catch(e){ P = null; }
+  if(!P){ try { const x = JSON.parse(localStorage.getItem('boxup.reship') || 'null'); if(x && Date.now() - (x.ts || 0) < 6 * 3600 * 1000) P = x; } catch(e){} }
+  return P && P.orderid && P.name ? P : null;
+}
+function rsStart(){
+  if(!/^#reship/.test(location.hash)) return;
+  const P = rsRead();
+  try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+  if(!P) return;
+  const wait = () => { if(document.documentElement.classList.contains('au-locked')) return setTimeout(wait, 600); rsShow(P); };
+  wait();
+}
+function rsShow(P){
+  RSP = P;
+  const re = !!P.reship, n = P.totalpkg || 1;
+  $('rsTitle').innerHTML = (re ? '&#8635; Reship order · ' : '&#43; New order · ') + esc(P.orderid);
+  $('rsSub').textContent = (re ? 'Reship of ' : 'New order from ') + P.from.id + '. Made in the Order Tracker: check it and print.';
+  $('rsFrom').innerHTML = `&#128279; ${re ? 'Reship of' : 'From'} <b>${esc(P.from.id)}</b>${P.from.name ? ' · ' + esc(P.from.name) : ''}${re ? ' · ' + esc(P.why) : ''}${P.note ? ' · ' + esc(P.note) : ''}`;
+  const awb = P.awb === 'sa' ? `New Shree Anjani AWB${n > 1 ? 's' : ''} (automatic${n > 1 ? ', one per box' : ''})` : P.awb === 'none' ? 'No tracking ID' : (P.trackid || 'Not set');
+  const row = (k, v) => `<b>${k}</b><span>${v}</span>`;
+  $('rsGrid').innerHTML = row('New Order ID', `<b style="color:#16311F;text-transform:none;font-size:13px;letter-spacing:0">${esc(P.orderid)}</b>`) +
+    row('Recipient', esc([P.name, P.phone, P.alt].filter(Boolean).join(' · '))) + row('Address', esc([P.address, P.city, P.state, P.pincode].filter(Boolean).join(', '))) +
+    row('Boxes', String(n)) + row('Courier', esc(P.courier || 'Not set') + ' · ' + esc(P.mode || '')) + row('Tracking ID', esc(awb)) + row('Sender company', esc(P.sender || '-'));
+  const t = String(P.labelNote || '').trim().toUpperCase();
+  $('rsBand').classList.toggle('off', !t); $('rsBand').firstElementChild.textContent = t || 'No note band on this label';
+  $('rsSum').className = 'ra-sum'; $('rsSum').innerHTML = `<b>${n} label${n > 1 ? 's' : ''}</b> · saved in the Label Log${P.oldNote ? ', and "Reshipped as ' + esc(P.orderid) + '" is noted on ' + esc(P.from.id) : ''}.`;
+  $('rsGo').innerHTML = re ? '&#8635; Print reship label' : '&#128424; Print label'; $('rsGo').disabled = false;
+  $('rsModal').hidden = false;
+}
+function rsClose(){ if(!RSP || !RSP.busy){ $('rsModal').hidden = true; RSP = null; try { localStorage.removeItem('boxup.reship'); } catch(e){} } }
+$('rsBack').addEventListener('click', rsClose);
+$('rsModal').addEventListener('keydown', e => { if(e.key === 'Escape') rsClose(); });
+/* the old order's saved label: keeps landmark, dial code and anything the Order Tracker does not show */
+async function rsOldLabel(P){
+  try {
+    const d = await fetch(LOG_URL + (LOG_URL.includes('?') ? '&' : '?') + 'action=manage&days=0&t=' + Date.now()).then(r => r.json());
+    const L = (d && d.list) || [], nm = String(P.from.name || '').trim().toLowerCase();
+    const hit = L.find(o => o.orderid === P.from.id && String(o.name || '').trim().toLowerCase() === nm && o.label) || L.find(o => o.orderid === P.from.id && o.label);
+    return hit ? Object.assign({}, hit.label) : {};
+  } catch(e){ return {}; }
+}
+$('rsGo').addEventListener('click', async () => {
+  const P = RSP; if(!P || P.busy || !pdfToolsReady()) return;
+  const btn = $('rsGo'), label = btn.innerHTML; P.busy = true; btn.disabled = true; btn.textContent = 'Getting the old order…';
+  try{
+    const base = await rsOldLabel(P);
+    const v = Object.assign({}, base);
+    const same = (a, b) => String(a || '').trim() === String(b || '').trim();
+    if(!same(base.address, P.address)) v.landmark = '';
+    if(!same(base.pincode, P.pincode) || !same(base.city, P.city)){ v.hubcode = ''; v.hubManual = false; }
+    Object.assign(v, { orderid: P.orderid, name: P.name, phone: P.phone, phoneDial: base.phoneDial || '91', alt: P.alt || '', address: P.address, pincode: P.pincode,
+      city: P.city, state: P.state, courier: P.courier, mode: P.mode || base.mode || 'Surface Shipping', shiptype: base.shiptype || 'Forward',
+      totalpkg: Math.min(5000, Math.max(1, parseInt(P.totalpkg, 10) || 1)), sender: P.sender || base.sender || '', company: base.company || P.company || '',
+      shipDate: todayLabelDate(), tracklink: '', trackAuto: false, trackPer: null, awbSeries: false, trkAllLabels: false, labelNote: String(P.labelNote || '') });
+    if(isPorter(v.courier)){ v.pDate = todayISO(); v.pTime = ''; v.pVeh = ''; } else { delete v.pDate; delete v.pTime; delete v.pVeh; delete v.pMap; v.pQR = false; }
+    if(P.awb === 'sa'){ v.courier = SA_NAME; v.trackid = ''; v.trackAuto = true; v.awbSeries = v.totalpkg > 1; }
+    else if(P.awb === 'none'){ v.trackid = ''; }
+    else { const ids = raSplit(P.trackid); if(ids.length > 1){ v.trackPer = ids.slice(0, v.totalpkg); v.trackid = ids[0]; v.awbSeries = true; } else { v.trackid = ids[0] || ''; if(v.totalpkg > 1 && v.trackid) v.trkAllLabels = true; } }
+    const fileName = `${v.orderid.replace(/[^a-zA-Z0-9-_]/g, '')} ${(v.name || 'Label').replace(/[^a-zA-Z0-9 '\-]/g, '').trim().replace(/\s+/g, ' ')}.pdf`;
+    const batchId = newBatchId();
+    const payload = sheetPayload([v], P.reship ? 'Reship of ' + P.from.id : 'New order from ' + P.from.id, fileName, batchId);
+    payload.bulk = false;
+    payload.orders[0].note = [P.reship ? P.why : '', P.note].filter(Boolean).join(' · ');
+    btn.textContent = 'Saving to the Label Log…';
+    let res;
+    try{ res = await fetch(LOG_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }).then(r => r.json()); }
+    catch(err){ res = { ok:false, error:'Could not reach the Google Sheet. Check the internet connection and try again.' }; }
+    if(!res || !res.ok){ $('rsSum').className = 'ra-sum bad'; $('rsSum').innerHTML = `<b>Nothing was saved or printed:</b> ${esc((res && res.error) || 'the sheet did not answer.')}`; return; }
+    const r0 = (res.orders || [])[0];
+    if(r0 && r0.rejected){ $('rsSum').className = 'ra-sum bad'; $('rsSum').innerHTML = `<b>Nothing was saved or printed:</b> ${esc(r0.error || 'the AWB is not in the Shree Anjani tab')}`; return; }
+    if(r0 && isSA(r0.courier || v.courier)){
+      v.courier = SA_NAME;
+      if(r0.awbs && r0.awbs.length > 1){ v.trackPer = r0.awbs.slice(); v.trackid = r0.awbs[0]; markAwbUsed(r0.awbs); }
+      else if(r0.awb){ v.trackid = r0.awb; if(!(v.trackPer && v.trackPer.length > 1)) v.trackPer = null; markAwbUsed([r0.awb]); }
+      v.tracklink = r0.link || '';
+    }
+    refreshSaList();
+    let noteMsg = '';
+    if(P.oldNote){
+      try{
+        const nr = await fetch(LOG_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ action:'manage', op:'reshipnote', items:[{ orderid: P.from.id, name: P.from.name, to: v.orderid, why: P.why }] }) }).then(r => r.json());
+        noteMsg = nr && nr.ok && (nr.done || []).length ? ' Noted on ' + P.from.id + '.' : ' (Could not add the note on ' + P.from.id + '.)';
+      }catch(e){ noteMsg = ' (Could not add the note on ' + P.from.id + '.)'; }
+    }
+    btn.textContent = 'Building PDF…';
+    const pdf = await buildLabelsPdf(labelEntries(v), (n, t) => { btn.textContent = `Building PDF… (${n}/${t})`; });
+    pdf.save(fileName); lastLabelPdf = pdf;
+    $('rsSum').className = 'ra-sum'; $('rsSum').innerHTML = `<b style="color:#1c6b33">&#10003; ${esc(v.orderid)} saved and printed${v.trackid ? ' · AWB ' + esc((v.trackPer && v.trackPer.length > 1 ? v.trackPer : [v.trackid]).join(', ')) : ''}.</b>${esc(noteMsg)} It shows in the Order Tracker after its next refresh.`;
+    btn.innerHTML = '&#10003; Done'; P.done = true;
+    try { localStorage.removeItem('boxup.reship'); } catch(e){}
+    $('rsBack').textContent = 'Close';
+  }catch(err){
+    console.error(err);
+    $('rsSum').className = 'ra-sum bad'; $('rsSum').textContent = err.message || 'Could not print the reship label.';
+  }finally{
+    P.busy = false; if(!P.done){ btn.innerHTML = label; btn.disabled = false; }
+  }
+});
+window.addEventListener('hashchange', rsStart);
+setTimeout(rsStart, 300);
 
 /* ---------- Reassign Courier"""
 : change the courier and / or tracking ID of printed orders, then reprint ---------- */
