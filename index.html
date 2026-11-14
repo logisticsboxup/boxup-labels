@@ -764,6 +764,16 @@
   .mo-b.ed{background:#eef4fb;color:#1D5C96;border-color:#b9cfe6;} .mo-b.cn{background:#fff6e5;color:#8a5a00;border-color:#f0d39b;}
   .mo-b.dl{background:#fff1f0;color:#b3261e;border-color:#f3c4bf;} .mo-b.rs{background:#eef4fb;color:#1D5C96;border-color:#b9cfe6;}
   .mo-b:disabled{opacity:.35;cursor:not-allowed;}
+  .mo-b.oi{background:#16311F;color:#fff;border-color:#16311F;}
+  .oi-box{border:2px solid #16311F;border-radius:12px;padding:10px 12px;background:#f5f9f6;}
+  .oi-row{display:flex;gap:10px;align-items:flex-end;}
+  .oi-row>div:not(.oi-ar){flex:1;min-width:0;}
+  .oi-ar{font-size:20px;color:#16311F;padding-bottom:6px;flex:none;}
+  .oi-was{border:1px solid #ddd6c4;border-radius:7px;padding:7px 9px;background:#f1efe8;color:#7a7568;text-decoration:line-through;font:600 12.5px 'Inter',sans-serif;}
+  .oi-warn{margin-top:10px;background:#fff4e0;border:1px solid #f0c27a;border-radius:9px;padding:8px 11px;font-size:12.5px;color:#7a4e12;line-height:1.45;}
+  .oi-note{margin-top:6px;font-size:11.5px;color:#4a6b55;}
+  .oi-box .ra-chk span{font-size:12.5px;font-weight:600;}
+  .me-tbl td small.oi-old{display:block;color:#9a9483;text-decoration:line-through;}
   .mo-st{font-size:10.5px;font-weight:800;border-radius:10px;padding:2px 8px;white-space:nowrap;}
   .mo-st.rd{background:#fdf0cf;color:#7a5600;} .mo-st.dp{background:#e2efe6;color:#1c6b33;} .mo-st.cx{background:#fde2e0;color:#b3261e;}
   .mo-tbl tr.cx td.st-x{color:#aaa;text-decoration:line-through;}
@@ -1162,6 +1172,7 @@
         <div><div class="me-lb">Mode of shipping</div><select id="meAllMode"><option value="">keep</option><option>Air Shipping</option><option>Surface Shipping</option><option>Express Ground</option></select></div>
         <div><div class="me-lb">Shipment type</div><select id="meAllType"><option value="">keep</option><option>Forward</option><option>Reverse</option></select></div>
         <div><div class="me-lb">Total boxes</div><input type="number" id="meAllBoxes" min="1" max="5000" placeholder="keep"></div>
+        <div><div class="me-lb">Order ID series from</div><input type="text" id="meAllOid" placeholder="e.g. 4612-01H-01" autocomplete="off" spellcheck="false" title="First Order ID: the next orders get +1 in list order"></div>
         <div id="meAllAwb"></div>
       </div>
       <datalist id="meCourierList"><option value="Shree Anjani"><option value="Porter"><option value="In-house"><option value="DTDC"><option value="Blue Dart"><option value="Delhivery"><option value="Professional Couriers"><option value="Trackon"><option value="DHL"><option value="India Post"></datalist>
@@ -1188,6 +1199,24 @@
       <div class="ra-sum" id="mcSum" style="margin-top:10px"></div>
     </div>
     <div class="sec-ft"><button type="button" id="mcBack">Back</button><button type="button" class="go" id="mcGo" style="background:#b3261e"></button></div>
+  </div>
+</div>
+
+<div class="sec-bg" id="oiModal" hidden>
+  <div class="sec" role="dialog" aria-modal="true" aria-labelledby="oiTitle" style="max-width:560px">
+    <div class="sec-hd"><h3 id="oiTitle"># Change Order ID</h3><div>Changes only the Order ID. The label is not reprinted, and it works on dispatched orders too.</div></div>
+    <div class="sec-bd">
+      <div class="mc-list" id="oiInfo"></div>
+      <div class="oi-box" style="margin-top:10px">
+        <div class="oi-row"><div><div class="me-lb">Current Order ID</div><div class="oi-was" id="oiWas"></div></div><div class="oi-ar">&#10140;</div>
+          <div><div class="me-lb">New Order ID</div><input type="text" class="mc-in" id="oiNew" autocomplete="off" spellcheck="false"></div></div>
+        <div id="oiDup"></div>
+        <div class="oi-note">Changes in the Label Log, Order Tracker, Dispatch Tasks and the Shree Anjani tab. Tracking ID and status stay the same.</div>
+      </div>
+      <div class="me-lb" style="margin-top:10px">Reason (optional)</div><input type="text" class="mc-in" id="oiReason" placeholder="e.g. Same order as the other estimate">
+      <div class="ra-sum" id="oiSum" style="margin-top:10px;display:none"></div>
+    </div>
+    <div class="sec-ft"><button type="button" id="oiBack">Back</button><button type="button" class="go" id="oiGo"># Change Order ID</button></div>
   </div>
 </div>
 
@@ -3833,7 +3862,7 @@ fillSenderList();   // used by the desktop app menu: File > Label settings
 
 /* ================= MANAGE ORDERS: edit & reprint, cancel, restore, delete (one order or many) ================= */
 var MO = { all: [], sel: new Set(), f: 'active', busy: false };
-const moKey = o => String(o.orderid).toLowerCase();
+const moKey = o => String(o.row || o.orderid).toLowerCase();   // by Label Log row: two orders can share one Order ID
 const moCancelled = o => /^cancel/i.test(o.ostatus || '');
 const moDispatched = o => /^(dispatched|partly)/i.test(o.dispatch || '');
 const moTrk = lab => { if(!lab) return []; if(lab.trackPer && lab.trackPer.length) return lab.trackPer.map(t => typeof t === 'object' ? (t.id || '') : String(t)).filter(Boolean); return raSplit(lab.trackid || ''); };
@@ -3872,7 +3901,7 @@ function moRender(){
     const k = moKey(o), on = MO.sel.has(k), cx = moCancelled(o), dp = moDispatched(o), lab = !!o.label;
     const st = cx ? `<span class="mo-st cx" title="${esc(o.ostatus)}">Cancelled</span>` : dp ? `<span class="mo-st dp">${esc(o.dispatch)}</span>` : `<span class="mo-st rd">${esc(o.dispatch || 'Ready')}</span>`;
     const acts = cx ? `<button type="button" class="mo-b rs" data-act="restore" data-k="${esc(k)}">&#8634; Restore</button>`
-      : `<button type="button" class="mo-b ed" data-act="edit" data-k="${esc(k)}" ${lab ? '' : 'disabled title="No saved label for this order"'}>&#9998; Edit</button><button type="button" class="mo-b cn" data-act="cancel" data-k="${esc(k)}">&#8856; Cancel</button><button type="button" class="mo-b dl" data-act="delete" data-k="${esc(k)}" ${dp ? 'disabled title="Already dispatched: cancel it instead"' : ''}>&#128465; Delete</button>`;
+      : `<button type="button" class="mo-b ed" data-act="edit" data-k="${esc(k)}" ${lab ? '' : 'disabled title="No saved label for this order"'}>&#9998; Edit</button><button type="button" class="mo-b oi" data-act="oid" data-k="${esc(k)}" title="Change the Order ID (no reprint)"># Order ID</button><button type="button" class="mo-b cn" data-act="cancel" data-k="${esc(k)}">&#8856; Cancel</button><button type="button" class="mo-b dl" data-act="delete" data-k="${esc(k)}" ${dp ? 'disabled title="Already dispatched: cancel it instead"' : ''}>&#128465; Delete</button>`;
     h += `<tr class="${on ? 'on' : ''}${cx ? ' cx' : ''}"><td><input type="checkbox" data-k="${esc(k)}" ${on ? 'checked' : ''}></td>
       <td class="st-x"><b>${esc(o.orderid)}</b><small>${esc([o.sender, String(o.printed || '').split(' ')[0]].filter(Boolean).join(' · '))}</small></td>
       <td class="st-x">${esc(o.name || '')}<small>${esc([o.city, (parseInt(o.boxes,10) || 1) + ' box' + ((parseInt(o.boxes,10) || 1) > 1 ? 'es' : '')].filter(Boolean).join(' · '))}</small></td>
@@ -3896,7 +3925,7 @@ function moBar(){
 }
 $('moClose').addEventListener('click', moClose);
 $('moModal').addEventListener('click', e => { if(e.target === $('moModal')) moClose(); });
-$('moModal').addEventListener('keydown', e => { if(e.key === 'Escape' && $('meModal').hidden && $('mcModal').hidden) moClose(); });
+$('moModal').addEventListener('keydown', e => { if(e.key === 'Escape' && $('meModal').hidden && $('mcModal').hidden && $('oiModal').hidden) moClose(); });
 $('moSearch').addEventListener('input', moRender);
 $('moSender').addEventListener('change', moRender);
 $('moDays').addEventListener('change', moLoad);
@@ -3911,12 +3940,70 @@ $('moList').addEventListener('change', e => {
 $('moList').addEventListener('click', e => {
   const b = e.target.closest('button[data-act]'); if(!b || b.disabled) return;
   const o = MO.all.find(x => moKey(x) === b.dataset.k); if(!o) return;
-  if(b.dataset.act === 'edit') meOpen([o]); else mcOpen(b.dataset.act, [o]);
+  if(b.dataset.act === 'edit') meOpen([o]); else if(b.dataset.act === 'oid') oiOpen(o); else mcOpen(b.dataset.act, [o]);
 });
 $('moBulkEdit').addEventListener('click', () => meOpen(moSelected().filter(o => o.label && !moCancelled(o))));
 $('moBulkCancel').addEventListener('click', () => mcOpen('cancel', moSelected().filter(o => !moCancelled(o))));
 $('moBulkDelete').addEventListener('click', () => mcOpen('delete', moSelected()));
 $('moBulkClear').addEventListener('click', () => { MO.sel.clear(); moRender(); });
+
+/* ---------- change the Order ID (no reprint) ---------- */
+const moIdEq = (a, b) => String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
+function moSameId(id, row){ return String(id || '').trim() ? MO.all.filter(o => moIdEq(o.orderid, id) && o.row !== row && !moCancelled(o)) : []; }
+function moUsed(id){ return MO.all.some(o => moIdEq(o.orderid, id)); }
+/* "keep them separate": one other order -> it becomes X-01 and this one X-02; more -> this one gets the next free X-NN */
+function moSepPlan(base, row){
+  base = String(base || '').trim(); const others = moSameId(base, row); if(!others.length) return null;
+  const n2 = k => base + '-' + String(k).padStart(2, '0');
+  if(others.length === 1 && !moUsed(n2(1)) && !moUsed(n2(2))) return { me: n2(2), other: others[0], otherTo: n2(1) };
+  let k = 1; while(moUsed(n2(k))) k++; return { me: n2(k) };
+}
+function moDupHtml(base, row, cbId, checked){
+  const others = moSameId(base, row); if(!others.length) return '';
+  const p = moSepPlan(base, row), bx = x => { const n = parseInt(x.boxes, 10) || 1; return n + ' box' + (n > 1 ? 'es' : ''); };
+  return `<div class="oi-warn">&#9888; <b>${esc(base)} is already used</b> by ${others.slice(0, 3).map(x => `${esc(x.name || '')}${x.sender ? ' · ' + esc(x.sender) : ''} · ${bx(x)} (${esc(x.dispatch || 'Ready')})`).join('<br>')}${others.length > 3 ? '<br>+ ' + (others.length - 3) + ' more' : ''}<br>${others.length > 1 ? 'All these orders' : 'Both orders'} will share this Order ID.</div>
+    <label class="ra-chk" style="margin-top:8px"><input type="checkbox" id="${cbId}" ${checked ? 'checked' : ''}><span>Optional: add a number so they stay separate (${p.other ? `this order becomes <b>${esc(p.me)}</b>, the other <b>${esc(p.otherTo)}</b>` : `this order becomes <b>${esc(p.me)}</b>`})</span></label>`;
+}
+async function moRename(items, reason){
+  const res = await fetch(LOG_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ action:'manage', op:'rename', reason: reason || '', items }) }).then(r => r.json());
+  if(!res || !res.ok) throw new Error((res && res.error) || 'The sheet did not answer.');
+  return res;
+}
+var OI = null;
+function oiOpen(o){
+  OI = { o, sep: false };
+  $('oiInfo').innerHTML = `<div><b>${esc(o.orderid)}</b> · ${esc(o.name || '')}${o.sender ? ' · ' + esc(o.sender) : ''} · ${esc(o.courier || '')} ${esc(o.trackid || '')} · ${esc(o.dispatch || 'Ready')}</div>`;
+  $('oiWas').textContent = o.orderid; $('oiNew').value = o.orderid; $('oiReason').value = '';
+  $('oiSum').style.display = 'none'; oiCheck(); $('oiModal').hidden = false;
+  setTimeout(() => { $('oiNew').focus(); $('oiNew').select(); }, 50);
+}
+function oiCheck(){
+  if(!OI) return;
+  const v = $('oiNew').value.trim(), same = !v || v === OI.o.orderid;
+  $('oiDup').innerHTML = same ? '' : moDupHtml(v, OI.o.row, 'oiSep', OI.sep);
+  $('oiGo').disabled = MO.busy || same;
+}
+function oiClose(){ if(!MO.busy){ $('oiModal').hidden = true; OI = null; } }
+$('oiNew').addEventListener('input', oiCheck);
+$('oiDup').addEventListener('change', e => { if(e.target.id === 'oiSep' && OI){ OI.sep = e.target.checked; } });
+$('oiBack').addEventListener('click', oiClose);
+$('oiModal').addEventListener('click', e => { if(e.target === $('oiModal')) oiClose(); });
+$('oiModal').addEventListener('keydown', e => { if(e.key === 'Escape') oiClose(); if(e.key === 'Enter' && e.target.id === 'oiNew' && !$('oiGo').disabled) $('oiGo').click(); });
+$('oiGo').addEventListener('click', async () => {
+  if(!OI || $('oiGo').disabled) return;
+  const o = OI.o, v = $('oiNew').value.trim(), p = OI.sep ? moSepPlan(v, o.row) : null;
+  const items = [{ row: o.row, orderid: o.orderid, to: p ? p.me : v, awbs: moTrk(o.label) }];
+  if(p && p.other) items.push({ row: p.other.row, orderid: p.other.orderid, to: p.otherTo, awbs: moTrk(p.other.label) });
+  const btn = $('oiGo'), label = btn.innerHTML; MO.busy = true; btn.disabled = true; btn.textContent = 'Saving to the Label Log…';
+  try{
+    const res = await moRename(items, $('oiReason').value.trim());
+    $('moMsg').innerHTML = `<span style="color:#1c6b33;font-weight:600">Order ID changed: ${esc((res.done || []).join(' · ') || 'nothing to change')}.</span>` +
+      ((res.skipped || []).length ? `<br><span style="color:var(--danger)">Not done: ${esc(res.skipped.join(' · '))}</span>` : '');
+    MO.busy = false; oiClose(); moLoad();
+  }catch(err){
+    $('oiSum').style.display = ''; $('oiSum').className = 'ra-sum bad'; $('oiSum').textContent = 'Nothing was changed: ' + (err.message || err) + ' Check the internet connection and try again.';
+  }finally{ MO.busy = false; btn.innerHTML = label; oiCheck(); }
+});
 
 /* ---------- cancel / restore / delete ---------- */
 var MC = null;
@@ -3972,16 +4059,17 @@ $('mcGo').addEventListener('click', async () => {
 
 /* ---------- edit & reprint (one order = form, many = table) ---------- */
 var ME = null;
-const ME_NAMES = { pDate:'dispatch date', pTime:'dispatch time', pVeh:'vehicle number', pMap:'map link', pQR:'QR code', name:'recipient', company:'company', phone:'phone', alt:'alt number', address:'address', landmark:'landmark', pincode:'pincode', city:'city', state:'state', sender:'sender company', courier:'courier', mode:'mode', shiptype:'shipment type', totalpkg:'boxes' };
+const ME_NAMES = { orderid:'order ID', pDate:'dispatch date', pTime:'dispatch time', pVeh:'vehicle number', pMap:'map link', pQR:'QR code', name:'recipient', company:'company', phone:'phone', alt:'alt number', address:'address', landmark:'landmark', pincode:'pincode', city:'city', state:'state', sender:'sender company', courier:'courier', mode:'mode', shiptype:'shipment type', totalpkg:'boxes' };
 function meOpen(list){
   list = list.filter(o => o.label);
   if(!list.length){ $('moMsg').innerHTML = '<span style="color:var(--danger)">These orders have no saved label, so they cannot be edited here.</span>'; return; }
   ME = { single: list.length === 1, items: list.map(o => {
     const orig = Object.assign({}, o.label); orig.totalpkg = Math.min(5000, Math.max(1, parseInt(orig.totalpkg || o.boxes, 10) || 1));
     if(o.sender && !orig.sender) orig.sender = o.sender;
+    orig.orderid = o.orderid;                    // the Order ID as it is in the Label Log now
     return { o, orig, v: Object.assign({}, orig), typed: '' };
   }) };
-  ['meAllSender','meAllCourier','meAllMode','meAllType','meAllBoxes','meReason'].forEach(id => $(id).value = '');
+  ['meAllSender','meAllCourier','meAllMode','meAllType','meAllBoxes','meAllOid','meReason'].forEach(id => $(id).value = ''); ME.sep = false;
   $('meFree').checked = false; $('mePerBox').checked = true;
   const n = ME.items.length;
   $('meTitle').innerHTML = ME.single ? `&#9998; Edit &amp; reprint · ${esc(list[0].orderid)}` : `&#9998; Bulk update · ${n} orders`;
@@ -4055,7 +4143,10 @@ function meRender(){
   if(ME.single){
     const it = ME.items[0], o = it.o;
     const fl = (label, f, w, type) => `<div class="${w || ''}"><div class="me-lb">${label}</div>${meInput(0, f, '', type)}</div>`;
+    const oidCh = String(it.v.orderid || '').trim() !== String(it.orig.orderid || '');
     h = `<div class="me-form">
+      <div class="w4 oi-box"><div class="oi-row"><div><div class="me-lb">Current Order ID</div><div class="oi-was">${esc(it.orig.orderid || o.orderid)}</div></div><div class="oi-ar">&#10140;</div><div><div class="me-lb">New Order ID</div>${meInput(0, 'orderid')}</div></div>
+        ${oidCh ? moDupHtml(String(it.v.orderid || '').trim(), o.row, 'meSep', ME.sep) : ''}</div>
       ${fl('Recipient', 'name', 'w2')}${fl('Company Name', 'company', 'w2')}
       ${fl('Phone', 'phone')}${fl('Alt number', 'alt')}${fl('Sender Company (not printed)', 'sender', 'w2')}
       ${fl('Address', 'address', 'w4')}
@@ -4075,7 +4166,8 @@ function meRender(){
         : mode === 'none' ? `<small style="color:var(--muted);font-weight:600">${p.err ? '<span style="color:var(--danger)">' + esc(p.err) + '</span>' : 'no tracking ID'}</small>`
         : mode === 'sa' ? `<small style="color:#1D5C96;font-weight:600">${p.err ? '<span style="color:var(--danger)">' + esc(p.err) + '</span>' : 'next free Shree Anjani AWB'}</small>`
         : `<div class="awb">${esc(p.ids.join(', ') || '—')}</div>${p.err ? `<small style="color:var(--danger)">${esc(p.err)}</small>` : (mode === 'keep' ? '<small>same as before</small>' : '')}`;
-      h += `<tr><td><b>${esc(it.o.orderid)}</b><small>${esc(it.o.sender || '')}</small></td><td>${meInput(i,'name')}</td><td>${meInput(i,'phone')}</td><td>${meInput(i,'address')}</td><td>${meInput(i,'pincode')}</td><td>${meInput(i,'city')}</td><td>${meInput(i,'courier')}</td><td>${meInput(i,'mode','', 'mode')}</td><td>${meInput(i,'totalpkg','','number')}</td><td>${trk}</td></tr>`;
+      const oidCh = String(it.v.orderid || '') !== String(it.orig.orderid || '');
+      h += `<tr><td style="min-width:130px">${meInput(i,'orderid')}<small${oidCh ? ' class="oi-old"' : ''}>${esc(oidCh ? it.o.orderid : (it.o.sender || ''))}</small></td><td>${meInput(i,'name')}</td><td>${meInput(i,'phone')}</td><td>${meInput(i,'address')}</td><td>${meInput(i,'pincode')}</td><td>${meInput(i,'city')}</td><td>${meInput(i,'courier')}</td><td>${meInput(i,'mode','', 'mode')}</td><td>${meInput(i,'totalpkg','','number')}</td><td>${trk}</td></tr>`;
     });
     h += '</tbody></table>';
   }
@@ -4102,6 +4194,7 @@ function meSummary(plan){
   $('meFreeWrap').style.display = mode !== 'keep' && anyOldSa ? '' : 'none';
   const errs = [], changes = ME.items.map(meChanges);
   ME.items.forEach((it, i) => {
+    if(!String(it.v.orderid || '').trim()) errs.push(it.o.orderid + ': Order ID is empty');
     if(!String(it.v.name || '').trim()) errs.push(it.o.orderid + ': recipient is empty');
     if(!String(it.v.address || '').trim()) errs.push(it.o.orderid + ': address is empty');
     if(!/^\d{6}$/.test(String(it.v.pincode || '').trim()) && !it.v.intl) errs.push(it.o.orderid + ': pincode must be 6 digits');
@@ -4140,6 +4233,11 @@ $('meModal').addEventListener('input', e => {
     meRender(); return;
   }
   if(t.id === 'meFirst' || t.id === 'meTypeOne'){ meRender(); return; }
+  if(t.id === 'meAllOid'){
+    let cur = t.value.trim();
+    ME.items.forEach(it => { if(cur){ it.v.orderid = cur; cur = raNext(cur) || cur; } else it.v.orderid = it.orig.orderid; });
+    meRender(); return;
+  }
   if(t.id && t.id.startsWith('meAll')){
     const map = { meAllSender:'sender', meAllCourier:'courier', meAllMode:'mode', meAllType:'shiptype', meAllBoxes:'totalpkg' }, f = map[t.id];
     if(f){ ME.items.forEach(it => { it.v[f] = t.value === '' ? it.orig[f] : (f === 'totalpkg' ? Math.min(5000, Math.max(1, parseInt(t.value, 10) || 1)) : t.value); }); meRender(); }
@@ -4147,6 +4245,7 @@ $('meModal').addEventListener('input', e => {
 });
 $('meModal').addEventListener('change', e => {
   const t = e.target; if(!ME) return;
+  if(t.id === 'meSep'){ ME.sep = t.checked; meRender(); return; }
   if(t.name === 'meAwb' || t.id === 'mePerBox' || t.id === 'meFree'){ meRender(); return; }
   if(t.tagName === 'SELECT' && t.dataset.f === '__cour'){ if(ME.items[+t.dataset.i].v.courier !== t.value || t.value === '__other') meSetCour(+t.dataset.i, t.value); return; }
   if(t.type === 'checkbox' && t.dataset.f){ ME.items[+t.dataset.i].v[t.dataset.f] = t.checked; meRender(); return; }
@@ -4162,6 +4261,7 @@ $('meGo').addEventListener('click', async () => {
     const items = ME.items.slice();
     const orders = items.map((it, i) => {
       const v = Object.assign({}, it.v), p = plan[i];
+      v.orderid = String(v.orderid || it.orig.orderid || '').trim();
       v.totalpkg = Math.min(5000, Math.max(1, parseInt(v.totalpkg, 10) || 1)); v.shipDate = todayLabelDate();
       v.tracklink = ''; v.trackAuto = false;
       if(isSA(v.courier)) v.courier = SA_NAME;
@@ -4172,13 +4272,17 @@ $('meGo').addEventListener('click', async () => {
       else { v.trackid = p.ids[0] || ''; v.trackPer = null; v.awbSeries = false; if(v.totalpkg > 1) v.trkAllLabels = true; }
       return v;
     });
+    // "keep them separate": this order gets -02 and the other order with the same ID becomes -01
+    const sepPlan = ME.single && ME.sep && orders[0].orderid !== items[0].o.orderid ? moSepPlan(orders[0].orderid, items[0].o.row) : null;
+    if(sepPlan) orders[0].orderid = sepPlan.me;
+    const pairs = items.map((it, i) => ({ it, v: orders[i] }));
     const fileName = orders.length === 1
       ? `${(orders[0].orderid || 'ORDER').replace(/[^a-zA-Z0-9-_]/g, '')} ${(orders[0].name || 'Label').replace(/[^a-zA-Z0-9 '\-]/g, '').trim().replace(/\s+/g, ' ')}.pdf`
       : `BoxUp Labels ${stamp} Edited (${orders.length} orders).pdf`;
     const batchId = newBatchId();
     const payload = sheetPayload(orders, 'Edited ' + stamp, fileName, batchId);
     payload.bulk = false;
-    payload.replace = items.map(it => ({ row: it.o.row, orderid: it.o.orderid }));
+    payload.replace = items.map((it, i) => ({ row: it.o.row, orderid: it.o.orderid, idx: i }));   // idx: the Order ID itself may have changed
     payload.orders.forEach((po, i) => {
       const ch = meChanges(items[i]).concat(mode === 'none' ? ['tracking ID removed'] : mode !== 'keep' ? ['tracking ID'] : []);
       po.editNote = 'Active · edited ' + when + (ch.length ? ': ' + ch.join(', ') : '') + (reason ? ' · ' + reason : '');
@@ -4208,6 +4312,15 @@ $('meGo').addEventListener('click', async () => {
     });
     if(saUsed.length) markAwbUsed(saUsed);
     refreshSaList();
+    // a changed Order ID also changes in Dispatch Tasks and the Shree Anjani tab (and the other order, for -01 / -02)
+    let renMsg = '';
+    const ren = pairs.filter(p => orders.includes(p.v) && p.v.orderid !== p.it.o.orderid)
+      .map(p => ({ row: p.it.o.row, orderid: p.it.o.orderid, to: p.v.orderid, linksOnly: true, awbs: mode === 'keep' ? moTrk(p.it.orig) : [] }));
+    if(sepPlan && sepPlan.other && ren.length) ren.push({ row: sepPlan.other.row, orderid: sepPlan.other.orderid, to: sepPlan.otherTo, awbs: moTrk(sepPlan.other.label) });
+    if(ren.length){
+      try{ await moRename(ren, reason); renMsg = ' Order ID changed: ' + ren.map(r => r.orderid + ' → ' + r.to).join(' · ') + '.'; }
+      catch(err){ renMsg = ' The new Order ID is saved, but Dispatch Tasks could not be updated: ' + (err.message || err); }
+    }
     const entries = []; orders.forEach(v => labelEntries(v).forEach(e => entries.push(e)));
     const pdf = await buildLabelsPdf(entries, (n, t) => { btn.textContent = `Building PDF… (${n}/${t})`; });
     pdf.save(fileName); lastLabelPdf = pdf;
@@ -4218,7 +4331,7 @@ $('meGo').addEventListener('click', async () => {
       downloadTrackingExcel(saItems, xlsName);
       showSaBulkModal(saItems, xlsName, { batchId, source: 'Edited', date: todayLabelDate() });
     }
-    $('moMsg').innerHTML = `<span style="color:#1c6b33;font-weight:600">${orders.length} order${orders.length > 1 ? 's' : ''} updated and reprinted. Old lines are struck through in the Label Log.${res.released ? ' ' + res.released + ' old Shree Anjani AWB' + (res.released > 1 ? 's are' : ' is') + ' free again.' : ''}</span>` +
+    $('moMsg').innerHTML = `<span style="color:#1c6b33;font-weight:600">${orders.length} order${orders.length > 1 ? 's' : ''} updated and reprinted. Old lines are struck through in the Label Log.${esc(renMsg)}${res.released ? ' ' + res.released + ' old Shree Anjani AWB' + (res.released > 1 ? 's are' : ' is') + ' free again.' : ''}</span>` +
       (rejected.length ? `<br><span style="color:var(--danger)">Not changed (AWB not in the Shree Anjani tab): ${esc(rejected.join(' · '))}</span>` : '');
     if(rejected.length) alert('Not changed, the AWB is not in the Shree Anjani tab:\n' + rejected.join('\n'));
     MO.sel.clear(); moLoad();
