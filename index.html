@@ -1842,7 +1842,7 @@ function buildLabelHTML(v, boxIndex, cat){
           ${v.intl ? '' : `<div class="tracking-box">
             <div class="trk-label">Tracking ID</div>
             ${trkFor(v, boxIndex).id ? `<div class="trk-id">${esc(trkFor(v, boxIndex).id)}</div>` : ''}
-            ${isMX(v.courier) && trkFor(v, boxIndex).id ? `<svg class="trk-bc" data-code="${esc(trkFor(v, boxIndex).id)}"></svg>` : ''}
+            ${(isMX(v.courier) || isSA(v.courier)) && trkFor(v, boxIndex).id ? `<svg class="trk-bc" data-code="${esc(trkFor(v, boxIndex).id)}"></svg>` : ''}
           </div>`}
           ${v.intl ? '' : `<div class="shiptype">Type:<b>${esc(v.shiptype)}</b></div>`}
         </div>
