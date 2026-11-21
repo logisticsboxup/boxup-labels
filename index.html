@@ -4226,7 +4226,7 @@ function meAwbHtml(){
   return `<div class="me-lb">Tracking ID / AWB</div>
     <label class="me-rd on"><input type="radio" name="meAwb" value="keep" checked><span><b>Keep the same AWB</b>${one && cur ? ' ' + esc(cur) : ''}<small>Reprint with the old tracking ID</small></span></label>
     <label class="me-rd" id="meNoRd"><input type="radio" name="meAwb" value="none"><span><b>No tracking ID</b><small>For Porter and In-house delivery: the old tracking ID is removed</small></span></label>
-    <label class="me-rd" id="meSaRd"><input type="radio" name="meAwb" value="sa"><span><b>New Shree Anjani AWB${one ? '' : 's'} (automatic)</b><small>Next free AWB from the Shree Anjani tab</small></span></label>
+    <label class="me-rd" id="meSaRd"><input type="radio" name="meAwb" value="sa"><span><b>New Shree Anjani / Mark Express AWB${one ? '' : 's'} (automatic)</b><small>Next free AWB from that courier's tab (Mark Express AWBs are booked after printing)</small></span></label>
     ${one ? '' : `<label class="me-rd"><input type="radio" name="meAwb" value="series"><span><b>Auto series</b> from <input type="text" id="meFirst" placeholder="first ID" style="width:120px;display:inline-block;padding:3px 6px" autocomplete="off"><small>Next orders fill +1 in list order</small></span></label>`}
     <label class="me-rd"><input type="radio" name="meAwb" value="type"><span><b>Type a new tracking ID</b>${one ? ` <input type="text" id="meTypeOne" placeholder="New tracking ID (comma between, one per box)" style="width:260px;display:inline-block;padding:3px 6px" autocomplete="off">` : ' <small style="display:inline">in the table</small>'}<small>Shree Anjani AWBs must be in the Shree Anjani tab</small></span></label>`;
 }
@@ -4238,7 +4238,8 @@ function meSetCour(i, val){
   if(isPorter(it.v.courier) && !it.v.pDate) it.v.pDate = todayISO();
   // Porter / In-house have no tracking ID: pick "No tracking ID" by itself; going back to a courier puts "Keep" back
   const allPor = ME.items.every(x => isPorter(x.v.courier)), m = meMode();
-  const pick = allPor && m !== 'none' ? 'none' : (!allPor && m === 'none' ? 'keep' : '');
+  const poolNew = ME.items.every(x => isPool(x.v.courier)) && ME.items.some(x => isMX(x.v.courier) !== isMX(x.orig.courier) || isSA(x.v.courier) !== isSA(x.orig.courier));
+  const pick = allPor && m !== 'none' ? 'none' : (!allPor && m === 'none' ? 'keep' : (poolNew && m === 'keep' ? 'sa' : ''));   // moved to Shree Anjani / Mark Express: take a new AWB from its tab
   if(pick){ const r = document.querySelector(`input[name=meAwb][value=${pick}]`); if(r) r.checked = true; }
   meRender();
 }
@@ -4262,10 +4263,11 @@ function mePlan(){
     const boxes = Math.min(5000, Math.max(1, parseInt(it.v.totalpkg, 10) || 1)), need = perBox ? boxes : 1;
     if(mode === 'keep'){
       const ids = moTrk(it.orig), per = it.orig.trackPer && it.orig.trackPer.length > 1;
-      return { ids, keep: true, err: per && ids.length !== boxes ? 'boxes changed, so pick new tracking IDs' : '' };
+      const poolMoved = isPool(it.v.courier) && ids.length && (isMX(it.v.courier) !== isMX(it.orig.courier) || isSA(it.v.courier) !== isSA(it.orig.courier));
+      return { ids, keep: true, err: poolMoved ? 'courier changed to ' + (isMX(it.v.courier) ? 'Mark Express' : 'Shree Anjani') + ': the old AWB belongs to ' + (it.orig.courier || 'another courier') + ', so pick New AWB (automatic)' : per && ids.length !== boxes ? 'boxes changed, so pick new tracking IDs' : '' };
     }
     if(mode === 'none') return { ids: [], none: true, err: isPorter(it.v.courier) ? '' : 'courier is not Porter or In-house' };
-    if(mode === 'sa') return { ids: [], auto: true, err: isSA(it.v.courier) ? '' : 'courier is not Shree Anjani' };
+    if(mode === 'sa') return { ids: [], auto: true, err: isPool(it.v.courier) ? '' : 'courier is not Shree Anjani or Mark Express' };
     if(mode === 'series'){
       const ids = [];
       for(let k = 0; k < need && cur; k++){ ids.push(cur); cur = raNext(cur); }
@@ -4323,7 +4325,7 @@ function meRender(){
 }
 function meSummary(plan){
   plan = plan || mePlan();
-  const mode = meMode(), allSa = ME.items.every(it => isSA(it.v.courier));
+  const mode = meMode(), allSa = ME.items.every(it => isPool(it.v.courier));
   document.querySelectorAll('input[name=meAwb]').forEach(x => x.closest('.me-rd').classList.toggle('on', x.checked));
   const saRd = document.querySelector('input[name=meAwb][value=sa]');
   if(saRd){ saRd.disabled = !allSa; saRd.closest('.me-rd').classList.toggle('dis', !allSa); }
@@ -4342,7 +4344,7 @@ function meSummary(plan){
     if(plan[i].err) errs.push(it.o.orderid + ': ' + plan[i].err);
   });
   if(mode === 'none' && !allPor) errs.unshift('No tracking ID is only for Porter and In-house: set the courier to Porter or In-house for every order');
-  if(mode === 'sa' && !allSa) errs.unshift('New Shree Anjani AWBs need the courier to be Shree Anjani for every order');
+  if(mode === 'sa' && !allSa) errs.unshift('Automatic AWBs need the courier to be Shree Anjani or Mark Express for every order');
   const ids = [].concat(...plan.map(p => p.ids || [])); const dup = ids.filter((x, i) => ids.indexOf(x) !== i);
   if(mode !== 'keep' && dup.length) errs.push('the same tracking ID is used twice: ' + [...new Set(dup)].slice(0, 3).join(', '));
   const nCh = changes.reduce((a, c) => a + c.length, 0), labels = ME.items.reduce((a, it) => a + (parseInt(it.v.totalpkg, 10) || 1), 0);
@@ -4405,7 +4407,7 @@ $('meGo').addEventListener('click', async () => {
       v.orderid = String(v.orderid || it.orig.orderid || '').trim();
       v.totalpkg = Math.min(5000, Math.max(1, parseInt(v.totalpkg, 10) || 1)); v.shipDate = todayLabelDate();
       v.tracklink = ''; v.trackAuto = false;
-      if(isSA(v.courier)) v.courier = SA_NAME;
+      if(isSA(v.courier)) v.courier = SA_NAME; else if(isMX(v.courier)) v.courier = MX_NAME;
       if(mode === 'keep'){ v.trackid = it.orig.trackid || ''; v.trackPer = it.orig.trackPer || null; v.awbSeries = !!it.orig.awbSeries; }
       else if(mode === 'none'){ v.trackid = ''; v.trackPer = null; v.awbSeries = false; }
       else if(mode === 'sa'){ v.trackid = ''; v.trackPer = null; v.trackAuto = true; v.awbSeries = perBox && v.totalpkg > 1; }
@@ -4445,10 +4447,10 @@ $('meGo').addEventListener('click', async () => {
     if(!orders.length){ $('meSum').className = 'ra-sum bad'; $('meSum').innerHTML = `<b>Nothing was changed or printed.</b> ${esc(rejected.join(' · '))}`; return; }
     const saUsed = [];
     (res.orders || []).forEach((r, i) => {
-      const v = orders[i]; if(!r || !isSA(r.courier || v.courier)) return;
-      v.courier = SA_NAME;
-      if(r.awbs && r.awbs.length > 1){ v.trackPer = r.awbs.slice(); v.trackid = r.awbs[0]; saUsed.push(...r.awbs); }
-      else if(r.awb){ v.trackid = r.awb; if(!(v.trackPer && v.trackPer.length > 1)) v.trackPer = null; saUsed.push(r.awb); }
+      const v = orders[i]; if(!r || !isPool(r.courier || v.courier)) return;
+      const mxc = isMX(r.courier || v.courier); v.courier = mxc ? MX_NAME : SA_NAME;
+      if(r.awbs && r.awbs.length > 1){ v.trackPer = r.awbs.slice(); v.trackid = r.awbs[0]; if(!mxc) saUsed.push(...r.awbs); }
+      else if(r.awb){ v.trackid = r.awb; if(!(v.trackPer && v.trackPer.length > 1)) v.trackPer = null; if(!mxc) saUsed.push(r.awb); }
       v.tracklink = r.link || '';
     });
     if(saUsed.length) markAwbUsed(saUsed);
@@ -4465,6 +4467,13 @@ $('meGo').addEventListener('click', async () => {
     const entries = []; orders.forEach(v => labelEntries(v).forEach(e => entries.push(e)));
     const pdf = await buildLabelsPdf(entries, (n, t) => { btn.textContent = `Building PDF… (${n}/${t})`; });
     pdf.save(fileName); lastLabelPdf = pdf;
+    // Mark Express: book the new AWBs (a reprint with the same AWB on the same courier was booked before)
+    let mxMsg = '';
+    const mxNew = pairs.filter(p => orders.includes(p.v) && isMX(p.v.courier) && p.v.trackid && (mode !== 'keep' || !isMX(p.it.orig.courier))).map(p => p.v);
+    if(mxNew.length && $('f_mxBook').checked){
+      btn.textContent = 'Booking with Mark Express…';
+      try{ mxMsg = mxBookHtml(await mxBookOrders(mxNew)); }catch(e){ mxMsg = '<div class="mxb-res bad"><b>✕ Not booked with Mark Express</b> · ' + esc(e.message || e) + '</div>'; }
+    }
     MO.busy = false; meClose();
     const saItems = orders.map((v, i) => ({ v, r: res.orders[i] })).filter(x => isSA(x.v.courier) && x.r && mode !== 'keep');
     if(saItems.length){
@@ -4473,7 +4482,7 @@ $('meGo').addEventListener('click', async () => {
       showSaBulkModal(saItems, xlsName, { batchId, source: 'Edited', date: todayLabelDate() });
     }
     $('moMsg').innerHTML = `<span style="color:#1c6b33;font-weight:600">${orders.length} order${orders.length > 1 ? 's' : ''} updated and reprinted. Old lines are struck through in the Label Log.${esc(renMsg)}${res.released ? ' ' + res.released + ' old Shree Anjani AWB' + (res.released > 1 ? 's are' : ' is') + ' free again.' : ''}</span>` +
-      (rejected.length ? `<br><span style="color:var(--danger)">Not changed (AWB not in the Shree Anjani tab): ${esc(rejected.join(' · '))}</span>` : '');
+      (rejected.length ? `<br><span style="color:var(--danger)">Not changed (AWB not in the Shree Anjani tab): ${esc(rejected.join(' · '))}</span>` : '') + mxMsg;
     if(rejected.length) alert('Not changed, the AWB is not in the Shree Anjani tab:\n' + rejected.join('\n'));
     MO.sel.clear(); moLoad();
   }catch(err){
@@ -4506,7 +4515,7 @@ function rsShow(P){
   $('rsTitle').innerHTML = (re ? '&#8635; Reship order · ' : '&#43; New order · ') + esc(P.orderid);
   $('rsSub').textContent = (re ? 'Reship of ' : 'New order from ') + P.from.id + '. Made in the Order Tracker: check it and print.';
   $('rsFrom').innerHTML = `&#128279; ${re ? 'Reship of' : 'From'} <b>${esc(P.from.id)}</b>${P.from.name ? ' · ' + esc(P.from.name) : ''}${re ? ' · ' + esc(P.why) : ''}${P.note ? ' · ' + esc(P.note) : ''}`;
-  const awb = P.awb === 'sa' ? `New Shree Anjani AWB${n > 1 ? 's' : ''} (automatic${n > 1 ? ', one per box' : ''})` : P.awb === 'none' ? 'No tracking ID' : (P.trackid || 'Not set');
+  const awb = P.awb === 'sa' ? `New ${isMX(P.courier) ? 'Mark Express' : 'Shree Anjani'} AWB${n > 1 ? 's' : ''} (automatic${n > 1 ? ', one per box' : ''})` : (P.awb === 'type' && isMX(P.courier) && !String(P.trackid || '').trim()) ? `New Mark Express AWB${n > 1 ? 's' : ''} (automatic${n > 1 ? ', one per box' : ''})` : P.awb === 'none' ? 'No tracking ID' : (P.trackid || 'Not set');
   const row = (k, v) => `<b>${k}</b><span>${v}</span>`;
   $('rsGrid').innerHTML = row('New Order ID', `<b style="color:#16311F;text-transform:none;font-size:13px;letter-spacing:0">${esc(P.orderid)}</b>`) +
     row('Recipient', esc([P.name, P.phone, P.alt].filter(Boolean).join(' · '))) + row('Address', esc([P.address, P.city, P.state, P.pincode].filter(Boolean).join(', '))) +
@@ -4543,7 +4552,8 @@ $('rsGo').addEventListener('click', async () => {
       totalpkg: Math.min(5000, Math.max(1, parseInt(P.totalpkg, 10) || 1)), sender: P.sender || base.sender || '', company: base.company || P.company || '',
       shipDate: todayLabelDate(), tracklink: '', trackAuto: false, trackPer: null, awbSeries: false, trkAllLabels: false, labelNote: String(P.labelNote || '') });
     if(isPorter(v.courier)){ v.pDate = todayISO(); v.pTime = ''; v.pVeh = ''; } else { delete v.pDate; delete v.pTime; delete v.pVeh; delete v.pMap; v.pQR = false; }
-    if(P.awb === 'sa'){ v.courier = SA_NAME; v.trackid = ''; v.trackAuto = true; v.awbSeries = v.totalpkg > 1; }
+    if(isMX(v.courier)) v.courier = MX_NAME;
+    if(P.awb === 'sa'){ v.courier = isMX(P.courier) ? MX_NAME : SA_NAME; v.trackid = ''; v.trackAuto = true; v.awbSeries = v.totalpkg > 1; }   // 'sa' = next free AWB of the courier's own tab (Shree Anjani or Mark Express)
     else if(P.awb === 'none'){ v.trackid = ''; }
     else { const ids = raSplit(P.trackid); if(ids.length > 1){ v.trackPer = ids.slice(0, v.totalpkg); v.trackid = ids[0]; v.awbSeries = true; } else { v.trackid = ids[0] || ''; if(v.totalpkg > 1 && v.trackid) v.trkAllLabels = true; } }
     const fileName = `${v.orderid.replace(/[^a-zA-Z0-9-_]/g, '')} ${(v.name || 'Label').replace(/[^a-zA-Z0-9 '\-]/g, '').trim().replace(/\s+/g, ' ')}.pdf`;
@@ -4558,10 +4568,10 @@ $('rsGo').addEventListener('click', async () => {
     if(!res || !res.ok){ $('rsSum').className = 'ra-sum bad'; $('rsSum').innerHTML = `<b>Nothing was saved or printed:</b> ${esc((res && res.error) || 'the sheet did not answer.')}`; return; }
     const r0 = (res.orders || [])[0];
     if(r0 && r0.rejected){ $('rsSum').className = 'ra-sum bad'; $('rsSum').innerHTML = `<b>Nothing was saved or printed:</b> ${esc(r0.error || 'the AWB is not in the Shree Anjani tab')}`; return; }
-    if(r0 && isSA(r0.courier || v.courier)){
-      v.courier = SA_NAME;
-      if(r0.awbs && r0.awbs.length > 1){ v.trackPer = r0.awbs.slice(); v.trackid = r0.awbs[0]; markAwbUsed(r0.awbs); }
-      else if(r0.awb){ v.trackid = r0.awb; if(!(v.trackPer && v.trackPer.length > 1)) v.trackPer = null; markAwbUsed([r0.awb]); }
+    if(r0 && isPool(r0.courier || v.courier)){
+      const mxc = isMX(r0.courier || v.courier); v.courier = mxc ? MX_NAME : SA_NAME;
+      if(r0.awbs && r0.awbs.length > 1){ v.trackPer = r0.awbs.slice(); v.trackid = r0.awbs[0]; if(!mxc) markAwbUsed(r0.awbs); }
+      else if(r0.awb){ v.trackid = r0.awb; if(!(v.trackPer && v.trackPer.length > 1)) v.trackPer = null; if(!mxc) markAwbUsed([r0.awb]); }
       v.tracklink = r0.link || '';
     }
     refreshSaList();
@@ -4575,7 +4585,12 @@ $('rsGo').addEventListener('click', async () => {
     btn.textContent = 'Building PDF…';
     const pdf = await buildLabelsPdf(labelEntries(v), (n, t) => { btn.textContent = `Building PDF… (${n}/${t})`; });
     pdf.save(fileName); lastLabelPdf = pdf;
-    $('rsSum').className = 'ra-sum'; $('rsSum').innerHTML = `<b style="color:#1c6b33">&#10003; ${esc(v.orderid)} saved and printed${v.trackid ? ' · AWB ' + esc((v.trackPer && v.trackPer.length > 1 ? v.trackPer : [v.trackid]).join(', ')) : ''}.</b>${esc(noteMsg)} It shows in the Order Tracker after its next refresh.`;
+    let mxMsg = '';
+    if(isMX(v.courier) && v.trackid && $('f_mxBook').checked){        // Mark Express: book the AWB(s) so they are live before pickup
+      btn.textContent = 'Booking with Mark Express…';
+      try{ mxMsg = mxBookHtml(await mxBookOrders([v])); }catch(e){ mxMsg = '<div class="mxb-res bad"><b>✕ Not booked with Mark Express</b> · ' + esc(e.message || e) + '</div>'; }
+    }
+    $('rsSum').className = 'ra-sum'; $('rsSum').innerHTML = `<b style="color:#1c6b33">&#10003; ${esc(v.orderid)} saved and printed${v.trackid ? ' · AWB ' + esc((v.trackPer && v.trackPer.length > 1 ? v.trackPer : [v.trackid]).join(', ')) : ''}.</b>${esc(noteMsg)} It shows in the Order Tracker after its next refresh.${mxMsg}`;
     btn.innerHTML = '&#10003; Done'; P.done = true;
     try { localStorage.removeItem('boxup.reship'); } catch(e){}
     $('rsBack').textContent = 'Close';
