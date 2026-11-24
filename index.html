@@ -5630,7 +5630,7 @@ $('intlGo').addEventListener('click', async ()=>{
       ls.set('boxup.notes.gate', Object.assign({}, seen && new Date().toDateString() === ls.get('boxup.notes.gateday', '') ? seen : {}, now)); ls.set('boxup.notes.gateday', new Date().toDateString());
     } catch(x){}
   }
-  // 4. partner updates from the Shree Anjani partner page
+  // 4. partner updates from the Partner page (shows the name the person gave on that page)
   let PV = '';
   async function partner(){
     try {
@@ -5639,7 +5639,7 @@ $('intlGo').addEventListener('click', async ()=>{
       PV = d.v || '';
       const snap = ls.get('boxup.notes.pt', null), now = {};
       (d.orders || []).forEach(o => { if (!o.pup) return; now[o.id] = o.pup + '|' + (o.ps || '') + '|' + (o.pod ? 1 : 0);
-        if (snap && snap[o.id] !== now[o.id]) note('partner', 'Partner update', 'Shree Anjani marked ' + (o.awb || o.id) + (o.ps ? ' ' + o.ps : '') + (o.pod && !(snap[o.id] || '').endsWith('|1') ? ' · POD added' : '') + (o.recv ? ' · received by ' + o.recv : '')); });
+        if (snap && snap[o.id] !== now[o.id]) note('partner', 'Partner update', (o.by || ((o.cou || 'Partner') + ' (no name given)')) + ' marked ' + (o.awb || o.id) + (o.cou ? ' · ' + o.cou : '') + (o.ps ? ' ' + o.ps : '') + (o.pod && !(snap[o.id] || '').endsWith('|1') ? ' · POD added' : '') + (o.recv ? ' · received by ' + o.recv : '')); });
       ls.set('boxup.notes.pt', now);
     } catch(x){}
   }
