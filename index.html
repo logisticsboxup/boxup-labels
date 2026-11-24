@@ -1308,6 +1308,7 @@
           <select id="raCourier">
             <option value="keep">Keep same courier (change tracking ID only)</option>
             <option value="sa">Shree Anjani</option>
+            <option value="mx">Mark Express</option>
             <option value="other" selected>Other courier (type name)</option>
           </select>
           <input type="text" id="raOther" list="raCourierList" placeholder="Courier name, for example DTDC">
@@ -1320,7 +1321,7 @@
           <label class="ra-rd"><input type="radio" name="raMode" value="type"><span>Type the tracking ID for each order (in the list)</span></label>
           <label class="ra-rd"><input type="radio" name="raMode" value="paste"><span>Paste a list of tracking IDs (one per line, in list order)</span></label>
           <div class="ra-sub" id="raPasteBox" hidden><textarea id="raPaste" placeholder="One tracking ID per line" spellcheck="false"></textarea></div>
-          <label class="ra-rd" id="raSaAutoWrap"><input type="radio" name="raMode" value="saauto"><span>Give new Shree Anjani AWBs automatically</span></label>
+          <label class="ra-rd" id="raSaAutoWrap"><input type="radio" name="raMode" value="saauto"><span>Give new AWBs automatically from stock (Shree Anjani / Mark Express)</span></label>
           <label class="ra-chk"><input type="checkbox" id="raPerBox" checked><span>Separate ID for each box (multi-box orders)</span></label>
           <label class="ra-chk" id="raFreeWrap"><input type="checkbox" id="raFree"><span>Free the old Shree Anjani AWBs so they can be used again (only if those labels were never sent out)</span></label>
         </div>
@@ -2501,7 +2502,9 @@ async function handleBulkFile(file){
         }
         if(!good.length){ status.innerHTML = '<span class="bad">Nothing was printed. These Shree Anjani AWBs are not in the Shree Anjani tab:</span><ul>' + bad.map(b=>'<li>'+b+'</li>').join('') + '</ul>'; return; }
         res.orders.forEach((r,i)=>{
+          const typedAwb = String(good[i].trackid || '').trim();
           if(r.courier) good[i].courier = r.courier;
+          good[i]._mxNew = isMX(good[i].courier) && !!r.awb && (!typedAwb || typedAwb !== String(r.awb));   // only AWBs given now get booked
           if(isPool(good[i].courier)){ good[i].trackid = r.awb; good[i].tracklink = r.link; good[i].trackPer = r.awbs && r.awbs.length > 1 ? r.awbs.slice() : null; }
         });
         markAwbUsed([].concat(...res.orders.filter((r,i)=>isSA(good[i].courier) === (saPool === 'sa') && isPool(good[i].courier)).map(r=>r.awbs && r.awbs.length ? r.awbs : [r.awb])));
@@ -2534,9 +2537,9 @@ async function handleBulkFile(file){
 
     status.innerHTML = `<span class="ok">Done: ${entries.length} label${entries.length>1?'s':''} for ${good.length} order${good.length>1?'s':''} downloaded.</span>` +
       (bad.length ? `<br><span class="bad">${bad.length} row${bad.length>1?'s were':' was'} skipped:</span><ul>` + bad.map(b=>'<li>'+b+'</li>').join('') + '</ul>' : '');
-    if(saResult && logOn() && $('f_mxBook').checked && good.some(v => isMX(v.courier))){
+    if(saResult && logOn() && $('f_mxBook').checked && good.some(v => v._mxNew)){
       setBulkBusy(true, 'Booking with Mark Express…');
-      const mr = await mxBookOrders(good);
+      const mr = await mxBookOrders(good.filter(v => v._mxNew));
       status.innerHTML += mxBookHtml(mr);
     }
   }catch(err){
@@ -2903,8 +2906,8 @@ function rvField(i, key, label, val, extra){
 }
 
 function rvCardHTML(o, i){
-  const v = o.v, sa = isSA(v.courier), po = isPorter(v.courier), ih = isInHouse(v.courier);
-  const none = !sa && !po && !v.courOther && !String(v.courier||'').trim();
+  const v = o.v, sa = isSA(v.courier), po = isPorter(v.courier), ih = isInHouse(v.courier), pool = isPool(v.courier);
+  const none = !pool && !po && !v.courOther && !String(v.courier||'').trim();
   const opt = (val, cur)=>`<option${val===cur?' selected':''}>${val}</option>`;
   return `<div class="rv-card" id="rvc${i}" data-i="${i}">
     <div class="rv-ch"><input type="checkbox" class="rv-pick" data-i="${i}" ${o.sel?'checked':''} title="Print this order">
@@ -2925,13 +2928,13 @@ function rvCardHTML(o, i){
       ${rvField(i,'state','State',v.state)}
       ${rvField(i,'hub','City code',v.hubText!=null?v.hubText:(v.hubManual?v.hubcode:''),{ph:autoHub(v.pincode,v.city)||'auto'})}
       ${rvField(i,'alt','Alt. details',v.alt)}
-      <div class="rv-f"><label>Courier</label><div class="rv-cour ${sa?'sa':''}${po?' po':''}${none?' none':''}" id="rvcour${i}">
+      <div class="rv-f"><label>Courier</label><div class="rv-cour ${pool?'sa':''}${po?' po':''}${none?' none':''}" id="rvcour${i}">
         <select data-i="${i}" data-k="courierSel"><option value="none"${none?' selected':''}>Not set</option><option value="sa"${sa?' selected':''}>Shree Anjani</option><option value="mx"${isMX(v.courier)?' selected':''}>Mark Express</option><option value="por"${po&&!ih?' selected':''}>Porter</option><option value="inh"${ih?' selected':''}>In-house</option><option value="other"${!sa&&!po&&!none&&!isMX(v.courier)?' selected':''}>Other</option></select>
         <input type="text" data-i="${i}" data-k="courier" value="${esc(sa||po||isMX(v.courier)?'':(v.courier||''))}" placeholder="Name" autocomplete="off"></div></div>
-      ${rvField(i,'trackid','Tracking ID',v.trackid,{cls: sa?'awb':'', ph: sa?'Auto: next free AWB':isMX(v.courier)?'Auto on Print: next free Mark Express AWB':''})}
+      ${rvField(i,'trackid','Tracking ID',v.trackid,{cls: pool?'awb':'', ph: pool?'Auto: next free AWB':''})}
       <div class="rv-f"><label>&nbsp;</label>
         <label class="rv-cb" style="margin-top:0"><input type="checkbox" data-i="${i}" data-k="trkAll" ${v.trkAllLabels?'checked':''}> On all labels</label>
-        <label class="rv-cb ${sa && (parseInt(v.totalpkg,10)||1) > 1 ? '' : 'dis'}" style="margin-top:3px" id="rvser${i}"><input type="checkbox" data-i="${i}" data-k="series" ${v.awbSeries?'checked':''} ${sa && (parseInt(v.totalpkg,10)||1) > 1 ? '' : 'disabled'}> AWB series (1 per box)</label></div>
+        <label class="rv-cb ${pool && (parseInt(v.totalpkg,10)||1) > 1 ? '' : 'dis'}" style="margin-top:3px" id="rvser${i}"><input type="checkbox" data-i="${i}" data-k="series" ${v.awbSeries?'checked':''} ${pool && (parseInt(v.totalpkg,10)||1) > 1 ? '' : 'disabled'}> AWB series (1 per box)</label></div>
       <div class="rv-f"><label>Shipment type</label><select data-i="${i}" data-k="shiptype">${opt('Forward',v.shiptype)}${opt('Reverse',v.shiptype)}</select></div>
       <div class="rv-f"><label>Mode</label><select data-i="${i}" data-k="mode">${opt('Air Shipping',v.mode)}${opt('Surface Shipping',v.mode)}${opt('Express Ground',v.mode)}</select></div>
       ${rvField(i,'totalpkg','Total boxes',v.totalpkg)}
@@ -2972,13 +2975,13 @@ function rvPaintCard(i, dup){
   const tf = card.querySelector('[data-f="trackid"]');
   if(tf){
     const lab = tf.querySelector('label'), inp = tf.querySelector('input');
-    const auto = !!o.v.trkAuto && isSA(o.v.courier);
+    const auto = !!o.v.trkAuto && isPool(o.v.courier);
     lab.innerHTML = 'Tracking ID' + (auto ? '<span class="rv-autotag">AUTO</span>' : '');
     if(auto && document.activeElement !== inp) inp.value = o.sel ? (o.v.autoShort ? '' : (o.v.trackid || '')) : '';
-    inp.placeholder = isSA(o.v.courier) ? (o.v.autoShort ? 'No free AWB left' : (o.sel ? 'Auto: next free AWB' : 'Tick the order to get an AWB')) : '';
+    inp.placeholder = isPool(o.v.courier) ? (o.v.autoShort ? 'No free AWB left' : (o.sel ? 'Auto: next free AWB' : 'Tick the order to get an AWB')) : '';
     inp.title = auto ? 'Preview. The AWB is confirmed by the Google Sheet when you Print.' : '';
   }
-  const serOk = isSA(r.v.courier) && r.v.totalpkg > 1;
+  const serOk = isPool(r.v.courier) && r.v.totalpkg > 1;
   const ser = $('rvser'+i); if(ser){ ser.classList.toggle('dis', !serOk); ser.querySelector('input').disabled = !serOk; }
   return r;
 }
@@ -2986,13 +2989,14 @@ function rvPaintCard(i, dup){
 function rvRefresh(){
   rvReflowAwbs();
   const dup = rvDupIds();
-  let sel = 0, labels = 0, bad = 0, warn = 0, sa = 0, noCour = 0;
+  let sel = 0, labels = 0, bad = 0, warn = 0, sa = 0, mxN = 0, noCour = 0;
   rvOrders.forEach((o,i)=>{
     const r = rvPaintCard(i, dup);
     if(!o.sel) return;
     sel++; labels += r.v.totalpkg;
     if(r.bad.length) bad++; else if(r.warn.length) warn++;
     if(isSA(r.v.courier)) sa++;
+    else if(isMX(r.v.courier)) mxN++;
     else if(!String(r.v.courier||'').trim()) noCour++;
   });
   const n = rvOrders.length;
@@ -3005,6 +3009,7 @@ function rvRefresh(){
   const off = n - sel;
   $('rvSum').innerHTML = `<b>${sel} of ${n} orders selected · ${labels} labels</b>` +
     (sa ? ` · ${sa} Shree Anjani (AWBs confirmed on Print)` : '') +
+    (mxN ? ` · ${mxN} Mark Express (AWBs from stock${$('f_mxBook').checked ? ', <b style="color:#b3261e">booked with Mark Express after printing</b>' : ', booking is OFF'})` : '') +
     (noCour ? ` · courier not set on ${noCour}` : '') +
     (bad ? ` · <span style="color:var(--danger);font-weight:600">fix ${bad} selected order${bad>1?'s':''} to print</span>` : '') +
     (off ? ` · ${off} not selected` : '');
@@ -3019,9 +3024,10 @@ function openReview(list, fileName){
     o.v.ccText = ccLabel(v.phoneDial);
     o.v.hubText = v.hubManual ? v.hubcode : '';
     o.sel = rowProblems(rvFinal(o)).length === 0;     // orders with red problems start unticked
-    if(isSA(v.courier) && !String(v.trackid||'').trim()) o.v.trkAuto = true;
+    if(isPool(v.courier) && !String(v.trackid||'').trim()){ o.v.trkAuto = true; if(isMX(v.courier) && (parseInt(v.totalpkg,10)||1) > 1) o.v.awbSeries = true; }
     return o;
   });
+  if(rvOrders.some(o=>o.v.trkAuto && isMX(o.v.courier)) && logOn()) rvLoadMxFree().then(()=>rvRefresh());
   rvUndoData = null; $('rvDone').hidden = true; rvBkShow(false);
   if(rvOrders.some(o=>o.v.trkAuto) && saFree === null && logOn()) rvLoadFree().then(()=>rvRefresh());
   $('rvFile').textContent = `${fileName} · edit anything below, tick the orders to print, then click Print`;
@@ -3070,9 +3076,9 @@ function rvSetCourier(i, kind, otherName){
     v.trkAuto = false; v.autoShort = false; v.awbSeries = false;
     if(!v.pDate) v.pDate = todayISO();
   } else if(kind === 'mx'){
-    v.courier = MX_NAME; v.courOther = false;
-    if(wasSA || v.trkAuto){ v.trackid = ''; }
-    v.trkAuto = false; v.autoShort = false;
+    v.courier = MX_NAME; v.courOther = false;      // like Shree Anjani: next free AWB from the Mark Express stock, booked after printing
+    if(wasSA || v.trkAuto || !String(v.trackid||'').trim()){ v.trackid = ''; v.trkAuto = true; }
+    v.autoShort = false; v.awbSeries = (parseInt(v.totalpkg,10)||1) > 1;
   } else if(kind === 'sa'){
     v.courier = 'Shree Anjani'; v.courOther = false;
     if(!wasSA || !String(v.trackid||'').trim() || v.trkAuto){ v.trkAuto = true; v.trackid = ''; }
@@ -3088,17 +3094,22 @@ function rvPaintCourier(i){
   const v = rvOrders[i].v, card = $('rvc'+i); if(!card) return;
   const sa = isSA(v.courier), po = isPorter(v.courier), ih = isInHouse(v.courier), none = !sa && !po && !v.courOther && !String(v.courier||'').trim();
   const box = $('rvcour'+i);
-  box.classList.toggle('sa', sa); box.classList.toggle('po', po); box.classList.toggle('none', none);
+  box.classList.toggle('sa', isPool(v.courier)); box.classList.toggle('po', po); box.classList.toggle('none', none && !isMX(v.courier));
   box.querySelector('select').value = sa ? 'sa' : isMX(v.courier) ? 'mx' : ih ? 'inh' : po ? 'por' : (none ? 'none' : 'other');
   const nm = box.querySelector('[data-k="courier"]'); if(isMX(v.courier)) nm.value = ''; else if(!sa && !po && document.activeElement !== nm) nm.value = v.courier || '';
   const pr = $('rvpor'+i); if(pr){ pr.hidden = !po; $('rvporh'+i).innerHTML = '&#128757; ' + (ih ? 'In-house delivery' : 'Porter dispatch'); const d = pr.querySelector('[data-k="pDate"]'); if(d && !d.value && v.pDate) d.value = v.pDate; }
   const tf = card.querySelector('[data-f="trackid"]');
-  tf.classList.toggle('awb', sa);
+  tf.classList.toggle('awb', isPool(v.courier));
   const inp = tf.querySelector('input'); if(!v.trkAuto) inp.value = v.trackid || '';
   const ser = card.querySelector('[data-k="series"]'); if(ser) ser.checked = !!v.awbSeries;
 }
 
 /* free AWB list for previews (same list the single-label form uses) */
+var rvMxFree = null;      // free Mark Express AWBs (preview only, the sheet gives the real ones on Print)
+async function rvLoadMxFree(){
+  if(!logOn()) return;
+  try{ const d = await fetch(LOG_URL + (LOG_URL.includes('?') ? '&' : '?') + 'action=awbs&courier=mx&t=' + Date.now()).then(r => r.json()); if(d.ok) rvMxFree = d.free || []; }catch(e){ console.warn(e); }
+}
 async function rvLoadFree(){
   if(!logOn()) return;
   try{
@@ -3112,17 +3123,21 @@ async function rvLoadFree(){
    Typed AWBs are skipped. The sheet gives the real ones on Print (same order). */
 function rvReflowAwbs(){
   const typed = new Set();
-  rvOrders.forEach(o=>{ if(o.sel && isSA(o.v.courier) && !o.v.trkAuto) splitList(o.v.trackid).forEach(a=>typed.add(String(a))); });
+  rvOrders.forEach(o=>{ if(o.sel && isPool(o.v.courier) && !o.v.trkAuto) splitList(o.v.trackid).forEach(a=>typed.add(String(a))); });
   const pool = (saFree || []).map(x=>String(x.awb)).filter(a=>!typed.has(a));
-  let k = 0, first = '', last = '', short = 0;
+  const mxPool = (rvMxFree || []).map(x=>String(x.awb)).filter(a=>!typed.has(a));
+  let k = 0, km = 0, first = '', last = '', short = 0;
   rvOrders.forEach(o=>{
     const v = o.v;
-    if(!v.trkAuto || !isSA(v.courier)) return;
+    if(!v.trkAuto || !isPool(v.courier)) return;
+    const mx = isMX(v.courier);
     if(!o.sel){ v.trackid = ''; v.autoShort = false; return; }
-    if(saFree === null){ v.trackid = ''; v.autoShort = false; return; }   // list not loaded: sheet picks on Print
+    if((mx ? rvMxFree : saFree) === null){ v.trackid = ''; v.autoShort = false; return; }   // list not loaded: sheet picks on Print
     const boxes = Math.max(1, parseInt(v.totalpkg,10) || 1);
     const need = (v.awbSeries && boxes > 1) ? boxes : 1;
-    const got = pool.slice(k, k + need); k += need;
+    let got;
+    if(mx){ got = mxPool.slice(km, km + need); km += need; if(got.length < need){ v.trackid = ''; v.autoShort = true; short++; return; } v.autoShort = false; v.trackid = got.join(', '); return; }
+    got = pool.slice(k, k + need); k += need;
     if(got.length < need){ v.trackid = ''; v.autoShort = true; short++; return; }
     v.autoShort = false; v.trackid = got.join(', ');
     if(!first) first = got[0]; last = got[got.length-1];
@@ -4637,7 +4652,7 @@ function raMode(){ const r = document.querySelector('input[name=raMode]:checked'
 function raBoxes(o){ return Math.min(5000, Math.max(1, parseInt(o.boxes,10) || parseInt(o.label && o.label.totalpkg,10) || 1)); }
 function raNewCourier(o){
   const c = $('raCourier').value;
-  return c === 'keep' ? (o.courier || '') : c === 'sa' ? SA_NAME : $('raOther').value.trim();
+  return c === 'keep' ? (o.courier || '') : c === 'sa' ? SA_NAME : c === 'mx' ? MX_NAME : $('raOther').value.trim();
 }
 /* next number in a series: the last group of digits goes up by 1, zeros at the front are kept */
 function raNext(id){
@@ -4732,7 +4747,7 @@ function raSummary(plan){
   $('raSeriesBox').style.display = mode === 'series' ? '' : 'none';
   $('raPasteBox').hidden = mode !== 'paste';
   // Shree Anjani automatic AWBs only when every ticked order ends up with Shree Anjani
-  const allSa = p.length ? p.every(o=>isSA(raNewCourier(o))) : (c === 'sa' || (c === 'keep' && raFilter === 'sa'));
+  const allSa = p.length ? p.every(o=>isPool(raNewCourier(o))) : (c === 'sa' || c === 'mx' || (c === 'keep' && raFilter === 'sa'));
   const saRadio = document.querySelector('input[name=raMode][value=saauto]');
   saRadio.disabled = !allSa; $('raSaAutoWrap').classList.toggle('dis', !allSa);
   if(!allSa && saRadio.checked){ document.querySelector('input[name=raMode][value=series]').checked = true; return raRender(); }
@@ -4829,10 +4844,10 @@ $('raGo').addEventListener('click', async ()=>{
     const saUsed = [];
     (res.orders || []).forEach((r,i)=>{
       const v = orders[i]; if(!r) return;
-      if(isSA(r.courier || v.courier)){
-        v.courier = SA_NAME;
-        if(r.awbs && r.awbs.length > 1){ v.trackPer = r.awbs.slice(); v.trackid = r.awbs[0]; saUsed.push(...r.awbs); }
-        else if(r.awb){ v.trackid = r.awb; v.trackPer = null; v.trkAllLabels = true; saUsed.push(r.awb); }
+      if(isPool(r.courier || v.courier)){
+        const mxc = isMX(r.courier || v.courier); v.courier = mxc ? MX_NAME : SA_NAME;
+        if(r.awbs && r.awbs.length > 1){ v.trackPer = r.awbs.slice(); v.trackid = r.awbs[0]; if(!mxc) saUsed.push(...r.awbs); }
+        else if(r.awb){ v.trackid = r.awb; v.trackPer = null; v.trkAllLabels = true; if(!mxc) saUsed.push(r.awb); }
         v.tracklink = r.link || '';
       }
     });
@@ -4842,6 +4857,12 @@ $('raGo').addEventListener('click', async ()=>{
     orders.forEach(v=>labelEntries(v).forEach(e=>entries.push(e)));
     const pdf = await buildLabelsPdf(entries, (n,t)=>{ btn.textContent = `Building PDF… (${n}/${t})`; });
     pdf.save(fileName); lastLabelPdf = pdf;
+    let mxMsg = '';
+    const mxNew = orders.filter((v,i)=>isMX(v.courier) && v.trackid && !(isMX(picked[i].courier) && v.trackid === picked[i].trackid));
+    if(mxNew.length && $('f_mxBook').checked){
+      btn.textContent = 'Booking with Mark Express…';
+      try{ mxMsg = mxBookHtml(await mxBookOrders(mxNew)); }catch(e){ mxMsg = '<div class="mxb-res bad"><b>✕ Not booked with Mark Express</b> · ' + esc(e.message || e) + '</div>'; }
+    }
     raBusy = false; raClose();
     const saItems = orders.map((v,i)=>({ v, r: res.orders[i] })).filter(x=>isSA(x.v.courier) && x.r);
     if(saItems.length){
@@ -4851,7 +4872,7 @@ $('raGo').addEventListener('click', async ()=>{
     }
     const freed = res.released ? ` ${res.released} old Shree Anjani AWB${res.released>1?'s are':' is'} free again.` : '';
     $('logStatus').innerHTML = `<span class="ok">${orders.length} order${orders.length>1?'s':''} reassigned and reprinted. The Label Log is updated.${freed}</span>` +
-      (rejected.length ? `<br><span class="bad">Not printed (AWB not in the Shree Anjani tab): ${esc(rejected.join(' · '))}</span>` : '');
+      (rejected.length ? `<br><span class="bad">Not printed (AWB not in the Shree Anjani tab): ${esc(rejected.join(' · '))}</span>` : '') + mxMsg;
     if(rejected.length) alert('Not printed, the AWB is not in the Shree Anjani tab:\n' + rejected.join('\n'));
   }catch(err){
     console.error(err);
@@ -5630,7 +5651,7 @@ $('intlGo').addEventListener('click', async ()=>{
       ls.set('boxup.notes.gate', Object.assign({}, seen && new Date().toDateString() === ls.get('boxup.notes.gateday', '') ? seen : {}, now)); ls.set('boxup.notes.gateday', new Date().toDateString());
     } catch(x){}
   }
-  // 4. partner updates from the Partner page (shows the name the person gave on that page)
+  // 4. partner updates from the Shree Anjani partner page
   let PV = '';
   async function partner(){
     try {
