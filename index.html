@@ -199,6 +199,11 @@
   .mxb-res{margin-top:8px;border-radius:10px;padding:9px 12px;font-size:13px;border:1px solid #b7dcc3;border-left:5px solid #1d7a3e;background:#fff}.mxb-res.bad{border-color:#efc9c5;border-left-color:#b3261e}.mxb-res b{color:#1d7a3e}.mxb-res.bad b{color:#b3261e}.mxb-res small{display:block;color:#6e6b60;margin-top:2px}
   .porter-row{grid-column:1 / -1;background:#f4f4f2;border:1.5px solid #111;border-radius:8px;padding:8px 10px;}
   .porter-in{display:grid;grid-template-columns:1fr 1fr 1.6fr;gap:8px;}
+  .ppay{grid-column:1 / -1}.ppay-seg{display:flex;border:1.5px solid #1E3A2E;border-radius:7px;overflow:hidden;margin-top:3px}.ppay-seg button{flex:1;border:0;background:#fff;color:#1E3A2E;font:700 14px Inter,Arial,sans-serif;padding:9px 6px;cursor:pointer}.ppay-seg button+button{border-left:1.5px solid #1E3A2E}.ppay-seg button.on{background:#1E3A2E;color:#fff}
+  .rv-ppay select{width:100%}
+  .label .pt-pay{align-self:center;margin-top:2.5mm;background:#000;color:#fff;border-radius:2mm;padding:1.2mm 8mm 1.5mm;text-align:center;font-family:'Inter',Arial,sans-serif;flex:none}
+  .label .pt-pay b{display:block;font-family:'Arial Black','Inter',Arial,sans-serif;font-weight:900;font-size:21px;letter-spacing:.14em;line-height:1.15}
+  .label .pt-pay small{display:block;font-weight:800;font-size:7.5px;letter-spacing:.2em}
   .porter-in small{display:block;font-size:11px;font-weight:600;color:#555;margin-bottom:3px}.porter-in small i{font-weight:400}
   .porter-in input{width:100%;}
   .porter-in .pmap{grid-column:1 / -1}
@@ -1051,6 +1056,7 @@
             <div><small>Dispatch date</small><input type="date" id="f_pDate" autocomplete="off"></div>
             <div><small>Dispatch time</small><input type="time" id="f_pTime" autocomplete="off"></div>
             <div><small>Vehicle number <i>(optional)</i></small><input type="text" id="f_pVeh" placeholder="Leave blank to write by hand" autocomplete="off"></div>
+            <div class="ppay"><small>Payment <b style="color:#9E2B25">*</b> <i>(printed on the label)</i></small><input type="hidden" id="f_pPay" value="prepaid"><div class="ppay-seg" id="pPaySeg"><button type="button" data-v="prepaid" class="on">&#10003; Pre-paid</button><button type="button" data-v="topay">To pay</button></div></div>
             <label class="pqr"><input type="checkbox" id="f_pQR"><span><b>Print address QR code</b><small>Driver scans it to open the address in Google Maps</small></span></label>
             <div class="pmap" id="pMapBox" hidden><small>&#128205; Map link <i>(optional, Google Maps · goes in the QR code)</i></small><div class="pmap-in"><input type="url" id="f_pMap" placeholder="Paste the Google Maps link, e.g. https://maps.app.goo.gl/…" autocomplete="off"><a id="pMapOpen" target="_blank" rel="noopener" title="Open the link to check it">Check &#8599;</a></div><span id="pMapNote" class="pmap-note">No link: the QR opens the address in Google Maps</span></div>
           </div></div>
@@ -1749,6 +1755,7 @@ function normPorterDate(x){
   return s;
 }
 /* 4:30 pm, 16:30, 4 PM or an Excel time fraction -> 16:30 */
+function normPay(x){ return /to\s*-?\s*pay|topay|post|receiver|cod/i.test(cellText(x)) ? 'topay' : 'prepaid'; }
 function normPorterTime(x){
   if(x === undefined || x === null || x === '') return '';
   if(typeof x === 'number' && x < 1){ const mins = Math.round(x * 1440); return String(Math.floor(mins/60)).padStart(2,'0') + ':' + String(mins%60).padStart(2,'0'); }
@@ -1789,6 +1796,7 @@ function buildPorterLabelHTML(v, boxIndex){
       <div class="pt-call"><small>CALL ON<br>ARRIVAL</small><b>${phone ? esc(phone) : dash}</b></div>
       ${v.alt ? `<div class="pt-alt">Alt contact: ${esc(v.alt)}</div>` : ''}
       <div class="pt-box">BOX <span class="n">${boxIndex}</span> OF <span class="n">${total}</span></div>
+      ${v.pPay === 'topay' ? '<div class="pt-pay"><b>TO PAY</b><small>FREIGHT TO BE PAID BY RECEIVER</small></div>' : '<div class="pt-pay"><b>PRE-PAID</b><small>DO NOT COLLECT ANY MONEY</small></div>'}
     </div>
     <div class="pt-dt"><div><span class="pt-k">DISPATCH DATE</span><b>${esc(date)}</b></div>
       <div><span class="pt-k">DISPATCH TIME</span>${time ? `<b>${esc(time)}</b>` : '<span class="blank"></span>'}</div></div>
@@ -2023,7 +2031,7 @@ function collect(){
     totalpkg: Math.min(5000, Math.max(1, parseInt($('f_totalpkg').value||'1',10) || 1)),
     hubcode: hubManual ? $('f_hub').value.trim().toUpperCase() : '',
     hubManual,
-    ...(courierIsPorter() ? { pDate: $('f_pDate').value || todayISO(), pTime: $('f_pTime').value, pVeh: $('f_pVeh').value.trim(), pMap: $('f_pMap').value.trim(), pQR: $('f_pQR').checked } : {}),
+    ...(courierIsPorter() ? { pDate: $('f_pDate').value || todayISO(), pTime: $('f_pTime').value, pVeh: $('f_pVeh').value.trim(), pPay: $('f_pPay').value === 'topay' ? 'topay' : 'prepaid', pMap: $('f_pMap').value.trim(), pQR: $('f_pQR').checked } : {}),
   };
 }
 
@@ -2320,6 +2328,7 @@ const HEADER_ALIASES = {
   pdate:    ['dispatchdate','porterdate','deliverydate','dispatchon'],
   ptime:    ['dispatchtime','portertime','deliverytime','timeofdispatch'],
   pveh:     ['vehiclenumber','vehicleno','vehicle','vehiclenum'],
+  ppay:     ['payment','paymenttype','paymentmode','prepaidtopay','prepaidortopay','pay','freight'],
   pqr:      ['qr','qrcode','addressqr','printqr'],
   pmap:     ['maplink','map','maps','googlemap','googlemaps','googlemaplink','location','locationlink','pinlocation','mappin'],
 };
@@ -2379,7 +2388,7 @@ function rowToLabelData(row){
     state: cellText(r.state),
     shiptype: shipRaw.startsWith('rev') ? 'Reverse' : 'Forward',
     courier: isSA(cellText(r.courier)) ? 'Shree Anjani' : isMX(cellText(r.courier)) ? MX_NAME : isInHouse(cellText(r.courier)) ? 'In-house' : isPorter(cellText(r.courier)) ? 'Porter' : cellText(r.courier),
-    ...(isPorter(cellText(r.courier)) ? { pDate: normPorterDate(r.pdate) || todayISO(), pTime: normPorterTime(r.ptime), pVeh: cellText(r.pveh), pMap: cellText(r.pmap), pQR: /^\s*y/i.test(cellText(r.pqr)) || !!cellText(r.pmap) } : {}),
+    ...(isPorter(cellText(r.courier)) ? { pDate: normPorterDate(r.pdate) || todayISO(), pTime: normPorterTime(r.ptime), pVeh: cellText(r.pveh), pPay: normPay(r.ppay), pMap: cellText(r.pmap), pQR: /^\s*y/i.test(cellText(r.pqr)) || !!cellText(r.pmap) } : {}),
     trackid: cellText(r.trackid).replace(/\.0+$/,''),
     ...(()=>{
       const ids = splitList(cellText(r.trackid).replace(/\.0+$/,''));
@@ -2942,6 +2951,7 @@ function rvCardHTML(o, i){
         <div class="rv-f"><label>Dispatch date</label><input type="date" data-i="${i}" data-k="pDate" value="${esc(v.pDate||'')}"></div>
         <div class="rv-f"><label>Dispatch time</label><input type="time" data-i="${i}" data-k="pTime" value="${esc(v.pTime||'')}"></div>
         <div class="rv-f"><label>Vehicle number</label><input type="text" data-i="${i}" data-k="pVeh" value="${esc(v.pVeh||'')}" placeholder="optional" autocomplete="off"></div>
+        <div class="rv-f rv-ppay"><label>Payment</label><select data-i="${i}" data-k="pPay"><option value="prepaid"${v.pPay==='topay'?'':' selected'}>Pre-paid</option><option value="topay"${v.pPay==='topay'?' selected':''}>To pay</option></select></div>
         <div class="rv-f rv-pmap"><label>Map link</label><input type="url" data-i="${i}" data-k="pMap" value="${esc(v.pMap||'')}" placeholder="optional Google Maps link" autocomplete="off"></div>
         <label class="rv-cb rv-pqr"><input type="checkbox" data-i="${i}" data-k="pQR" ${v.pQR?'checked':''}> Print address QR</label></div>
     </div></div>`;
@@ -3284,7 +3294,7 @@ function newBatchId(){ return 'B-' + Date.now().toString(36) + Math.random().toS
 /* the order exactly as printed, saved in the log so the PDF can be rebuilt later */
 function labelSnapshot(v){
   const keep = ['sender','name','company','phone','phoneDial','alt','address','landmark','pincode','city','state','shiptype','courier',
-    'trackid','trkAllLabels','mode','orderid','totalpkg','hubcode','hubManual','shipDate','awbSeries','trackPer','intl','country','countryIso','phoneText','pDate','pTime','pVeh','pMap','pQR'];
+    'trackid','trkAllLabels','mode','orderid','totalpkg','hubcode','hubManual','shipDate','awbSeries','trackPer','intl','country','countryIso','phoneText','pDate','pTime','pVeh','pPay','pMap','pQR'];
   const o = {}; keep.forEach(k=>{ if(v[k] !== undefined && v[k] !== '' && v[k] !== null) o[k] = v[k]; });
   return o;
 }
@@ -3481,6 +3491,8 @@ function pMapNote(){ const v = $('f_pMap').value.trim(), n = $('pMapNote'), a = 
 $('f_pMap').addEventListener('input', () => { if($('f_pMap').value.trim() && !$('f_pQR').checked){ $('f_pQR').checked = true; pQRUI(); } pMapNote(); });
 function pQRUI(){ $('pMapBox').hidden = !$('f_pQR').checked; render(); }
 $('f_pQR').addEventListener('change', pQRUI);
+function setPay(val){ $('f_pPay').value = val === 'topay' ? 'topay' : 'prepaid'; document.querySelectorAll('#pPaySeg button').forEach(b => { const on = b.dataset.v === $('f_pPay').value; b.classList.toggle('on', on); b.innerHTML = (on ? '&#10003; ' : '') + (b.dataset.v === 'topay' ? 'To pay' : 'Pre-paid'); }); }
+$('pPaySeg').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; setPay(b.dataset.v); render(); });
 $('awbPrev').addEventListener('click', ()=> pickSa(saManual ? 0 : saIdx - 1));
 $('awbNext').addEventListener('click', ()=> pickSa(saManual ? 0 : saIdx + 1));
 $('f_trackid').addEventListener('input', ()=>{
@@ -4566,7 +4578,7 @@ $('rsGo').addEventListener('click', async () => {
       city: P.city, state: P.state, courier: P.courier, mode: P.mode || base.mode || 'Surface Shipping', shiptype: base.shiptype || 'Forward',
       totalpkg: Math.min(5000, Math.max(1, parseInt(P.totalpkg, 10) || 1)), sender: P.sender || base.sender || '', company: base.company || P.company || '',
       shipDate: todayLabelDate(), tracklink: '', trackAuto: false, trackPer: null, awbSeries: false, trkAllLabels: false, labelNote: String(P.labelNote || '') });
-    if(isPorter(v.courier)){ v.pDate = todayISO(); v.pTime = ''; v.pVeh = ''; } else { delete v.pDate; delete v.pTime; delete v.pVeh; delete v.pMap; v.pQR = false; }
+    if(isPorter(v.courier)){ v.pDate = todayISO(); v.pTime = ''; v.pVeh = ''; v.pPay = v.pPay || 'prepaid'; } else { delete v.pDate; delete v.pTime; delete v.pVeh; delete v.pPay; delete v.pMap; v.pQR = false; }
     if(isMX(v.courier)) v.courier = MX_NAME;
     if(P.awb === 'sa'){ v.courier = isMX(P.courier) ? MX_NAME : SA_NAME; v.trackid = ''; v.trackAuto = true; v.awbSeries = v.totalpkg > 1; }   // 'sa' = next free AWB of the courier's own tab (Shree Anjani or Mark Express)
     else if(P.awb === 'none'){ v.trackid = ''; }
@@ -5093,7 +5105,7 @@ function resetAll(){
   if(typeof pinRequestId !== 'undefined') pinRequestId++;   // ignore any PIN lookup still running
   render();
   $('validation_note').innerHTML = '';
-  try{ $('f_pQR').checked = false; $('pMapBox').hidden = true; pMapNote(); }catch(e){}
+  try{ $('f_pQR').checked = false; $('pMapBox').hidden = true; pMapNote(); setPay('prepaid'); }catch(e){}
   $('f_name').focus();
 }
 $('resetBtn').addEventListener('click', (e)=>{ e.stopPropagation(); $('resetPop').hidden = !$('resetPop').hidden; });
