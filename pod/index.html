@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BoxUp · POD Center</title>
+<link rel="icon" href="../favicon.png">
+<style>
+:root{--g:#1e4a2c;--g2:#1e7b3c;--gl:#e3f4e8;--bg:#f4f1e8;--ln:#e3e0d6;--mu:#6b716c;--am:#b26a00;--aml:#fff3d6;--rd:#b3261e;--rdl:#fff1f0;--bl:#1d5c96}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,"Segoe UI",Arial,sans-serif;color:#1b1f1c;font-size:14px}
+button,input,select{font:inherit}button{cursor:pointer}
+.top{background:var(--g);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.logo{font:700 20px Georgia,serif;letter-spacing:.14em}.logo small{display:block;font:700 7px Inter,Arial;letter-spacing:.32em}
+.top h1{margin:0;font:700 20px Georgia,serif}.top p{margin:2px 0 0;font-size:12.5px;opacity:.8}.sp{flex:1}
+.tb{background:#fff;color:var(--g);border:0;border-radius:10px;padding:8px 14px;font-weight:800;font-size:13.5px}.tb.o{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.6)}
+.me{font-size:12.5px;opacity:.9}.me u{cursor:pointer}
+.wrap{padding:16px 24px 40px}
+.k{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.k button{background:#fff;border-radius:14px;padding:11px 14px;border:1.5px solid var(--ln);text-align:left}.k button.on{border-color:var(--g)}.k button:disabled{color:inherit;cursor:default}
+.k small{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--mu)}.k b{display:block;font-size:27px;margin-top:2px}.k i{font-style:normal;font-size:12px;color:var(--mu)}
+.bar{display:flex;gap:10px;margin:14px 0 10px;align-items:center;flex-wrap:wrap}
+.srch{flex:1;min-width:240px;background:#fff;border:1.5px solid #cfd8cf;border-radius:12px;padding:10px 14px;font-size:14.5px;outline:0}
+.sel{background:#fff;border:1.5px solid var(--ln);border-radius:10px;padding:9px 10px;font-size:13.5px;font-weight:700}
+.tabs{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}.tabs button{border-radius:20px;padding:7px 14px;font-weight:800;font-size:13px;background:#fff;border:1.5px solid var(--ln)}
+.tabs .on{background:var(--g);color:#fff;border-color:var(--g)}.tabs .p{background:var(--aml);color:var(--am);border-color:#f5d08a}.tabs .r{background:var(--rdl);color:#9f1d1d;border-color:#f1b9b9}
+.tabs .p.on,.tabs .r.on{color:#fff}.tabs .p.on{background:var(--am);border-color:var(--am)}.tabs .r.on{background:var(--rd);border-color:var(--rd)}
+.hint{font-size:12.5px;color:var(--mu);margin:0 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:12px}
+.pc{background:#fff;border-radius:14px;overflow:hidden;border:1px solid var(--ln);cursor:pointer;display:flex;flex-direction:column}.pc:hover{box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.ph{height:130px;position:relative;background:#ece7da;display:flex;align-items:center;justify-content:center;overflow:hidden}.ph img{width:100%;height:100%;object-fit:cover}.ph .doc{font-size:34px;color:#8a8f8a}
+.tag{position:absolute;top:8px;border-radius:8px;padding:1px 7px;font-size:10.5px;font-weight:900}.tag.new{left:8px;background:var(--g2);color:#fff}.tag.nn{right:8px;background:rgba(0,0,0,.6);color:#fff}
+.pb{padding:9px 10px;flex:1;display:flex;flex-direction:column}.r1{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:13px}
+.st{border-radius:6px;padding:1px 6px;font-size:10.5px;font-weight:800;white-space:nowrap}.st.d{background:var(--gl);color:var(--g2)}.st.n{background:var(--aml);color:var(--am)}.st.x{background:var(--rdl);color:var(--rd)}
+.nm{font-size:12.5px;margin-top:3px}.mt{font-size:11.5px;color:var(--mu);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cb{background:#e6f2e9;color:var(--g);border-radius:5px;padding:0 5px;font-weight:800;margin-right:4px}
+.up{font-size:11px;color:var(--bl);margin-top:auto;padding-top:5px;font-weight:700}
+.bt{display:flex;gap:4px;margin-top:7px}.bt a,.bt button{flex:1;text-align:center;border:1px solid var(--ln);background:#fff;border-radius:7px;padding:5px 0;font-size:11px;font-weight:800;color:#1b1f1c;text-decoration:none}.bt .wa{background:var(--gl);color:var(--g2);border-color:#bfe3cb}
+.pn{background:#fff;border-radius:14px;border:1px solid var(--ln);overflow:hidden;margin-bottom:14px}
+.pn h2{margin:0;padding:11px 16px;font:700 16px Georgia,serif;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pn h2 em{margin-left:auto;font:700 12.5px Inter,Arial;font-style:normal}
+.pn.red h2{background:var(--rdl);color:#9f1d1d;border-bottom:1px solid #f6cfcb}.pn.amb h2{background:#fff8ea;border-bottom:1px solid #f0e2c2}
+.pn .note{padding:8px 16px;font-size:12.5px;color:var(--mu)}
+table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;font-size:11px;letter-spacing:.06em;color:var(--mu);padding:8px 10px;border-bottom:1px solid var(--ln)}td{padding:8px 10px;border-bottom:1px solid #f1eee5;vertical-align:middle}
+tr.cl{cursor:pointer}tr.cl:hover td{background:#faf8f2}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--g)}
+.b2{display:inline-block;border:1.5px solid var(--g);color:var(--g);background:#fff;border-radius:8px;padding:4px 9px;font-weight:800;font-size:12px;white-space:nowrap}
+.b2.d{background:var(--g2);color:#fff;border-color:var(--g2)}.b2.w{border-color:#25d366;color:#128c4a}.b2.x{border-color:#e2a6a1;color:var(--rd)}.b2:disabled{opacity:.5}
+.more{display:block;margin:14px auto 0;background:#fff;border:1.5px solid var(--g);color:var(--g);border-radius:10px;padding:9px 18px;font-weight:800}
+.empty{padding:26px;text-align:center;color:var(--mu)}
+.load{padding:60px;text-align:center;color:var(--mu);font-size:15px}
+.ov{position:fixed;inset:0;background:rgba(20,30,22,.38);z-index:20;display:none}.ov.on{display:block}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(470px,100%);background:#fff;box-shadow:-10px 0 40px rgba(0,0,0,.2);overflow:auto;z-index:21;transform:translateX(105%);transition:transform .2s}.dr.on{transform:none}
+.dh{background:var(--g);color:#fff;padding:13px 18px;display:flex;align-items:flex-start;gap:10px;position:sticky;top:0;z-index:1}.dh b{font:700 18px Georgia,serif}.dh .s{opacity:.85;font-size:12.5px}.dh button{margin-left:auto;background:none;border:0;color:#fff;font-size:22px;line-height:1}
+.db{padding:14px 18px 22px}
+.fl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.fi{border:1px solid var(--ln);border-radius:10px;overflow:hidden}.fi .im{height:100px;background:#ece7da;display:flex;align-items:center;justify-content:center}.fi img{width:100%;height:100%;object-fit:cover}
+.fi .ac{display:flex}.fi .ac a,.fi .ac button{flex:1;text-align:center;border:0;border-top:1px solid var(--ln);background:#fff;padding:5px 0;font-size:11px;font-weight:800;color:#1b1f1c;text-decoration:none}.fi .ac button{color:var(--rd);border-left:1px solid var(--ln)}
+.add{border:2px dashed #b9d3c0;border-radius:10px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:800;color:var(--g);min-height:126px;cursor:pointer;background:#fafcf9}
+.lb{font-size:11.5px;font-weight:800;letter-spacing:.08em;color:var(--mu);margin:16px 0 6px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f{display:block;font-size:12px;color:#475569;font-weight:700}.f input,.f select{display:block;width:100%;margin-top:4px;padding:9px;border:1.5px solid #cbd5e1;border-radius:9px;font-size:14px;background:#fff}
+.hist{font-size:12.5px;color:#475569;line-height:1.85}
+.go{margin-top:14px;width:100%;background:var(--g2);color:#fff;border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:800}.go:disabled{opacity:.5}
+.err{color:var(--rd);font-size:12.5px;font-weight:700;margin-top:8px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1b1f1c;color:#fff;border-radius:12px;padding:11px 16px;font-size:13.5px;font-weight:700;z-index:40;display:none;max-width:90%}
+@media(max-width:900px){.k{grid-template-columns:repeat(2,1fr)}.top h1{font-size:17px}}
+</style></head><body>
+<div class="top"><div class="logo">BOXUP<small>LUXURY GIFTING</small></div><div><h1>POD Center</h1><p>Every proof of delivery in one place · Partner page and BoxUp team</p></div><div class="sp"></div>
+<span class="me" id="me"></span><button class="tb o" id="refresh">&#8635; Refresh</button><button class="tb o" id="exp">&#11015; Export list</button><button class="tb" id="upBtn">&#11014; Upload POD</button></div>
+<div class="wrap">
+<div class="k" id="kp"></div>
+<div class="bar"><input class="srch" id="q" placeholder="&#128269; Search order ID, AWB, name or company…"><select class="sel" id="fCo"></select><select class="sel" id="fCou"></select><select class="sel" id="fDt"><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="0">All time</option></select></div>
+<div class="tabs" id="tabs"></div>
+<div id="main"><div class="load">Loading the Label Log…</div></div>
+</div>
+<div class="ov" id="ov"></div><div class="dr" id="dr"></div>
+<input type="file" id="file" accept="image/*,application/pdf" multiple hidden>
+<div class="toast" id="toast"></div>
+<script>
+const LOG_URL = 'https://script.google.com/macros/s/AKfycbxkWlpzmubWJwgFQF7cCDAegDHDFpst-j2AnoLVrk3rVnZL9CuOukEIC_GR43gUlL7e/exec';
+const PARTNER_URL = 'https://logisticsboxup.github.io/boxup-partner/';
+const STEPS = ['Ready', 'Dispatched', 'In Transit', 'At Destination', 'Out for Delivery', 'Delivered'];
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let ALL = [], TAB = 'new', SHOW = 60, SEL = null, UPFOR = null;
+let ME = ''; try { ME = localStorage.getItem('boxup.pod.me') || ''; } catch(e) {}
+function toast(t, ms){ const e = $('toast'); e.innerHTML = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', ms || 2600); }
+function who(){ if(!ME){ ME = (prompt('Your name (saved with every change you make here):', '') || '').trim(); if(ME) try { localStorage.setItem('boxup.pod.me', ME); } catch(e){} } drawMe(); return ME; }
+function drawMe(){ $('me').innerHTML = ME ? 'Saving as <b>' + esc(ME) + '</b> · <u id="chMe">change</u>' : ''; const c = $('chMe'); if(c) c.onclick = () => { ME = ''; try { localStorage.removeItem('boxup.pod.me'); } catch(e){} who(); }; }
+const via = () => 'POD Center · ' + (ME || 'BoxUp') + ' (BoxUp team)';
+
+/* ---------- dates ---------- */
+const MON = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+function pDate(s){ s = String(s || ''); let m = /(\d{1,2})-([A-Za-z]{3})-(\d{4})(?:\s+(\d{1,2}):(\d{2})\s*([AP]M)?)?/i.exec(s);
+  if(m){ let h = +(m[4] || 0); if(m[6]){ h = h % 12 + (/p/i.test(m[6]) ? 12 : 0); } return new Date(+m[3], MON[m[2].toLowerCase()], +m[1], h, +(m[5] || 0)).getTime(); }
+  const t = Date.parse(s); return isNaN(t) ? 0 : t; }
+const dShort = t => t ? new Date(t).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'numeric', minute:'2-digit'}) : '';
+const iso = t => { const d = new Date(t || Date.now()); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const today0 = () => { const d = new Date(); d.setHours(0,0,0,0); return d.getTime(); };
+
+/* ---------- POD links ---------- */
+const podList = s => String(s || '').split(/\s*,\s*/).filter(x => /^https?:/.test(x));
+const fid = u => (/\/d\/([^/?#]+)/.exec(u) || /[?&]id=([^&#]+)/.exec(u) || [])[1] || '';
+const thumb = u => fid(u) ? 'https://drive.google.com/thumbnail?id=' + fid(u) + '&sz=w400' : '';
+const dl = u => fid(u) ? 'https://drive.google.com/uc?export=download&id=' + fid(u) : u;
+
+/* ---------- load ---------- */
+async function load(fresh){
+  try {
+    const d = await fetch(LOG_URL + '?action=sales' + (fresh ? '&fresh=1' : '') + '&t=' + Date.now()).then(r => r.json());
+    const H = d.headers || [], ix = n => H.indexOf(n), g = (r, n) => { const i = ix(n); return i < 0 ? '' : String(r[i] == null ? '' : r[i]).trim(); };
+    const seen = {}; ALL = [];
+    (d.rows || []).forEach(r => { const id = g(r, 'Order ID'); if(!id || seen[id.toLowerCase()]) return; seen[id.toLowerCase()] = 1;
+      const o = { id, name: g(r, 'Name'), co: g(r, 'Sender Company') || g(r, 'Company'), city: g(r, 'City'), pin: g(r, 'Pincode'), ph: g(r, 'Phone'), cou: g(r, 'Courier'), awb: g(r, 'Tracking ID'),
+        os: g(r, 'Order Status'), pr: g(r, 'Problem'), dd: g(r, 'Delivered Date'), pod: podList(g(r, 'POD')), recv: g(r, 'Partner Received By'), pup: g(r, 'Partner Updated'), pby: g(r, 'Partner By'),
+        ps: g(r, 'Partner Status'), tl: g(r, 'Partner Timeline'), at: g(r, 'Logged at'), boxes: g(r, 'Total Boxes') };
+      o.pupT = pDate(o.pup); o.ddT = pDate(o.dd); o.atT = pDate(o.at);
+      o.podT = podTime(o); o.del = /^delivered/i.test(o.os); o.cancel = /cancel/i.test(o.os);
+      ALL.push(o); });
+    fillFilters(); draw();
+  } catch(e){ $('main').innerHTML = '<div class="load">Could not reach the Label Log. Check the internet and press Refresh.<br><small>' + esc(e.message) + '</small></div>'; }
+}
+/* time of the latest POD upload: last timeline line that mentions POD, else Partner Updated */
+function podTime(o){ if(!o.pod.length) return 0; let t = 0;
+  String(o.tl || '').split(' ; ').forEach(l => { const p = l.split(' | '); if(/POD/i.test(p[0] || '') && !/removed/i.test(p[0])) t = Math.max(t, pDate(p[1])); });
+  return t || o.pupT || o.atT; }
+function podBy(o){ let b = ''; String(o.tl || '').split(' ; ').forEach(l => { const p = l.split(' | '); if(/POD/i.test(p[0] || '') && !/removed/i.test(p[0])) b = p[2] || b; }); return b || o.pby || 'Partner'; }
+
+/* ---------- filters ---------- */
+function fillFilters(){
+  const keep = [$('fCo').value, $('fCou').value];
+  const cnt = k => { const m = {}; ALL.filter(o => o.pod.length || o.del).forEach(o => { const v = o[k] || '(none)'; m[v] = (m[v] || 0) + 1; }); return Object.entries(m).sort((a, b) => b[1] - a[1]); };
+  $('fCo').innerHTML = '<option value="">Company: All</option>' + cnt('co').map(([k, n]) => `<option value="${esc(k)}">${esc(k)} (${n})</option>`).join('');
+  $('fCou').innerHTML = '<option value="">Courier: All</option>' + cnt('cou').map(([k, n]) => `<option value="${esc(k)}">${esc(k)} (${n})</option>`).join('');
+  $('fCo').value = keep[0]; $('fCou').value = keep[1];
+}
+function base(){
+  const q = $('q').value.trim().toLowerCase(), co = $('fCo').value, cou = $('fCou').value;
+  return ALL.filter(o => !o.cancel && (!co || (o.co || '(none)') === co) && (!cou || (o.cou || '(none)') === cou) &&
+    (!q || [o.id, o.awb, o.name, o.co, o.city, o.pin].join(' ').toLowerCase().includes(q)));
+}
+const inDays = (t, d) => !+d || (t && t >= Date.now() - d * 864e5);
+
+/* ---------- draw ---------- */
+function sets(){
+  const B = base(), dd = $('fDt').value, t0 = today0();
+  const withPod = B.filter(o => o.pod.length).sort((a, b) => b.podT - a.podT);
+  return {
+    newU: withPod.filter(o => o.podT >= Date.now() - 2 * 864e5),
+    all: withPod.filter(o => inDays(o.podT, dd)),
+    pend: B.filter(o => o.del && !o.pod.length && inDays(o.ddT || o.pupT || o.atT, dd)).sort((a, b) => (b.ddT || b.atT) - (a.ddT || a.atT)),
+    notDel: withPod.filter(o => !o.del),
+    today: withPod.filter(o => o.podT >= t0),
+    delTotal: B.filter(o => o.del).length, podTotal: withPod.length
+  };
+}
+function draw(){
+  const S = sets();
+  $('kp').innerHTML = [
+    ['all', 'POD UPLOADED', S.podTotal, 'of ' + S.delTotal + ' delivered', '#1e7b3c'],
+    ['pend', 'POD PENDING', S.pend.length, 'delivered, no POD yet', '#b26a00'],
+    ['new', 'UPLOADED TODAY', S.today.length, S.newU.length + ' in the last 2 days', ''],
+    ['notDel', 'POD BUT NOT DELIVERED', S.notDel.length, 'status still not Delivered', '#b3261e'],
+    ['', 'DELIVERED WITH POD', S.delTotal ? Math.round(100 * (S.delTotal - B_pend()) / S.delTotal) + '%' : '-', 'of all delivered orders', '']
+  ].map(([t, l, n, s, c]) => `<button ${t ? `data-t="${t}"` : 'disabled'} class="${TAB === t ? 'on' : ''}"><small>${l}</small><b style="color:${c || 'inherit'}">${n}</b><i>${s}</i></button>`).join('');
+  $('tabs').innerHTML = [['new', '&#127381; New uploads ' + S.newU.length, ''], ['all', 'All PODs ' + S.all.length, ''], ['pend', '&#9888; Pending ' + S.pend.length, 'p'], ['notDel', '&#10067; POD but not Delivered ' + S.notDel.length, 'r']]
+    .map(([t, l, c]) => `<button data-t="${t}" class="${c} ${TAB === t ? 'on' : ''}">${l}</button>`).join('');
+  document.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { TAB = b.dataset.t; SHOW = 60; draw(); });
+  const M = $('main');
+  if(TAB === 'new' || TAB === 'all'){
+    const L = TAB === 'new' ? S.newU : S.all;
+    M.innerHTML = `<p class="hint">${TAB === 'new' ? 'PODs uploaded in the last 2 days, newest first. NEW = uploaded today.' : 'Every order with a POD, newest upload first.'} Click a card to see or change it.</p>` +
+      (L.length ? `<div class="grid">${L.slice(0, SHOW).map(card).join('')}</div>` + (L.length > SHOW ? `<button class="more" id="more">Show more (${L.length - SHOW} left)</button>` : '') : '<div class="empty">No PODs here for these filters.</div>');
+  } else if(TAB === 'pend'){
+    const L = S.pend;
+    M.innerHTML = `<div class="pn amb"><h2>&#9888; Delivered but POD pending<em>${L.length} · <button class="b2 w" id="askSel">&#128172; Ask partner for ticked</button></em></h2>
+      <div class="note">Upload the POD yourself, or ask the partner on WhatsApp (opens the Partner page for that order).</div>
+      ${L.length ? `<table><tr><th><input type="checkbox" id="ckAll"></th><th>ORDER ID</th><th>NAME</th><th>COMPANY</th><th>COURIER · AWB</th><th>DELIVERED</th><th></th></tr>${L.slice(0, SHOW).map(o => `<tr class="cl" data-o="${esc(o.id)}"><td><input type="checkbox" data-ck="${esc(o.id)}"></td><td><b>${esc(o.id)}</b></td><td>${esc(o.name)}</td><td>${esc(o.co)}</td><td>${esc(o.cou)} · ${esc(o.awb.split(/[,\s]+/)[0])}</td><td>${esc(o.dd || '-')}</td><td style="white-space:nowrap"><button class="b2" data-up="${esc(o.id)}">&#11014; Upload</button> <button class="b2 w" data-ask="${esc(o.id)}">&#128172; Ask partner</button></td></tr>`).join('')}</table>` : '<div class="empty">Every delivered order has a POD.</div>'}
+      ${L.length > SHOW ? `<button class="more" id="more">Show more (${L.length - SHOW} left)</button>` : ''}</div>`;
+  } else {
+    const L = S.notDel;
+    M.innerHTML = `<div class="pn red"><h2>&#10067; POD uploaded but not marked Delivered<em>${L.length} orders · <button class="b2 d" id="delSel">&#10004; Mark ticked as Delivered</button></em></h2>
+      <div class="note">These have a POD but the order status is not Delivered. Check the POD, then mark Delivered (delivered date = the POD upload date).</div>
+      ${L.length ? `<table><tr><th><input type="checkbox" id="ckAll"></th><th>ORDER ID</th><th>NAME</th><th>COMPANY</th><th>COURIER · AWB</th><th>OUR STATUS</th><th>PARTNER SAID</th><th></th><th></th></tr>${L.slice(0, SHOW).map(o => `<tr class="cl" data-o="${esc(o.id)}"><td><input type="checkbox" data-ck="${esc(o.id)}" ${/deliver/i.test(o.ps) ? 'checked' : ''}></td><td><b>${esc(o.id)}</b></td><td>${esc(o.name)}</td><td>${esc(o.co)}</td><td>${esc(o.cou)} · ${esc(o.awb.split(/[,\s]+/)[0])}</td><td><span class="st n">${esc(o.os || 'Ready')}${o.pr ? ' · ' + esc(o.pr) : ''}</span></td><td style="color:${/deliver/i.test(o.ps) ? '#1e7b3c' : '#b26a00'};font-weight:700">${esc(o.ps || '-')} · ${esc(dShort(o.podT))}</td><td><a href="${esc(o.pod[0])}" target="_blank" style="color:#1d5c96;font-weight:800;text-decoration:none" onclick="event.stopPropagation()">&#128065; POD</a></td><td><button class="b2 d" data-del="${esc(o.id)}">&#10004; Mark Delivered</button></td></tr>`).join('')}</table>` : '<div class="empty">Nothing here. Every order with a POD is marked Delivered.</div>'}
+      ${L.length > SHOW ? `<button class="more" id="more">Show more (${L.length - SHOW} left)</button>` : ''}</div>`;
+  }
+  wire();
+}
+function B_pend(){ return base().filter(o => o.del && !o.pod.length).length; }
+function card(o){
+  const n = o.pod.length, th = thumb(o.pod[0]), isNew = o.podT >= today0();
+  return `<div class="pc" data-o="${esc(o.id)}"><div class="ph">${th ? `<img loading="lazy" src="${th}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'doc',innerHTML:'&#128196;'}))">` : '<span class="doc">&#128196;</span>'}${isNew ? '<span class="tag new">NEW</span>' : ''}${n > 1 ? `<span class="tag nn">${n} files</span>` : ''}</div>
+  <div class="pb"><div class="r1"><b>${esc(o.id)}</b>${o.del ? '<span class="st d">&#10004; Delivered</span>' : `<span class="st x">${esc(o.os || 'Ready')}</span>`}</div>
+  <div class="nm">${esc(o.name)}${o.city ? ' · ' + esc(o.city) : ''}</div><div class="mt"><span class="cb">${esc(o.cou || '-')}</span>${esc(o.awb.split(/[,\s]+/)[0])}</div><div class="mt">${esc(o.co || '')}</div>
+  <div class="up">&#11014; ${esc(podBy(o))} · ${esc(dShort(o.podT))}</div>
+  <div class="bt"><a href="${esc(o.pod[0])}" target="_blank" onclick="event.stopPropagation()">&#128065; View</a><a href="${esc(dl(o.pod[0]))}" target="_blank" onclick="event.stopPropagation()">&#11015; Download</a><button class="wa" data-share="${esc(o.id)}">&#128172; Share</button></div></div></div>`;
+}
+function wire(){
+  const mo = $('more'); if(mo) mo.onclick = () => { SHOW += 60; draw(); };
+  document.querySelectorAll('[data-o]').forEach(e => e.onclick = ev => { if(ev.target.closest('button,a,input')) return; openO(e.dataset.o); });
+  document.querySelectorAll('[data-share]').forEach(b => b.onclick = ev => { ev.stopPropagation(); share(find(b.dataset.share)); });
+  document.querySelectorAll('[data-up]').forEach(b => b.onclick = ev => { ev.stopPropagation(); pickUpload(b.dataset.up); });
+  document.querySelectorAll('[data-ask]').forEach(b => b.onclick = ev => { ev.stopPropagation(); ask([find(b.dataset.ask)]); });
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = ev => { ev.stopPropagation(); markDel([b.dataset.del]); });
+  const ca = $('ckAll'); if(ca) ca.onchange = () => document.querySelectorAll('[data-ck]').forEach(c => c.checked = ca.checked);
+  const ticked = () => [...document.querySelectorAll('[data-ck]')].filter(c => c.checked).map(c => c.dataset.ck);
+  const as = $('askSel'); if(as) as.onclick = () => { const t = ticked(); if(!t.length) return toast('Tick the orders first'); ask(t.map(find)); };
+  const ds = $('delSel'); if(ds) ds.onclick = () => { const t = ticked(); if(!t.length) return toast('Tick the orders first'); markDel(t); };
+}
+const find = id => ALL.find(o => o.id === id);
+
+/* ---------- actions ---------- */
+function share(o){ if(!o) return;
+  const t = `Proof of delivery · ${o.id}${o.name ? ' · ' + o.name : ''}${o.city ? ', ' + o.city : ''}${o.awb ? '\nAWB ' + o.awb.split(/[,\s]+/)[0] + ' (' + o.cou + ')' : ''}${o.dd ? '\nDelivered ' + o.dd : ''}\n\n${o.pod.join('\n')}\n\nBoxUp Luxury Gifting`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank'); }
+function ask(L){ L = L.filter(Boolean); if(!L.length) return;
+  const t = L.length === 1 ? `Hi, please upload the POD (proof of delivery) for order ${L[0].id}${L[0].name ? ' (' + L[0].name + ', ' + (L[0].city || '') + ')' : ''}${L[0].awb ? ', AWB ' + L[0].awb.split(/[,\s]+/)[0] : ''} on the BoxUp Partner page:\n${PARTNER_URL}?q=${encodeURIComponent(L[0].id)}\n\nThank you, BoxUp Luxury Gifting`
+    : `Hi, please upload the POD (proof of delivery) for these ${L.length} delivered orders on the BoxUp Partner page:\n\n${L.map(o => '• ' + o.id + (o.awb ? ' · AWB ' + o.awb.split(/[,\s]+/)[0] : '') + (o.name ? ' · ' + o.name : '')).join('\n')}\n\n${PARTNER_URL}\n\nThank you, BoxUp Luxury Gifting`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank'); }
+async function markDel(ids){
+  if(!who()) return toast('Type your name first');
+  const L = ids.map(find).filter(Boolean); if(!L.length) return;
+  if(!confirm('Mark ' + L.length + ' order' + (L.length > 1 ? 's' : '') + ' as Delivered?\nDelivered date = the POD upload date.')) return;
+  let ok = 0, bad = [];
+  for(const o of L){
+    toast('Saving ' + (ok + bad.length + 1) + ' of ' + L.length + '…', 60000);
+    try { const q = {action:'orderset', pin:'', id:o.id, status:'Delivered', problem:'', deliv:iso(o.podT || Date.now()), t:Date.now()};
+      const d = await fetch(LOG_URL + '?' + new URLSearchParams(q)).then(r => r.json());
+      if(d.ok){ ok++; o.os = 'Delivered'; o.del = true; o.pr = ''; o.dd = iso(o.podT); o.ddT = o.podT; } else bad.push(o.id + ': ' + (d.error || 'not saved'));
+    } catch(e){ bad.push(o.id + ': no internet'); }
+  }
+  toast('&#10004; ' + ok + ' marked Delivered' + (bad.length ? ' · ' + bad.length + ' failed: ' + esc(bad.join(', ')) : ''), 5000);
+  draw(); if(SEL) openO(SEL.id);
+}
+/* upload: pick files for an order (or ask which order) */
+function pickUpload(id){
+  if(!who()) return toast('Type your name first');
+  if(!id){ id = (prompt('Order ID or AWB for this POD:', '') || '').trim(); if(!id) return;
+    const o = ALL.find(x => x.id.toLowerCase() === id.toLowerCase() || x.awb.split(/[,\s]+/).includes(id)); if(!o) return toast('Order ' + esc(id) + ' not found in the Label Log'); id = o.id; }
+  UPFOR = id; $('file').value = ''; $('file').click(); }
+$('file').onchange = async () => {
+  const files = [...$('file').files]; const o = find(UPFOR); if(!files.length || !o) return;
+  let ok = 0;
+  for(const f of files){
+    toast('Uploading ' + (ok + 1) + ' of ' + files.length + ' for ' + esc(o.id) + '…', 120000);
+    try { const pod = await toPod(f);
+      const d = await fetch(LOG_URL, {method:'POST', body:JSON.stringify({action:'pt', op:'set', id:o.id, awb:o.awb.split(/[,\s]+/)[0], st:'', pod, via:via()})}).then(r => r.json());
+      if(!d.ok) throw new Error(d.error || 'not saved');
+      o.pod = podList(d.pod); o.podT = Date.now(); o.tl = (o.tl ? o.tl + ' ; ' : '') + 'POD uploaded | ' + new Date().toLocaleString() + ' | ' + ME + ' (BoxUp team)'; ok++;
+    } catch(e){ toast('Upload failed: ' + esc(e.message), 5000); break; }
+  }
+  if(ok){ toast('&#10004; ' + ok + ' POD file' + (ok > 1 ? 's' : '') + ' uploaded for ' + esc(o.id), 3500);
+    if(!o.del && confirm(o.id + ' is not marked Delivered yet. Mark it Delivered now?')) await markDel([o.id]); else draw();
+    if(SEL && SEL.id === o.id) openO(o.id); }
+};
+function toPod(f){ return new Promise((res, rej) => {
+  if(/pdf/i.test(f.type)){ if(f.size > 8e6) return rej(new Error('PDF is bigger than 8 MB'));
+    const r = new FileReader(); r.onload = () => res({name:f.name, mime:'application/pdf', data:String(r.result).split(',')[1]}); r.onerror = () => rej(new Error('could not read the file')); r.readAsDataURL(f); return; }
+  const img = new Image(), url = URL.createObjectURL(f);
+  img.onload = () => { const s = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res({name:f.name.replace(/\.\w+$/, '') + '.jpg', mime:'image/jpeg', data:c.toDataURL('image/jpeg', .82).split(',')[1]}); };
+  img.onerror = () => rej(new Error('not a photo or PDF')); img.src = url; }); }
+
+/* ---------- drawer: see and change one order ---------- */
+function openO(id){
+  const o = find(id); if(!o) return; SEL = o;
+  const hist = [['Label printed', o.at, '']].concat(String(o.tl || '').split(' ; ').filter(Boolean).map(l => l.split(' | ')));
+  $('dr').innerHTML = `<div class="dh"><div><b>${esc(o.id)}</b><div class="s">${esc([o.name, o.co, o.city].filter(Boolean).join(' · '))}</div></div><button id="dX">&#10005;</button></div>
+  <div class="db">
+    <div class="lb" style="margin-top:0">POD FILES (${o.pod.length})</div>
+    <div class="fl">${o.pod.map((u, i) => `<div class="fi"><div class="im">${thumb(u) ? `<img src="${thumb(u)}" alt="" onerror="this.outerHTML='&#128196;'">` : '&#128196;'}</div><div class="ac"><a href="${esc(u)}" target="_blank">View</a><a href="${esc(dl(u))}" target="_blank">&#11015;</a><button data-rm="${i}">Remove</button></div></div>`).join('')}
+      <div class="add" id="dAdd">&#10133;<br>Add photo / PDF</div></div>
+    ${o.pod.length ? `<div style="font-size:12px;color:#1d5c96;font-weight:700;margin-top:6px">&#11014; Last upload by ${esc(podBy(o))} · ${esc(dShort(o.podT))}</div>` : ''}
+    <div class="lb">CHANGE DETAILS</div>
+    <div class="g2"><label class="f">Order status<select id="eSt">${STEPS.map(s => `<option ${s === (o.os === 'Active' ? 'Ready' : o.os) ? 'selected' : ''}>${s}</option>`).join('')}</select></label>
+      <label class="f">Delivered date<input type="date" id="eDd" value="${o.ddT ? iso(o.ddT) : ''}"></label>
+      <label class="f">Received by<input id="eRv" value="${esc(o.recv)}" placeholder="e.g. Security · Ramesh"></label>
+      <label class="f">Courier<input id="eCo" value="${esc(o.cou)}"></label></div>
+    <label class="f" style="margin-top:10px">AWB / Tracking ID<input id="eAwb" value="${esc(o.awb)}"></label>
+    <div class="err" id="dErr"></div>
+    <button class="go" id="dSave">&#10004; Save changes</button>
+    <div style="display:flex;gap:8px;margin-top:8px"><button class="b2 w" style="flex:1;padding:9px" id="dShare" ${o.pod.length ? '' : 'disabled'}>&#128172; Share POD with client</button><button class="b2 w" style="flex:1;padding:9px" id="dAsk">&#128172; Ask partner for POD</button></div>
+    <div class="lb">HISTORY (cannot be changed)</div>
+    <div class="hist">${hist.map(p => `&#9679; ${esc(p[0])}${p[1] ? ' · ' + esc(p[1]) : ''}${p[2] ? ' · ' + esc(p[2]) : ''}`).join('<br>')}</div>
+    <div style="font-size:12px;color:#6b716c;margin-top:8px">Our status: <b>${esc(o.os || 'Ready')}${o.pr ? ' · ' + esc(o.pr) : ''}</b>${o.dd ? ' · delivered ' + esc(o.dd) : ''} · ${esc(o.cou)} ${esc(o.awb)}</div>
+  </div>`;
+  $('ov').classList.add('on'); $('dr').classList.add('on');
+  $('dX').onclick = closeO; $('dAdd').onclick = () => pickUpload(o.id);
+  $('dShare').onclick = () => share(o); $('dAsk').onclick = () => ask([o]);
+  $('eSt').onchange = () => { if($('eSt').value === 'Delivered' && !$('eDd').value) $('eDd').value = iso(o.podT || Date.now()); };
+  document.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => removePod(o, +b.dataset.rm));
+  $('dSave').onclick = () => saveO(o);
+}
+function closeO(){ SEL = null; $('ov').classList.remove('on'); $('dr').classList.remove('on'); }
+$('ov').onclick = closeO;
+async function removePod(o, i){
+  if(!who()) return;
+  if(!confirm('Remove this POD file from ' + o.id + '?\nThe file stays in the Drive POD folder; it is only taken off this order.')) return;
+  const keep = o.pod.filter((u, k) => k !== i);
+  try { const d = await fetch(LOG_URL, {method:'POST', body:JSON.stringify({action:'pt', op:'podedit', id:o.id, pod:keep.join(', '), via:via()})}).then(r => r.json());
+    if(!d.ok) throw new Error(d.error || 'not saved');
+    o.pod = podList(d.pod); o.podT = podTime(o) ; o.tl = (o.tl ? o.tl + ' ; ' : '') + '1 POD file removed | ' + new Date().toLocaleString() + ' | ' + ME + ' (BoxUp team)';
+    toast('POD file removed'); openO(o.id); draw();
+  } catch(e){ toast('Could not remove: ' + esc(e.message), 5000); } }
+async function saveO(o){
+  if(!who()) return;
+  const st = $('eSt').value, dd = $('eDd').value, rv = $('eRv').value.trim(), co = $('eCo').value.trim(), awb = $('eAwb').value.trim(), er = $('dErr');
+  const cur = o.os === 'Active' || !o.os ? 'Ready' : o.os;
+  const chOs = st !== cur || dd !== (o.ddT ? iso(o.ddT) : '') || co !== o.cou || awb !== o.awb, chRv = rv !== o.recv;
+  if(!chOs && !chRv){ er.textContent = 'Nothing changed.'; return; }
+  if(st === 'Delivered' && !dd){ er.textContent = 'Enter the delivered date.'; return; }
+  if(cur === 'Delivered' && st !== 'Delivered' && !confirm(o.id + ' is Delivered. Move it back to ' + st + '?')) return;
+  const b = $('dSave'); b.disabled = true; b.textContent = 'Saving…'; er.textContent = '';
+  try {
+    if(chOs){ const q = {action:'orderset', pin:'', id:o.id, status:st, problem:o.pr || '', courier:co, awb:awb, deliv:st === 'Delivered' ? dd : '', t:Date.now()};
+      const d = await fetch(LOG_URL + '?' + new URLSearchParams(q)).then(r => r.json()); if(!d.ok) throw new Error(d.error || 'status not saved');
+      Object.assign(o, {os:st, del:st === 'Delivered', cou:co, awb:awb, dd:st === 'Delivered' ? dd : '', ddT:st === 'Delivered' ? new Date(dd).getTime() : 0}); }
+    if(chRv){ const d = await fetch(LOG_URL, {method:'POST', body:JSON.stringify({action:'pt', op:'podedit', id:o.id, recv:rv, via:via()})}).then(r => r.json()); if(!d.ok) throw new Error(d.error || 'received-by not saved'); o.recv = rv; }
+    toast('&#10004; Saved ' + esc(o.id)); draw(); openO(o.id);
+  } catch(e){ er.textContent = e.message === 'Failed to fetch' ? 'Could not reach the Label Log. Check the internet.' : e.message; b.disabled = false; b.textContent = '✔ Save changes'; }
+}
+
+/* ---------- export ---------- */
+$('exp').onclick = () => {
+  const S = sets(), L = TAB === 'new' ? S.newU : TAB === 'all' ? S.all : TAB === 'pend' ? S.pend : S.notDel;
+  const rows = [['Order ID', 'Name', 'Company', 'City', 'Courier', 'AWB', 'Order Status', 'Delivered Date', 'Received By', 'POD uploaded', 'Uploaded by', 'POD links']].concat(
+    L.map(o => [o.id, o.name, o.co, o.city, o.cou, o.awb, o.os, o.dd, o.recv, o.podT ? new Date(o.podT).toLocaleString('en-IN') : '', o.pod.length ? podBy(o) : '', o.pod.join(' ')]));
+  const csv = rows.map(r => r.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + csv], {type:'text/csv'}));
+  a.download = 'BoxUp POD list - ' + ({new:'new uploads', all:'all PODs', pend:'pending', notDel:'POD not delivered'}[TAB]) + ' - ' + iso() + '.csv'; a.click();
+};
+$('upBtn').onclick = () => pickUpload('');
+$('refresh').onclick = () => { $('main').innerHTML = '<div class="load">Refreshing…</div>'; load(true); };
+['q', 'fCo', 'fCou', 'fDt'].forEach(i => $(i).addEventListener(i === 'q' ? 'input' : 'change', () => { SHOW = 60; draw(); }));
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeO(); });
+(() => { const q = new URLSearchParams(location.search).get('q'); if(q){ $('q').value = q; TAB = 'all'; $('fDt').value = '0'; } })();
+drawMe(); load(true);
+</script>
+</body></html>
