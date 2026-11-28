@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1e4a2c">
+<title>BoxUp Logistics</title>
+<link rel="icon" href="favicon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BoxUp Logistics">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--g:#1e4a2c;--g2:#122e1b;--bg:#f4f1e8;--ln:#e3e0d6;--mu:#6b716c;--ink:#16211a;--bl:#1d5c96;--rd:#b3261e;--am:#8a5a00;--gr:#1e7b3c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.4 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;touch-action:manipulation;overscroll-behavior:none}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}
+[hidden]{display:none!important}
+#app{display:flex;flex-direction:column;height:100%}
+/* header */
+.hd{background:linear-gradient(150deg,var(--g),var(--g2));color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;gap:10px;flex:none;z-index:5}
+.hd .bk{background:none;border:0;color:#fff;font-size:26px;line-height:1;padding:0 4px 0 0}
+.hd .ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;flex:none;background:#fff;color:var(--g)}
+.hd .ic img{width:100%;height:100%;border-radius:10px}
+.hd b{font-size:16px;display:block}.hd small{font-size:11.5px;opacity:.8}
+.hd .sp{flex:1}
+.av{width:34px;height:34px;border-radius:50%;background:#c9a24a;color:var(--g);font-weight:900;display:flex;align-items:center;justify-content:center;border:0;overflow:hidden;flex:none}.av img{width:100%;height:100%}
+.hd .rf{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:10px;padding:7px 10px;font-weight:700;font-size:12px}
+/* desktop tabs */
+.tabs{display:none;background:#dfe3df;padding:6px 10px 0;gap:4px;flex:none;overflow-x:auto}
+.tabs button{border:0;background:transparent;border-radius:9px 9px 0 0;padding:7px 12px;font-weight:700;font-size:12.5px;color:#444;white-space:nowrap;display:flex;gap:6px;align-items:center}
+.tabs button.on{background:var(--bg);color:var(--g)}.tabs button i{font-style:normal;opacity:.55;padding-left:4px}
+/* main */
+.main{flex:1;min-height:0;position:relative}
+.view{position:absolute;inset:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:12px 12px 90px}
+.view.fr{padding:0;overflow:hidden}
+.view iframe{border:0;width:100%;height:100%;display:block;background:#fff}
+.wrap{max-width:1200px;margin:0 auto}
+/* bottom nav */
+.nav{flex:none;background:#fff;border-top:1px solid var(--ln);display:flex;justify-content:space-around;align-items:flex-end;padding:6px 4px calc(8px + env(safe-area-inset-bottom));z-index:6}
+.nav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;font-size:10.5px;font-weight:700;color:var(--mu);min-width:56px;position:relative}
+.nav button i{font-style:normal;font-size:20px;line-height:1.2}.nav button.on{color:var(--g)}
+.nav .scan i{width:58px;height:58px;border-radius:50%;background:var(--g);color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;margin-top:-28px;border:5px solid var(--bg);box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.nav .dot{position:absolute;top:-2px;right:12px;background:var(--rd);color:#fff;border-radius:10px;font-size:9.5px;padding:0 5px;min-width:16px}
+/* common */
+.srch{width:100%;border:1px solid var(--ln);border-radius:12px;padding:11px 12px;background:#fff;font-size:14px;margin-bottom:10px}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.kp div{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:9px 10px;cursor:pointer}.kp small{display:block;font-size:10px;font-weight:800;color:var(--mu);letter-spacing:.03em}.kp b{font-size:22px}
+.sec{font-size:11px;font-weight:800;letter-spacing:.07em;color:var(--mu);margin:14px 2px 8px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 6px}
+.tile{background:none;border:0;text-align:center;font-size:11.5px;font-weight:700;color:#2b322d;padding:0}
+.tile .ti{width:56px;height:56px;border-radius:16px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:900;box-shadow:0 3px 8px rgba(0,0,0,.13)}
+.tile small{display:none}
+.card{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:11px 12px;margin-bottom:8px}
+.card h4{margin:0 0 6px;font-size:14px}
+.mu{color:var(--mu);font-size:12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chips button{border:1px solid #d6d3c8;border-radius:20px;padding:5px 11px;font-size:12px;font-weight:700;background:#fff}
+.chips button.on{background:var(--g);color:#fff;border-color:var(--g)}
+.chips select{border:1px solid #d6d3c8;border-radius:20px;padding:5px 9px;font-size:12px;font-weight:700;background:#fff}
+.st{display:inline-block;border-radius:20px;padding:2px 8px;font-weight:800;font-size:10.5px;white-space:nowrap}
+.s-d{background:#e3f4e8;color:var(--gr)}.s-t{background:#e2eefa;color:var(--bl)}.s-o{background:#fff3d6;color:var(--am)}.s-r{background:#fbe4e2;color:var(--rd)}.s-n{background:#eeeee8;color:#555}.s-a{background:#ede7fb;color:#5b3fb0}
+.oc{display:flex;gap:10px;align-items:flex-start;cursor:pointer}.oc .t{flex:1;min-width:0}.oc b{font-size:13.5px}
+.cl{display:inline-block;margin-top:3px;background:#ecfdf5;color:#166534;border:1px solid #86efac;border-radius:7px;padding:0 6px;font-size:11px;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.al{border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:13px;cursor:pointer}
+.al.r{background:#fbe4e2;color:#8c1d18}.al.y{background:#fff3d6;color:#6b4a00}.al.b{background:#e2eefa;color:#1d4e7e}.al.g{background:#e3f4e8;color:#1e5c33}
+.btn{display:block;width:100%;border:0;border-radius:11px;padding:11px;font-weight:800;font-size:14px;background:var(--g);color:#fff;text-align:center;text-decoration:none;margin-top:8px}
+.btn.o{background:#fff;color:var(--g);border:1.5px solid var(--g)}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.more{text-align:center;padding:10px;color:var(--mu);font-size:12px}
+table.rp{width:100%;border-collapse:collapse;font-size:12.5px}.rp th{text-align:left;font-size:10.5px;color:var(--mu);padding:6px;border-bottom:1px solid var(--ln)}.rp td{padding:7px 6px;border-bottom:1px solid #f0eee7}
+.bars{display:flex;align-items:flex-end;gap:3px;height:120px;padding-top:6px}.bars div{flex:1;background:var(--g);border-radius:3px 3px 0 0;position:relative;min-height:2px}.bars div span{position:absolute;top:-15px;left:0;right:0;text-align:center;font-size:9px;color:var(--mu)}
+.bl{display:flex;gap:3px}.bl span{flex:1;text-align:center;font-size:9px;color:var(--mu)}
+.chk{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f0eee7;font-size:13px}.chk input{width:18px;height:18px;margin-top:1px}
+/* order sheet */
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:20px 20px 0 0;padding:14px 14px calc(18px + env(safe-area-inset-bottom))}
+.sheet .x{float:right;background:#fff;border:1px solid var(--ln);border-radius:50%;width:34px;height:34px;font-size:18px}
+.callr{display:flex;gap:8px;margin-top:8px}.callr a{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:13px;padding:11px 6px;font-weight:800;font-size:14.5px;background:#16a34a;color:#fff;text-decoration:none;box-shadow:0 3px 0 #0f7a36}
+.callr a.wa{background:#25D366;box-shadow:0 3px 0 #1a9c4b}.callr a.sms{background:var(--bl);box-shadow:0 3px 0 #123f69}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.kv div{background:#fff;border:1px solid var(--ln);border-radius:10px;padding:6px 9px;font-size:12px;min-width:0}.kv span{display:block;color:var(--mu);font-size:10.5px;font-weight:700}.kv b{overflow-wrap:anywhere}
+.load{padding:40px 10px;text-align:center;color:var(--mu)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#16211a;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;z-index:80}
+/* install gate */
+#gate{position:fixed;inset:0;z-index:100;background:linear-gradient(160deg,var(--g),#0f2a19);display:flex;align-items:center;justify-content:center;padding:22px}
+#gate .ag{background:#fff;border-radius:22px;padding:24px 20px;max-width:380px;text-align:center}
+#gate img{width:76px;height:76px;border-radius:18px}#gate h2{margin:10px 0 6px;color:var(--g);font-size:20px}#gate p{margin:0 0 14px;color:#555;font-size:14px}
+#gate .h{margin-top:12px;background:var(--bg);border-radius:12px;padding:10px;font-size:12.5px;text-align:left;color:#444}
+#gate .l{margin-top:10px;background:none;border:0;color:var(--mu);text-decoration:underline;font-size:12.5px}
+/* wide screens */
+@media (min-width:900px){
+  .tabs{display:flex}
+  .grid{grid-template-columns:repeat(6,1fr);gap:14px}
+  .tile{background:#fff;border:1px solid var(--ln);border-radius:16px;padding:14px 8px;font-size:13px;font-weight:800}
+  .tile small{display:block;font-weight:600;color:var(--mu);font-size:11px;margin-top:2px}
+  .kp{grid-template-columns:repeat(6,1fr)}
+  .home2{display:grid;grid-template-columns:1fr 340px;gap:16px}
+  .nav{display:none}
+  .view{padding:16px 20px 30px}
+  .sheet-bg{align-items:center}.sheet{border-radius:20px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="hd">
+    <button class="bk" id="bk" hidden aria-label="Back">&#8249;</button>
+    <div class="ic" id="hic"><img src="icon-192.png" alt=""></div>
+    <div><b id="ht">BoxUp Logistics</b><small id="hs">All logistics apps in one place</small></div>
+    <div class="sp"></div>
+    <button class="rf" id="rf" title="Reload this page">&#8635;</button>
+    <button class="av" id="av" title="Me">P</button>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="main" id="main"></div>
+  <div class="nav" id="nav">
+    <button data-go="home" class="on"><i>&#127968;</i>Home</button>
+    <button data-go="orders"><i>&#128230;</i>Orders</button>
+    <button data-go="scan" class="scan"><i>&#9707;</i>Scan</button>
+    <button data-go="alerts"><i>&#128276;</i>Alerts<span class="dot" id="adot" hidden></span></button>
+    <button data-go="me"><i>&#128100;</i>Me</button>
+  </div>
+</div>
+<div id="gate" hidden><div class="ag"><img src="icon-192.png" alt=""><h2>Install BoxUp Logistics</h2><p>All BoxUp logistics apps in one app. Installed, it opens from your home screen in its own window: no address bar, no zoom.</p><button class="btn" id="gInst">&#11015; Install app</button><div class="h" id="gHow">If no install window opens: Chrome menu <b>&#8942;</b> &rarr; <b>Install app</b> (or <b>Add to Home screen</b>).<br>Already installed? Open <b>BoxUp Logistics</b> from your home screen.</div><button class="l" id="gSkip">Use in the browser this time</button></div></div>
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbxkWlpzmubWJwgFQF7cCDAegDHDFpst-j2AnoLVrk3rVnZL9CuOukEIC_GR43gUlL7e/exec';
+const SITE = 'https://logisticsboxup.github.io/';
+const SHEET = 'https://docs.google.com/spreadsheets/d/17IMy6t47Y0q895rvQsAEdgsGM6w_2lSDWso8BIWHEtg/edit';
+const VER = '2026-11-28 13:30';
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const wide = () => matchMedia('(min-width:900px)').matches;
+function toast(t){ const d = document.createElement('div'); d.className = 'toast'; d.innerHTML = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2600); }
+
+/* ---------- the apps ---------- */
+const APPS = [
+  { id:'labels',  name:'Label Generator', short:'Labels',       sub:'single · bulk · reship', ic:'&#127991;', bg:'#1a9b6c,#0d6b49', url:'boxup-labels/' },
+  { id:'tracker', name:'Order Tracker',   short:'Order Tracker',sub:'sales lookup',           ic:'&#128200;', bg:'#2a9d8f,#17675e', url:'boxup-sales/' },
+  { id:'partner', name:'Partner Desk',    short:'Partner Desk', sub:'scan · status · POD',    ic:'&#129309;', bg:'#ff8a50,#c94a17', url:'boxup-partner/' },
+  { id:'gate',    name:'Gate / Security', short:'Gate',         sub:'scan boxes out',         ic:'&#128737;', bg:'#a8701f,#7A4E12', url:'boxup-gate/' },
+  { id:'pod',     name:'POD Center',      short:'POD Center',   sub:'proofs of delivery',     ic:'&#128247;', bg:'#6d4bd1,#43289a', url:'boxup-labels/pod/' },
+  { id:'mx',      name:'Mark Express',    short:'Mark Express', sub:'book · track',           ic:'MX',        bg:'#d63a3a,#8e1212', url:'boxup-markexpress/' },
+  { id:'dtdc',    name:'DTDC',            short:'DTDC',         sub:'shipments · status',     ic:'DT',        bg:'#f2b705,#b88700', page:'courier', courier:'DTDC' },
+  { id:'sa',      name:'Shree Anjani',    short:'Shree Anjani', sub:'shipments · status',     ic:'&#128666;', bg:'#2f77b8,#1D5C96', page:'courier', courier:'Shree Anjani' },
+  { id:'mf',      name:'Manifests',       short:'Manifests',    sub:'all couriers',           ic:'&#128221;', bg:'#4a7c59,#2b5137', page:'manifest' },
+  { id:'track',   name:'Client Track page',short:'Track page',  sub:'what clients see',       ic:'&#127758;', bg:'#2f5f9e,#1D3F6E', url:'boxup-track/' },
+  { id:'manage',  name:'Manage Orders',   short:'Manage Orders',sub:'edit · cancel · reprint',ic:'&#9998;',   bg:'#c0392b,#7d1f16', url:'boxup-labels/#open=qaManage' },
+  { id:'reports', name:'Reports / MIS',   short:'Reports',      sub:'daily · monthly',        ic:'&#128202;', bg:'#4a4a4a,#1c1c1c', page:'reports' },
+  { id:'users',   name:'Users & AWBs',    short:'Users & AWBs', sub:'access · dockets',       ic:'&#128101;', bg:'#b08a3c,#7a5c1e', url:'boxup-labels/#open=qaUsers' },
+  { id:'dcc',     name:'Dispatch Control',short:'Dispatch',     sub:'daily dispatch tasks',   ic:'&#128203;', bg:'#3b6ea8,#244a78', url:'boxup-labels/dispatch/' },
+  { id:'gatedash',name:'Gate dashboard',  short:'Gate dash',    sub:'gate counts',            ic:'&#128200;', bg:'#8a6a2f,#5c4519', url:'boxup-gate/dashboard.html' },
+  { id:'sheet',   name:'Log Sheet',       short:'Log Sheet',    sub:'Google Sheet',           ic:'&#128209;', bg:'#2fae6a,#188038', ext:SHEET },
+  { id:'settings',name:'Settings',        short:'Settings',     sub:'app · data',             ic:'&#9881;',   bg:'#8a8f8a,#5b605b', page:'settings' }
+];
+const CORE = { home:{ name:'BoxUp Logistics', sub:'All logistics apps in one place', page:'home' }, orders:{ name:'Orders', sub:'every order, all couriers', ic:'&#128230;', bg:'#2f5240,#16311F', page:'orders' },
+  alerts:{ name:'Alerts', sub:'needs action', ic:'&#128276;', bg:'#b3261e,#7d1f16', page:'alerts' }, me:{ name:'Me', sub:'profile', ic:'&#128100;', bg:'#b08a3c,#7a5c1e', page:'me' } };
+const appBy = id => APPS.find(a => a.id === id) || CORE[id];
+
+/* ---------- data from the Label Log ---------- */
+let D = null, LOADING = null;
+const ME = (() => { try { return JSON.parse(localStorage.getItem('boxup.me') || 'null'); } catch (e) { return null; } })();
+async function loadData(fresh){
+  if (LOADING) return LOADING;
+  LOADING = (async () => {
+    try {
+      const j = await fetch(API + '?action=sales' + (fresh ? '&fresh=1' : ''), { cache: 'no-store' }).then(r => r.json());
+      const h = j.headers || [], I = n => h.indexOf(n);
+      const k = { at:'Logged at', id:'Order ID', name:'Name', co:'Company', ph:'Phone', alt:'Alt Details', addr:'Address', pin:'Pincode', city:'City', st:'State', mode:'Mode of Shipping', cou:'Courier', awb:'Tracking ID', link:'Tracking Link', box:'Total Boxes', ds:'Dispatch Status', dd:'Dispatch Date', cat:'Category', os:'Order Status', pr:'Problem', dv:'Delivered Date', cs:'Courier Status', sc:'Sender Company', ps:'Partner Status', pod:'POD' };
+      const ix = {}; Object.keys(k).forEach(x => ix[x] = I(k[x]));
+      const seen = {}, rows = [];
+      (j.rows || []).forEach(r => { const o = {}; Object.keys(ix).forEach(x => o[x] = ix[x] >= 0 ? String(r[ix[x]] == null ? '' : r[ix[x]]).trim() : ''); if (!o.id) return; const key = o.id.toLowerCase(); if (seen[key]) return; seen[key] = 1; o.t = pd(o.at); o.dvT = pd(o.dv); rows.push(o); });
+      rows.sort((a, b) => b.t - a.t);
+      D = rows; localStorage.setItem('boxup.app.cache', JSON.stringify({ at: Date.now(), n: rows.length }));
+    } catch (e) { if (!D) D = []; toast('Could not load orders. Check the internet.'); }
+    LOADING = null; renderCurrent(); return D;
+  })();
+  return LOADING;
+}
+const MON = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
+function pd(s){ const m = /(\d{1,2})[-\/ ]([A-Za-z]{3}|\d{1,2})[-\/ ](\d{2,4})(?:\s+(\d{1,2}):(\d{2}))?/.exec(String(s || '')); if (!m) return 0;
+  const mo = isNaN(m[2]) ? MON[m[2].toLowerCase()] : +m[2] - 1; let y = +m[3]; if (y < 100) y += 2000; return new Date(y, mo, +m[1], +(m[4] || 0), +(m[5] || 0)).getTime() || 0; }
+const isCx = o => /^cancel/i.test(o.os);
+const isDel = o => /deliver/i.test(o.os) && !/out for/i.test(o.os);
+const isRto = o => /rto|return/i.test(o.pr) || /rto|return/i.test(o.os);
+function stat(o){
+  if (isCx(o)) return ['Cancelled', 's-n'];
+  if (isRto(o) && !isDel(o)) return ['RTO', 's-r'];
+  if (isDel(o)) return ['Delivered', 's-d'];
+  if (/out for/i.test(o.os)) return ['Out for delivery', 's-o'];
+  if (/destination/i.test(o.os)) return ['At destination', 's-a'];
+  if (/transit/i.test(o.os)) return ['In transit', 's-t'];
+  if (/dispatch/i.test(o.ds) || /dispatch/i.test(o.os)) return ['Dispatched', 's-t'];
+  return ['Ready', 's-n'];
+}
+const day0 = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); };
+function counts(){
+  const t0 = day0(), w = Date.now() - 7 * 864e5, L = (D || []).filter(o => !isCx(o));
+  return {
+    today: L.filter(o => o.t >= t0).length,
+    transit: L.filter(o => ['In transit', 'Dispatched', 'At destination'].includes(stat(o)[0])).length,
+    ofd: L.filter(o => stat(o)[0] === 'Out for delivery').length,
+    del7: L.filter(o => isDel(o) && (o.dvT || o.t) >= w).length,
+    rto: L.filter(o => stat(o)[0] === 'RTO').length,
+    nopod: L.filter(o => isDel(o) && !o.pod && o.t >= Date.now() - 45 * 864e5).length,
+    podNotDel: L.filter(o => o.pod && !isDel(o)).length,
+    stuck: L.filter(o => stat(o)[0] === 'Ready' && o.t && o.t < Date.now() - 2 * 864e5 && o.t > Date.now() - 30 * 864e5).length
+  };
+}
+
+/* ---------- navigation: tabs on a computer, one page at a time on a phone ---------- */
+let CUR = 'home'; const OPEN = ['home']; const FRAMES = {};
+function go(id, push){
+  if (id === 'scan') { openApp('partner', '#scan'); return; }
+  const a = appBy(id); if (!a) return;
+  if (a.ext) { window.open(a.ext, '_blank', 'noopener'); return; }
+  if (!OPEN.includes(id)) OPEN.push(id);
+  CUR = id;
+  if (push !== false) { try { history.pushState({ v: id }, '', '#' + id); } catch (e) {} }
+  draw();
+}
+function openApp(id, hash){ const a = appBy(id); if (hash && a && a.url) { if (FRAMES[id]) { FRAMES[id].remove(); delete FRAMES[id]; } a._hash = hash; } go(id); }
+function closeTab(id){ const i = OPEN.indexOf(id); if (i > 0) OPEN.splice(i, 1); if (FRAMES[id]) { FRAMES[id].remove(); delete FRAMES[id]; } if (CUR === id) { CUR = OPEN[Math.max(0, i - 1)] || 'home'; } draw(); }
+window.addEventListener('popstate', e => { const v = (e.state && e.state.v) || 'home'; CUR = v; if (!OPEN.includes(v)) OPEN.push(v); draw(); });
+function draw(){
+  const a = appBy(CUR) || CORE.home;
+  $('ht').textContent = a.name; $('hs').textContent = a.sub || '';
+  $('hic').innerHTML = CUR === 'home' ? '<img src="icon-192.png" alt="">' : a.ic; $('hic').style.background = CUR === 'home' ? '#fff' : 'linear-gradient(145deg,' + a.bg + ')'; $('hic').style.color = CUR === 'home' ? '' : '#fff';
+  $('bk').hidden = CUR === 'home';
+  $('rf').hidden = !a.url;
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.go === CUR || (b.dataset.go === 'scan' && CUR === 'partner')));
+  $('tabs').innerHTML = OPEN.map(id => { const x = appBy(id); return `<button data-t="${id}" class="${id === CUR ? 'on' : ''}">${id === 'home' ? '&#127968; Home' : (x.ic.length < 3 ? x.ic + ' ' : x.ic + ' ') + esc(x.short || x.name)}${id === 'home' ? '' : `<i data-x="${id}">&#10005;</i>`}</button>`; }).join('');
+  const main = $('main');
+  [...main.children].forEach(c => c.hidden = true);
+  if (a.url) {
+    let f = FRAMES[CUR];
+    if (!f) { f = document.createElement('div'); f.className = 'view fr'; const ifr = document.createElement('iframe'); ifr.allow = 'camera *; microphone *; clipboard-read *; clipboard-write *; fullscreen *; geolocation *'; ifr.src = SITE + a.url.replace(/#.*/, '') + (a._hash || (a.url.includes('#') ? a.url.slice(a.url.indexOf('#')) : '')); a._hash = ''; f.appendChild(ifr); main.appendChild(f); FRAMES[CUR] = f; }
+    f.hidden = false;
+  } else {
+    let v = $('native'); if (!v) { v = document.createElement('div'); v.className = 'view'; v.id = 'native'; main.appendChild(v); }
+    v.hidden = false; v.scrollTop = 0; renderCurrent();
+  }
+  const c = D ? counts() : null; const n = c ? (c.rto ? 1 : 0) + (c.podNotDel ? 1 : 0) + (c.stuck ? 1 : 0) : 0; $('adot').hidden = !n; $('adot').textContent = n;
+}
+$('tabs').addEventListener('click', e => { const x = e.target.closest('[data-x]'); if (x) { e.stopPropagation(); closeTab(x.dataset.x); return; } const t = e.target.closest('[data-t]'); if (t) go(t.dataset.t); });
+$('nav').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) go(b.dataset.go); });
+$('bk').onclick = () => { if (history.state && history.state.v && history.state.v !== 'home') history.back(); else go('home'); };
+$('av').onclick = () => go('me');
+$('rf').onclick = () => { const f = FRAMES[CUR]; if (f) { const i = f.querySelector('iframe'); i.src = i.src; } };
+if (ME && (ME.name || ME.email)) { $('av').textContent = String(ME.name || ME.email)[0].toUpperCase(); if (ME.photo) $('av').innerHTML = `<img src="${esc(ME.photo)}" referrerpolicy="no-referrer" alt="">`; }
+
+/* ---------- native pages ---------- */
+function renderCurrent(){
+  const v = $('native'); if (!v || v.hidden) return;
+  const a = appBy(CUR); if (!a || a.url) return;
+  const P = { home: pHome, orders: pOrders, courier: pCourier, manifest: pManifest, reports: pReports, alerts: pAlerts, me: pMe, settings: pSettings }[a.page];
+  v.innerHTML = '<div class="wrap">' + (P ? P(a) : '') + '</div>'; bind(v, a);
+}
+function kpis(){ if (!D) return '<div class="load">Loading orders…</div>'; const c = counts();
+  return `<div class="kp"><div data-f="today"><small>BOOKED TODAY</small><b>${c.today}</b></div><div data-f="transit"><small>IN TRANSIT</small><b style="color:var(--bl)">${c.transit}</b></div><div data-f="ofd"><small>OUT FOR DELIVERY</small><b style="color:var(--am)">${c.ofd}</b></div><div data-f="del"><small>DELIVERED 7 DAYS</small><b style="color:var(--gr)">${c.del7}</b></div><div data-f="rto"><small>RTO</small><b style="color:var(--rd)">${c.rto}</b></div><div data-f="nopod"><small>POD MISSING</small><b style="color:var(--am)">${c.nopod}</b></div></div>`; }
+function alertsHtml(short){ if (!D) return ''; const c = counts(), A = [];
+  if (c.rto) A.push(`<div class="al r" data-f="rto"><b>${c.rto} RTO</b> orders: check, reship or close</div>`);
+  if (c.podNotDel) A.push(`<div class="al y" data-open="pod"><b>${c.podNotDel} orders</b> have a POD but are not marked Delivered</div>`);
+  if (c.stuck) A.push(`<div class="al y" data-f="stuck"><b>${c.stuck} orders</b> printed 2+ days ago, still not dispatched</div>`);
+  if (c.nopod) A.push(`<div class="al b" data-open="pod"><b>${c.nopod} delivered</b> orders without POD (last 45 days)</div>`);
+  if (!A.length) A.push('<div class="al g">&#10004; Nothing needs action right now</div>');
+  return short ? A.slice(0, 4).join('') : A.join(''); }
+function pHome(){
+  const tiles = APPS.map(a => `<button class="tile" data-open="${a.id}"><div class="ti" style="background:linear-gradient(145deg,${a.bg});${a.ic.length < 3 ? 'font-size:17px' : ''}">${a.ic}</div>${esc(a.short)}<small>${esc(a.sub)}</small></button>`).join('');
+  return `<input class="srch" id="hq" placeholder="&#128269; Search any AWB, order ID, name or phone" autocomplete="off">
+  ${kpis()}<div class="home2"><div><div class="sec">ALL APPS</div><div class="grid">${tiles}</div></div>
+  <div><div class="sec">NEEDS ACTION</div>${alertsHtml(true)}</div></div>`;
+}
+let OF = { q: '', f: 'all', cou: '', n: 60 };
+function filt(list, f){ const t0 = day0();
+  return list.filter(o => { const s = stat(o)[0];
+    if (f === 'all') return !isCx(o); if (f === 'today') return !isCx(o) && o.t >= t0; if (f === 'transit') return ['In transit', 'Dispatched', 'At destination'].includes(s);
+    if (f === 'ofd') return s === 'Out for delivery'; if (f === 'del') return s === 'Delivered'; if (f === 'rto') return s === 'RTO'; if (f === 'ready') return s === 'Ready';
+    if (f === 'nopod') return isDel(o) && !o.pod && o.t >= Date.now() - 45 * 864e5; if (f === 'stuck') return s === 'Ready' && o.t < Date.now() - 2 * 864e5 && o.t > Date.now() - 30 * 864e5;
+    if (f === 'cx') return isCx(o); return true; }); }
+function search(list, q){ q = q.trim().toLowerCase(); if (!q) return list; const qd = q.replace(/\D/g, '');
+  return list.filter(o => [o.id, o.awb, o.name, o.co, o.sc, o.city, o.pin].join(' ').toLowerCase().includes(q) || (qd.length >= 5 && (o.ph.replace(/\D/g, '').includes(qd) || o.awb.replace(/\D/g, '').includes(qd)))); }
+function card(o){ const s = stat(o);
+  return `<div class="card oc" data-o="${esc(o.id)}"><div class="t"><div style="display:flex;justify-content:space-between;gap:6px"><b>${esc(o.id)}</b><span class="st ${s[1]}">${s[0]}</span></div>
+  <div style="font-weight:700">${esc(o.name)}</div>${o.sc ? `<span class="cl">Client: ${esc(o.sc)}</span>` : ''}
+  <div class="mu">${esc([o.city, o.pin].filter(Boolean).join(' '))} · ${esc(o.cou || 'No courier')}${o.awb ? ' · ' + esc(o.awb.split(',')[0]) : ''} · ${esc((o.at || '').split(' ')[0])}</div></div></div>`; }
+function listHtml(list){ const L = list.slice(0, OF.n); return (L.length ? L.map(card).join('') : '<div class="load">No orders</div>') + (list.length > OF.n ? `<button class="btn o" data-more>Show more (${list.length - OF.n} more)</button>` : ''); }
+const FCH = [['all', 'All'], ['today', 'Today'], ['ready', 'Ready'], ['transit', 'In transit'], ['ofd', 'Out for delivery'], ['del', 'Delivered'], ['rto', 'RTO'], ['nopod', 'POD missing'], ['cx', 'Cancelled']];
+function couSel(){ const c = {}; (D || []).forEach(o => { if (o.cou) c[o.cou] = (c[o.cou] || 0) + 1; }); return `<select data-cou><option value="">Courier: All</option>${Object.keys(c).sort((a, b) => c[b] - c[a]).map(x => `<option ${OF.cou === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>`; }
+function pOrders(){ if (!D) return '<div class="load">Loading orders…</div>';
+  let L = filt(D, OF.f); if (OF.cou) L = L.filter(o => o.cou === OF.cou); L = search(L, OF.q);
+  return `<input class="srch" id="oq" value="${esc(OF.q)}" placeholder="&#128269; AWB, order ID, name, phone, client, city" autocomplete="off">
+  <div class="chips">${FCH.map(c => `<button data-fc="${c[0]}" class="${OF.f === c[0] ? 'on' : ''}">${c[1]}</button>`).join('')}${couSel()}</div>
+  <div class="mu" style="margin:0 2px 8px">${L.length} orders</div><div id="ol">${listHtml(L)}</div>`; }
+function pCourier(a){ if (!D) return '<div class="load">Loading orders…</div>';
+  const all = D.filter(o => o.cou === a.courier && !isCx(o)), by = f => filt(all, f).length;
+  let L = filt(all, OF.f === 'cx' ? 'all' : OF.f); L = search(L, OF.q);
+  return `<div class="kp"><div data-fc="all"><small>TOTAL</small><b>${all.length}</b></div><div data-fc="transit"><small>IN TRANSIT</small><b style="color:var(--bl)">${by('transit')}</b></div><div data-fc="ofd"><small>OUT FOR DEL.</small><b style="color:var(--am)">${by('ofd')}</b></div><div data-fc="del"><small>DELIVERED</small><b style="color:var(--gr)">${by('del')}</b></div><div data-fc="rto"><small>RTO</small><b style="color:var(--rd)">${by('rto')}</b></div><div data-fc="nopod"><small>POD MISSING</small><b style="color:var(--am)">${by('nopod')}</b></div></div>
+  <input class="srch" id="oq" value="${esc(OF.q)}" placeholder="&#128269; Search ${esc(a.courier)} shipments" autocomplete="off">
+  <div class="chips">${FCH.filter(c => c[0] !== 'cx').map(c => `<button data-fc="${c[0]}" class="${OF.f === c[0] ? 'on' : ''}">${c[1]}</button>`).join('')}</div>
+  <div class="r2" style="margin-bottom:10px"><button class="btn o" data-open="mf" data-mfc="${esc(a.courier)}">&#128221; Manifest</button><button class="btn o" data-csv>&#11015; Export Excel (CSV)</button></div>
+  <div class="mu" style="margin:0 2px 8px">${L.length} shipments</div><div id="ol">${listHtml(L)}</div>`; }
+/* manifest */
+let MF = { cou: 'Mark Express', d: '' , pick: {} };
+function ymd(t){ const d = new Date(t); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function pManifest(){ if (!D) return '<div class="load">Loading orders…</div>';
+  if (!MF.d) MF.d = ymd(Date.now());
+  const cs = {}; D.forEach(o => { if (o.cou) cs[o.cou] = 1; });
+  const L = D.filter(o => o.cou === MF.cou && !isCx(o) && o.t && ymd(o.t) === MF.d);
+  return `<div class="card"><h4>&#128221; Make a manifest</h4><div class="r2"><select class="srch" style="margin:0" id="mfc">${Object.keys(cs).sort().map(c => `<option ${c === MF.cou ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select><input class="srch" style="margin:0" type="date" id="mfd" value="${MF.d}"></div>
+  <div class="mu" style="margin-top:8px">${L.length} shipments booked on this day · untick the ones not going</div>
+  ${L.map(o => `<label class="chk"><input type="checkbox" data-mp="${esc(o.id)}" ${MF.pick[o.id] === false ? '' : 'checked'}><span><b>${esc(o.awb || 'no AWB')}</b> · ${esc(o.id)}<br><span class="mu">${esc(o.name)} · ${esc(o.city)} ${esc(o.pin)} · ${esc(o.box || 1)} box</span></span></label>`).join('') || '<div class="load">No shipments for this courier on this day</div>'}
+  ${L.length ? '<button class="btn" id="mfgo">Generate manifest PDF</button>' : ''}</div>`; }
+function makeManifest(){
+  const L = D.filter(o => o.cou === MF.cou && !isCx(o) && o.t && ymd(o.t) === MF.d && MF.pick[o.id] !== false);
+  if (!L.length) { toast('Tick at least one shipment'); return; }
+  const dt = new Date(MF.d + 'T00:00'), dtx = dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const no = 'MF-' + MF.d.replace(/-/g, '') + '-' + MF.cou.replace(/[^A-Z]/gi, '').slice(0, 2).toUpperCase() + String(Date.now()).slice(-3);
+  const boxes = L.reduce((s, o) => s + (parseInt(o.box, 10) || 1), 0);
+  const rows = L.map((o, i) => `<tr><td>${i + 1}</td><td><b>${esc(o.awb)}</b><svg class="bc" data-c="${esc((o.awb || '').split(',')[0].trim())}"></svg></td><td><b>${esc(o.id)}</b></td><td><b>${esc(o.name).toUpperCase()}</b><div class="ad">${esc(o.addr)}<br><b>${esc(o.city)}, ${esc(o.st)} - ${esc(o.pin)}</b></div></td><td>${esc(o.ph)}</td><td>${esc(o.sc || o.co)}</td><td class=c>${esc(o.box || 1)}</td><td class=c>${(parseInt(o.box, 10) || 1) * 2} kg</td><td class=c>${esc(String(o.mode).replace(/\s*shipping$/i, ''))}</td><td></td></tr>`).join('');
+  const w = window.open('', '_blank'); if (!w) { toast('Allow pop-ups to open the manifest'); return; }
+  w.document.write(`<!doctype html><html><head><meta charset=utf-8><title>${no}</title><script src="https://cdnjs.cloudflare.com/ajax/libs/JsBarcode/3.11.5/JsBarcode.all.min.js"><\/script><style>@page{size:A4 landscape;margin:8mm}body{font:10px Inter,Arial,sans-serif;color:#111;margin:0}.top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #1e4a2c;padding-bottom:6px}h1{margin:0;font:700 18px Georgia,serif}.k{display:flex;gap:8px;margin:8px 0}.k div{border:1px solid #ddd;border-radius:6px;padding:5px 8px;flex:1}.k small{display:block;font-size:7.5px;color:#777;text-transform:uppercase}table{width:100%;border-collapse:collapse}th{background:#1e4a2c;color:#fff;text-align:left;padding:5px;font-size:9px}td{border-bottom:1px solid #e5e5e5;padding:5px;vertical-align:top}.c{text-align:center}.ad{font-size:8.5px;color:#444}.bc{display:block;height:30px;width:120px}.ft{display:flex;gap:30px;margin-top:26px}.ft div{flex:1;border-top:1px solid #333;padding-top:4px}button{position:fixed;right:12px;top:12px;padding:8px 14px;background:#1e4a2c;color:#fff;border:0;border-radius:8px;font-weight:700}@media print{button{display:none}}</style></head><body>
+  <button onclick="print()">Print / Save PDF</button><div class=top><div><h1>Shipment Manifest</h1>Courier pickup handover · BoxUp Luxury Gifting, Bengaluru</div><div style="text-align:right"><b style="font:700 16px Georgia,serif;color:#1e4a2c">${esc(MF.cou)}</b><br>Manifest No. <b>${no}</b></div></div>
+  <div class=k><div><small>Date</small><b>${dtx}</b></div><div><small>Courier</small><b>${esc(MF.cou)}</b></div><div><small>Shipments</small><b>${L.length}</b></div><div><small>Total boxes</small><b>${boxes}</b></div><div><small>Total weight</small><b>${boxes * 2} kg</b></div></div>
+  <table><tr><th>#</th><th>AWB / Barcode</th><th>Order ID</th><th>Consignee &amp; Address</th><th>Phone</th><th>Client</th><th>Box</th><th>Wt</th><th>Mode</th><th>Received &#10003;</th></tr>${rows}</table>
+  <div class=ft><div>Handed over by (BoxUp) · Name / Sign / Time</div><div>Received by (${esc(MF.cou)}) · Name / Sign / Time</div><div>Security check · Name / Sign</div></div>
+  <script>window.onload=()=>{document.querySelectorAll('.bc').forEach(s=>{try{JsBarcode(s,s.dataset.c,{format:'CODE128',displayValue:false,margin:0,height:40,width:1.4})}catch(e){}});}<\/script></body></html>`);
+  w.document.close();
+}
+/* reports */
+let RP = { m: '' };
+function pReports(){ if (!D) return '<div class="load">Loading orders…</div>';
+  const ms = {}; D.forEach(o => { if (o.t) ms[ymd(o.t).slice(0, 7)] = 1; }); const mk = Object.keys(ms).sort().reverse(); if (!RP.m) RP.m = mk[0];
+  const L = D.filter(o => o.t && ymd(o.t).startsWith(RP.m) && !isCx(o));
+  const by = {}; L.forEach(o => { const c = o.cou || 'No courier'; const b = by[c] || (by[c] = { n: 0, d: 0, t: 0, r: 0, box: 0 }); b.n++; b.box += parseInt(o.box, 10) || 1; const s = stat(o)[0]; if (s === 'Delivered') b.d++; else if (s === 'RTO') b.r++; else b.t++; });
+  const [y, m] = RP.m.split('-').map(Number), nd = new Date(y, m, 0).getDate(), per = Array(nd).fill(0); L.forEach(o => per[new Date(o.t).getDate() - 1]++); const mx = Math.max(1, ...per);
+  const cl = {}; L.forEach(o => { const c = o.sc || o.co || '-'; cl[c] = (cl[c] || 0) + 1; }); const top = Object.keys(cl).sort((a, b) => cl[b] - cl[a]).slice(0, 10);
+  return `<div class="chips"><select data-rm>${mk.map(x => `<option ${x === RP.m ? 'selected' : ''} value="${x}">${new Date(x + '-01').toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}</option>`).join('')}</select><button data-csvm>&#11015; Export month (CSV)</button></div>
+  <div class="kp"><div><small>ORDERS</small><b>${L.length}</b></div><div><small>BOXES</small><b>${L.reduce((s, o) => s + (parseInt(o.box, 10) || 1), 0)}</b></div><div><small>DELIVERED</small><b style="color:var(--gr)">${L.filter(o => stat(o)[0] === 'Delivered').length}</b></div></div>
+  <div class="card"><h4>Orders booked per day</h4><div class="bars">${per.map(v => `<div style="height:${Math.round(v / mx * 100)}%"><span>${v || ''}</span></div>`).join('')}</div><div class="bl">${per.map((v, i) => `<span>${(i + 1) % 5 === 1 ? i + 1 : ''}</span>`).join('')}</div></div>
+  <div class="card"><h4>By courier</h4><table class="rp"><tr><th>Courier</th><th>Orders</th><th>Boxes</th><th>Delivered</th><th>On the way</th><th>RTO</th><th>Delivered %</th></tr>${Object.keys(by).sort((a, b) => by[b].n - by[a].n).map(c => { const b = by[c]; return `<tr><td><b>${esc(c)}</b></td><td>${b.n}</td><td>${b.box}</td><td>${b.d}</td><td>${b.t}</td><td>${b.r}</td><td><b>${Math.round(b.d / b.n * 100)}%</b></td></tr>`; }).join('')}</table></div>
+  <div class="card"><h4>Top clients</h4><table class="rp">${top.map(c => `<tr><td>${esc(c)}</td><td><b>${cl[c]}</b></td></tr>`).join('')}</table></div>`; }
+function csv(list, name){ const H = ['Order ID', 'Logged at', 'Name', 'Company', 'Client', 'Phone', 'Address', 'City', 'State', 'Pincode', 'Courier', 'AWB', 'Mode', 'Boxes', 'Status', 'Delivered Date', 'Courier Status', 'POD'];
+  const rows = list.map(o => [o.id, o.at, o.name, o.co, o.sc, o.ph, o.addr, o.city, o.st, o.pin, o.cou, o.awb, o.mode, o.box, stat(o)[0], o.dv, o.cs, o.pod]);
+  const s = '﻿' + [H].concat(rows).map(r => r.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([s], { type: 'text/csv' })); a.download = name + '.csv'; a.click(); }
+function pAlerts(){ return D ? alertsHtml(false) + '<div class="mu" style="margin-top:6px">Tap an alert to see the orders.</div>' : '<div class="load">Loading…</div>'; }
+function pMe(){ const m = ME || {};
+  return `<div class="card" style="text-align:center"><div class="av" style="width:64px;height:64px;margin:0 auto 8px;font-size:26px">${m.photo ? `<img src="${esc(m.photo)}" referrerpolicy="no-referrer" alt="">` : esc(String(m.name || m.email || '?')[0].toUpperCase())}</div><b style="font-size:16px">${esc(m.name || 'Not signed in')}</b><div class="mu">${esc(m.email || 'Sign in once in Labels with your Google account')}</div>${m.role ? `<div class="mu">${esc(m.role)}</div>` : ''}</div>
+  ${ME ? '' : '<button class="btn" data-open="labels">Sign in (opens Labels)</button>'}
+  <button class="btn o" data-open="users">Users, access &amp; AWBs</button>
+  <button class="btn o" id="signout">Sign out</button>`; }
+function pSettings(){ const c = (() => { try { return JSON.parse(localStorage.getItem('boxup.app.cache') || '{}'); } catch (e) { return {}; } })();
+  return `<div class="card"><h4>Data</h4><div class="mu">${D ? D.length + ' orders loaded' : 'Loading…'}${c.at ? ' · ' + new Date(c.at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : ''}</div><button class="btn" id="reload">&#8635; Reload orders now</button></div>
+  <div class="card"><h4>Label settings</h4><div class="mu">Label notes, festival bands and courier settings are in the Label Generator.</div><button class="btn o" data-app="boxup-labels/#open=qaLabelSet" data-open="labels">Open Label Settings</button></div>
+  <div class="card"><h4>App</h4><div class="mu">Version ${VER}</div><button class="btn o" id="upd">Check for update</button><button class="btn o" id="inst2">Install app</button></div>
+  <div class="card"><h4>Links</h4><button class="btn o" data-open="sheet">Open Label Log (Google Sheet)</button></div>`; }
+function bind(v, a){
+  v.querySelectorAll('[data-open]').forEach(b => b.onclick = () => { if (b.dataset.mfc) MF.cou = b.dataset.mfc; if (b.dataset.app) { openApp(b.dataset.open, b.dataset.app.slice(b.dataset.app.indexOf('#'))); return; } go(b.dataset.open); });
+  v.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { OF = { q: '', f: b.dataset.f, cou: '', n: 60 }; go('orders'); });
+  v.querySelectorAll('[data-fc]').forEach(b => b.onclick = () => { OF.f = b.dataset.fc; OF.n = 60; renderCurrent(); });
+  const cs = v.querySelector('[data-cou]'); if (cs) cs.onchange = () => { OF.cou = cs.value; OF.n = 60; renderCurrent(); };
+  const mo = v.querySelector('[data-more]'); if (mo) mo.onclick = () => { OF.n += 100; renderCurrent(); };
+  const oq = $('oq'); if (oq) { oq.oninput = () => { OF.q = oq.value; OF.n = 60; const st = oq.selectionStart; renderCurrent(); const n = $('oq'); n.focus(); try { n.setSelectionRange(st, st); } catch (e) {} }; }
+  const hq = $('hq'); if (hq) hq.onkeydown = e => { if (e.key === 'Enter' && hq.value.trim()) { OF = { q: hq.value, f: 'all', cou: '', n: 60 }; go('orders'); } };
+  v.querySelectorAll('[data-o]').forEach(c => c.onclick = () => openOrder(c.dataset.o));
+  const cv = v.querySelector('[data-csv]'); if (cv) cv.onclick = () => csv(D.filter(o => o.cou === a.courier), a.courier + ' shipments');
+  const cm = v.querySelector('[data-csvm]'); if (cm) cm.onclick = () => csv(D.filter(o => o.t && ymd(o.t).startsWith(RP.m)), 'BoxUp orders ' + RP.m);
+  const rm = v.querySelector('[data-rm]'); if (rm) rm.onchange = () => { RP.m = rm.value; renderCurrent(); };
+  if ($('mfc')) { $('mfc').onchange = () => { MF.cou = $('mfc').value; MF.pick = {}; renderCurrent(); }; $('mfd').onchange = () => { MF.d = $('mfd').value; MF.pick = {}; renderCurrent(); }; }
+  v.querySelectorAll('[data-mp]').forEach(c => c.onchange = () => { MF.pick[c.dataset.mp] = c.checked; });
+  if ($('mfgo')) $('mfgo').onclick = makeManifest;
+  if ($('reload')) $('reload').onclick = () => { D = null; renderCurrent(); loadData(true); };
+  if ($('signout')) $('signout').onclick = () => { if (!confirm('Sign out of BoxUp on this device?')) return; ['boxup.auth', 'boxup.me'].forEach(k => localStorage.removeItem(k)); location.reload(); };
+  if ($('upd')) $('upd').onclick = () => { if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(rs => Promise.all(rs.map(r => r.update()))).finally(() => location.reload()); else location.reload(); };
+  if ($('inst2')) $('inst2').onclick = () => { if (instEv) { instEv.prompt(); } else toast('Use the Chrome menu &#8942; &rarr; Install app'); };
+}
+/* order details sheet: call, message, track */
+function openOrder(id){
+  const o = (D || []).find(x => x.id === id); if (!o) return; const s = stat(o);
+  const m = (o.ph.replace(/\D/g, '').match(/[6-9]\d{9}$/) || [''])[0], al = (o.alt.replace(/[\s-]/g, '').match(/[6-9]\d{9}/) || [''])[0];
+  const bg = document.createElement('div'); bg.className = 'sheet-bg';
+  bg.innerHTML = `<div class="sheet"><button class="x">&#10005;</button><div class="mu">${esc(o.awb || 'No AWB')} · ${esc(o.cou)}</div><b style="font-size:17px">${esc(o.name)}</b> <span class="st ${s[1]}">${s[0]}</span>
+  <div class="mu">Order ${esc(o.id)} · ${esc(o.box || 1)} box</div>${o.sc ? `<span class="cl" style="font-size:12px">Client: ${esc(o.sc)}</span>` : ''}${o.co ? `<div style="margin-top:6px">&#127970; <b>${esc(o.co)}</b></div>` : ''}
+  <div style="margin-top:6px">&#128205; ${esc([o.addr, o.city, o.st, o.pin].filter(Boolean).join(', '))}</div>
+  ${m ? `<div class="callr"><a href="tel:+91${m}">&#128222; Call customer</a></div><div class="callr"><a class="wa" href="https://wa.me/91${m}" target="_blank" rel="noopener">&#128172; WhatsApp</a><a class="sms" href="sms:+91${m}">&#9993;&#65039; SMS</a></div>` : ''}
+  ${al && al !== m ? `<div class="callr"><a href="tel:+91${al}" style="background:#fff;color:#16a34a;border:2px solid #16a34a;box-shadow:none">&#128222; Call alternate ${al}</a></div>` : (o.alt ? `<div class="mu" style="margin-top:6px">Alt: ${esc(o.alt)}</div>` : '')}
+  <div class="kv"><div><span>Courier</span><b>${esc(o.cou || '-')}</b></div><div><span>Mode</span><b>${esc(String(o.mode).replace(/\s*shipping$/i, '') || '-')}</b></div><div><span>Booked</span><b>${esc(o.at)}</b></div><div><span>Delivered</span><b>${esc(o.dv || '-')}</b></div></div>
+  ${o.cs ? `<div class="card" style="margin-top:8px"><b>Courier says:</b> ${esc(o.cs.split(' · ')[0])}</div>` : ''}
+  <div class="r2">${o.link ? `<a class="btn o" href="${esc(o.link)}" target="_blank" rel="noopener">Track on courier site</a>` : '<span></span>'}${o.pod ? `<a class="btn o" href="${esc(o.pod.split(/[\s,]+/)[0])}" target="_blank" rel="noopener">View POD</a>` : '<span></span>'}</div>
+  <div class="r2"><button class="btn" data-a="tracker">Open in Order Tracker</button><button class="btn" data-a="partner">Update status</button></div></div>`;
+  document.body.appendChild(bg);
+  const close = () => bg.remove(); bg.onclick = e => { if (e.target === bg) close(); }; bg.querySelector('.x').onclick = close;
+  bg.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { close(); if (b.dataset.a === 'tracker') go('tracker'); else openApp('partner', '#q=' + encodeURIComponent((o.awb || o.id).split(',')[0].trim())); });
+}
+
+/* ---------- install as an app ---------- */
+let instEv = null;
+const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true || document.referrer.startsWith('android-app://');
+const isPhone = () => /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); instEv = e; });
+window.addEventListener('appinstalled', () => { $('gate').hidden = true; toast('&#10004; Installed. Open BoxUp Logistics from your home screen.'); });
+if (isPhone() && !standalone() && sessionStorage.getItem('boxup.app.tab') !== '1') { $('gate').hidden = false; if (/iphone|ipad|ipod/i.test(navigator.userAgent)) { $('gInst').hidden = true; $('gHow').innerHTML = 'Tap <b>Share</b> &#8679; then <b>Add to Home Screen</b>.'; } }
+$('gInst').onclick = async () => { if (!instEv) { $('gHow').style.outline = '2px solid #1e4a2c'; return; } instEv.prompt(); try { const c = await instEv.userChoice; if (c.outcome === 'accepted') $('gate').hidden = true; } catch (e) {} instEv = null; };
+$('gSkip').onclick = () => { $('gate').hidden = true; sessionStorage.setItem('boxup.app.tab', '1'); };
+['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, e => e.preventDefault(), { passive: false }));
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(() => {});
+
+/* ---------- start ---------- */
+const start = (location.hash || '').slice(1);
+history.replaceState({ v: 'home' }, '', location.pathname);
+draw(); loadData(false);
+if (start && appBy(start)) go(start);
+setInterval(() => { if (!document.hidden) loadData(true); }, 5 * 60000);
+</script>
+</body>
+</html>

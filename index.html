@@ -2163,6 +2163,10 @@ async function downloadLabelPdf(){
   const btn = $('printBtn');
   const v = collect();
   if(!validate(v)){ alert('Please fill all required fields (Name, Phone, Address, Pincode) before downloading.'); return; }
+  // Shree Anjani with none of your own AWBs left: ask logistics, or print now and logistics adds the AWB later
+  if(isSA(v.courier) && logOn() && !String(v.trackid || '').trim() && Array.isArray(saFree) && !saFree.length){
+    const ch = await noAwbAsk(); if(ch !== 'noawb') return; v.noAwb = true;
+  }
   if(!pdfToolsReady()) return;
 
   const originalText = btn.textContent;
@@ -2174,11 +2178,13 @@ async function downloadLabelPdf(){
     const batchId = newBatchId();
     v.shipDate = todayLabelDate();
     let saResult = null;
-    if(isPool(v.courier) && logOn()){
+    if(isPool(v.courier) && logOn() && !v.noAwb){
       // get the AWB confirmed in the Shree Anjani tab BEFORE printing, so no two orders share one
       btn.textContent = 'Getting AWB…';
       saResult = await sendToSheet([v], 'Single label', fileName, batchId);
-      if(!saResult.ok){ alert('Could not get a ' + (isMX(v.courier) ? MX_NAME : SA_NAME) + ' AWB:\n' + saResult.error + '\n\nNothing was printed.'); return; }
+      if(!saResult.ok && isSA(v.courier) && /free|no awb|awbs? left|not enough/i.test(saResult.error || '')){ btn.disabled = false; btn.textContent = originalText; const ch = await noAwbAsk(); if(ch !== 'noawb') return; btn.disabled = true; v.noAwb = true; saResult = null; }
+      else if(!saResult.ok){ alert('Could not get a ' + (isMX(v.courier) ? MX_NAME : SA_NAME) + ' AWB:\n' + saResult.error + '\n\nNothing was printed.'); return; }
+      if(saResult){
       const got = saResult.orders[0];
       if(got.rejected){ alert(got.error + '.\n\nNothing was printed. Check the AWB, or leave Tracking ID empty to get the next free Shree Anjani AWB.'); $('logStatus').innerHTML = '<span class="bad">' + esc(got.error) + '. Nothing was printed.</span>'; return; }
       v.trackid = got.awb; v.tracklink = got.link;
@@ -2187,6 +2193,7 @@ async function downloadLabelPdf(){
       markAwbUsed(got.awbs && got.awbs.length ? got.awbs : [got.awb]);
       await refreshSaList();
       render();
+      }
     }
     const fresh = labelEntries(v);
     const pdf = await buildLabelsPdf(fresh, (n,t)=>{ btn.textContent = `Building PDF… (${n}/${t})`; });
@@ -2199,6 +2206,10 @@ async function downloadLabelPdf(){
         const mr = await mxBookOrders([v]);
         $('logStatus').innerHTML += mxBookHtml(mr);
       }
+    } else if(v.noAwb){
+      // logged with no courier, so it shows in Assign Courier for logistics to add the Shree Anjani AWB and reprint
+      logToSheet([Object.assign({}, v, { courier: '', trackid: '', tracklink: '' })], 'Single label · Shree Anjani AWB to be added', fileName, batchId);
+      setTimeout(() => { $('logStatus').innerHTML = '<span class="ok">Printed without AWB. Logistics will add the Shree Anjani AWB (Assign Courier) and reprint before dispatch.</span>'; }, 1500);
     } else {
       logToSheet([v], 'Single label', fileName, batchId);
     }
@@ -6477,9 +6488,54 @@ html.au-locked #auLock{display:flex}
   setInterval(() => { if(window.bxTok() && document.visibilityState === 'visible') refreshMe(); }, 60000);
   setInterval(() => { if(ME && ME.status === 'active' && $i('auChip')) chip(true); }, 4000);
   if(ME && ME.admin) setTimeout(adminNotes, 4000);
-  window.bxAuth = { refresh: refreshMe, signOut, openAdmin };
+  window.bxAuth = { refresh: refreshMe, signOut, openAdmin, request: (n, note) => api('request', { type:'awbs', awbs: n, apps: [], note: note || '' }) };
 })();
 </script>
 
+<script>
+/* BoxUp Logistics app: a link like #open=qaManage opens that Quick access tool once you are signed in */
+(function(){ var m = /open=(qa\w+)/.exec(location.hash || ''); if(!m) return; var n = 0;
+  var t = setInterval(function(){ var el = document.getElementById(m[1]);
+    if(el && !document.documentElement.classList.contains('au-locked')){ clearInterval(t); try{ history.replaceState(null, '', location.pathname); }catch(e){} el.click(); }
+    if(++n > 80) clearInterval(t); }, 400); })();
+</script>
+<div class="sec-bg" id="naModal" hidden><div class="sec" style="width:560px" role="dialog" aria-modal="true">
+  <div class="sec-hd" style="background:linear-gradient(135deg,#1D5C96,#2f77b8)"><h3 style="color:#fff">&#128666; Shree Anjani: you have no AWBs</h3><div style="color:rgba(255,255,255,.88)">Other couriers (Mark Express, DTDC, Porter, In-house…) work as normal. Only Shree Anjani needs an AWB from your range.</div></div>
+  <div class="sec-bd" style="padding:16px 20px">
+    <label style="display:block;border:2px solid #16311F;border-radius:12px;padding:12px 14px;margin-bottom:10px;cursor:pointer"><input type="radio" name="naPick" value="request" checked> <b style="font-size:15px">Ask logistics for AWBs</b>
+      <div style="color:#666;font-size:12.5px;margin:4px 0 8px">Logistics gets a notification and gives you a range. Print the label once the AWBs arrive.</div>
+      <div style="display:flex;gap:6px" id="naN"><button type="button" class="ra-chip" data-n="50">50</button><button type="button" class="ra-chip on" data-n="100">100</button><button type="button" class="ra-chip" data-n="200">200</button><button type="button" class="ra-chip" data-n="500">500</button></div></label>
+    <label style="display:block;border:2px solid #a8550c;border-radius:12px;padding:12px 14px;background:#fff8ef;cursor:pointer"><input type="radio" name="naPick" value="noawb"> <b style="font-size:15px">Print now without AWB</b>
+      <div style="color:#666;font-size:12.5px;margin-top:4px">The label prints with an empty Tracking ID. The order goes to logistics' <b>Assign Courier</b> list; logistics adds the AWB and reprints before dispatch.</div></label>
+    <div class="sec-msg" id="naMsg" style="text-align:left;padding:8px 0 0"></div>
+  </div>
+  <div class="sec-ft"><button type="button" id="naCancel">Cancel</button><button type="button" class="go" id="naGo" style="background:#16311F;border-color:#16311F;color:#fff">Send AWB request</button></div>
+</div></div>
+<script>
+/* Shree Anjani with no AWBs of your own: ask logistics for more, or print now without an AWB */
+function noAwbAsk(){
+  return new Promise(res => {
+    const m = document.getElementById('naModal'), go = document.getElementById('naGo'), msg = document.getElementById('naMsg');
+    let n = 100; msg.textContent = '';
+    const pick = () => (document.querySelector('input[name=naPick]:checked') || {}).value || 'request';
+    const sync = () => { const p = pick(); go.textContent = p === 'noawb' ? 'Print without AWB' : 'Send AWB request'; go.style.background = go.style.borderColor = p === 'noawb' ? '#a8550c' : '#16311F'; };
+    document.querySelectorAll('input[name=naPick]').forEach(r => r.onchange = sync);
+    document.querySelectorAll('#naN [data-n]').forEach(b => b.onclick = e => { e.preventDefault(); n = +b.dataset.n; document.querySelectorAll('#naN [data-n]').forEach(x => x.classList.toggle('on', x === b)); document.querySelector('input[name=naPick][value=request]').checked = true; sync(); });
+    const done = v => { m.hidden = true; res(v); };
+    document.getElementById('naCancel').onclick = () => done('cancel');
+    go.onclick = async () => {
+      if(pick() === 'noawb'){ done('noawb'); return; }
+      go.disabled = true; msg.textContent = 'Sending your request…';
+      try{ const d = window.bxAuth && window.bxAuth.request ? await window.bxAuth.request(n, 'Asked while printing a Shree Anjani label') : { ok:false, error:'Please sign in again.' };
+        if(d && d.ok === false) throw new Error(d.error || 'not sent');
+        msg.innerHTML = '<span style="color:#1e7b3c;font-weight:700">&#10004; Request for ' + n + ' AWBs sent to logistics.</span> You will get a notification when they are added.';
+        setTimeout(() => done('request'), 1800);
+      }catch(e){ msg.innerHTML = '<span style="color:#b3261e">Could not send: ' + String(e.message || e) + '</span>'; }
+      go.disabled = false;
+    };
+    sync(); m.hidden = false;
+  });
+}
+</script>
 </body>
 </html>
