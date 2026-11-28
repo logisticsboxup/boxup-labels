@@ -128,7 +128,7 @@ table.rp{width:100%;border-collapse:collapse;font-size:12.5px}.rp th{text-align:
 const API = 'https://script.google.com/macros/s/AKfycbxkWlpzmubWJwgFQF7cCDAegDHDFpst-j2AnoLVrk3rVnZL9CuOukEIC_GR43gUlL7e/exec';
 const SITE = 'https://logisticsboxup.github.io/';
 const SHEET = 'https://docs.google.com/spreadsheets/d/17IMy6t47Y0q895rvQsAEdgsGM6w_2lSDWso8BIWHEtg/edit';
-const VER = '2026-11-28 13:30';
+const VER = '2026-11-28 15:40';
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const wide = () => matchMedia('(min-width:900px)').matches;
@@ -312,21 +312,49 @@ function pManifest(){ if (!D) return '<div class="load">Loading orders…</div>'
   <div class="mu" style="margin-top:8px">${L.length} shipments booked on this day · untick the ones not going</div>
   ${L.map(o => `<label class="chk"><input type="checkbox" data-mp="${esc(o.id)}" ${MF.pick[o.id] === false ? '' : 'checked'}><span><b>${esc(o.awb || 'no AWB')}</b> · ${esc(o.id)}<br><span class="mu">${esc(o.name)} · ${esc(o.city)} ${esc(o.pin)} · ${esc(o.box || 1)} box</span></span></label>`).join('') || '<div class="load">No shipments for this courier on this day</div>'}
   ${L.length ? '<button class="btn" id="mfgo">Generate manifest PDF</button>' : ''}</div>`; }
-function makeManifest(){
-  const L = D.filter(o => o.cou === MF.cou && !isCx(o) && o.t && ymd(o.t) === MF.d && MF.pick[o.id] !== false);
+function loadBarcodeLib(){ return window.JsBarcode ? Promise.resolve() : new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'JsBarcode.all.min.js'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }); }
+function bcSvg(code){ try { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); JsBarcode(s, code, { format: 'CODE128', displayValue: false, margin: 0, height: 44, width: 1.8 }); s.setAttribute('class', 'bc'); s.setAttribute('preserveAspectRatio', 'none'); return s.outerHTML; } catch (e) { return ''; } }
+const modeOf = o => /air/i.test(o.mode) ? 'Air' : /surface|ground/i.test(o.mode) ? 'Surface' : (String(o.mode).replace(/\s*shipping$/i, '') || '-');
+async function makeManifest(){
+  const L = D.filter(o => o.cou === MF.cou && !isCx(o) && o.t && ymd(o.t) === MF.d && MF.pick[o.id] !== false).sort((a, b) => a.t - b.t);
   if (!L.length) { toast('Tick at least one shipment'); return; }
-  const dt = new Date(MF.d + 'T00:00'), dtx = dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-  const no = 'MF-' + MF.d.replace(/-/g, '') + '-' + MF.cou.replace(/[^A-Z]/gi, '').slice(0, 2).toUpperCase() + String(Date.now()).slice(-3);
-  const boxes = L.reduce((s, o) => s + (parseInt(o.box, 10) || 1), 0);
-  const rows = L.map((o, i) => `<tr><td>${i + 1}</td><td><b>${esc(o.awb)}</b><svg class="bc" data-c="${esc((o.awb || '').split(',')[0].trim())}"></svg></td><td><b>${esc(o.id)}</b></td><td><b>${esc(o.name).toUpperCase()}</b><div class="ad">${esc(o.addr)}<br><b>${esc(o.city)}, ${esc(o.st)} - ${esc(o.pin)}</b></div></td><td>${esc(o.ph)}</td><td>${esc(o.sc || o.co)}</td><td class=c>${esc(o.box || 1)}</td><td class=c>${(parseInt(o.box, 10) || 1) * 2} kg</td><td class=c>${esc(String(o.mode).replace(/\s*shipping$/i, ''))}</td><td></td></tr>`).join('');
   const w = window.open('', '_blank'); if (!w) { toast('Allow pop-ups to open the manifest'); return; }
-  w.document.write(`<!doctype html><html><head><meta charset=utf-8><title>${no}</title><script src="https://cdnjs.cloudflare.com/ajax/libs/JsBarcode/3.11.5/JsBarcode.all.min.js"><\/script><style>@page{size:A4 landscape;margin:8mm}body{font:10px Inter,Arial,sans-serif;color:#111;margin:0}.top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #1e4a2c;padding-bottom:6px}h1{margin:0;font:700 18px Georgia,serif}.k{display:flex;gap:8px;margin:8px 0}.k div{border:1px solid #ddd;border-radius:6px;padding:5px 8px;flex:1}.k small{display:block;font-size:7.5px;color:#777;text-transform:uppercase}table{width:100%;border-collapse:collapse}th{background:#1e4a2c;color:#fff;text-align:left;padding:5px;font-size:9px}td{border-bottom:1px solid #e5e5e5;padding:5px;vertical-align:top}.c{text-align:center}.ad{font-size:8.5px;color:#444}.bc{display:block;height:30px;width:120px}.ft{display:flex;gap:30px;margin-top:26px}.ft div{flex:1;border-top:1px solid #333;padding-top:4px}button{position:fixed;right:12px;top:12px;padding:8px 14px;background:#1e4a2c;color:#fff;border:0;border-radius:8px;font-weight:700}@media print{button{display:none}}</style></head><body>
-  <button onclick="print()">Print / Save PDF</button><div class=top><div><h1>Shipment Manifest</h1>Courier pickup handover · BoxUp Luxury Gifting, Bengaluru</div><div style="text-align:right"><b style="font:700 16px Georgia,serif;color:#1e4a2c">${esc(MF.cou)}</b><br>Manifest No. <b>${no}</b></div></div>
-  <div class=k><div><small>Date</small><b>${dtx}</b></div><div><small>Courier</small><b>${esc(MF.cou)}</b></div><div><small>Shipments</small><b>${L.length}</b></div><div><small>Total boxes</small><b>${boxes}</b></div><div><small>Total weight</small><b>${boxes * 2} kg</b></div></div>
-  <table><tr><th>#</th><th>AWB / Barcode</th><th>Order ID</th><th>Consignee &amp; Address</th><th>Phone</th><th>Client</th><th>Box</th><th>Wt</th><th>Mode</th><th>Received &#10003;</th></tr>${rows}</table>
-  <div class=ft><div>Handed over by (BoxUp) · Name / Sign / Time</div><div>Received by (${esc(MF.cou)}) · Name / Sign / Time</div><div>Security check · Name / Sign</div></div>
-  <script>window.onload=()=>{document.querySelectorAll('.bc').forEach(s=>{try{JsBarcode(s,s.dataset.c,{format:'CODE128',displayValue:false,margin:0,height:40,width:1.4})}catch(e){}});}<\/script></body></html>`);
-  w.document.close();
+  w.document.write('<p style="font:14px sans-serif;padding:20px">Making the manifest…</p>');
+  try { await loadBarcodeLib(); } catch (e) {}
+  const dt = new Date(MF.d + 'T00:00'), dtx = dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const no = 'MF-' + MF.d.replace(/-/g, '') + '-' + ({ 'mark express': 'MX', 'shree anjani': 'SA', 'dtdc': 'DT', 'shree maruthi': 'SM', 'porter': 'PO', 'in-house': 'IH' }[MF.cou.toLowerCase()] || (MF.cou.match(/\b[A-Z]/gi) || ['X']).join('').slice(0, 2).toUpperCase()) + String(Date.now()).slice(-2);
+  const nb = o => parseInt(o.box, 10) || 1, boxes = L.reduce((s, o) => s + nb(o), 0);
+  const clients = [...new Set(L.map(o => o.sc || o.co).filter(Boolean))];
+  const branch = /mark/i.test(MF.cou) ? 'JP Nagar Hub' : 'BoxUp, Bengaluru';
+  const U = x => esc(String(x || '').toUpperCase());
+  const rows = L.map((o, i) => { const aw = (o.awb || '').split(/[\s,]+/).filter(Boolean);
+    return `<tr><td class=c>${i + 1}</td><td>${aw.map(a => `<b class=awb>${esc(a)}</b>${bcSvg(a)}`).join('') || '<b class=awb>-</b>'}</td><td class=nw><b>${esc(o.id)}</b>${/-R\d+$/i.test(o.id) ? '<div style="font-size:7pt;color:#777">Reship</div>' : ''}</td>
+    <td><b>${U(o.name)}</b>${o.co && o.co !== o.sc ? `<div class=ad>${esc(o.co)}</div>` : ''}<div class=ad>${U(o.addr)}<br><b>${esc(o.city)}, ${esc(o.st)} - ${esc(o.pin)}</b></div></td><td class=nw>${esc(o.ph)}</td><td class=alt>${esc(o.sc || o.co || '')}</td>
+    <td class=c>${nb(o)}</td><td class="c nw">${nb(o) * 2} kg</td><td class=c>${modeOf(o)}</td><td class=sg></td></tr>`; }).join('');
+  const byMode = {}; L.forEach(o => { const m = modeOf(o); (byMode[m] = byMode[m] || []).push((o.awb || '').split(/[\s,]+/)[0]); });
+  const modeTxt = Object.keys(byMode).map(m => `${byMode[m].length} ${m} (${byMode[m].join(', ')})`).join(', ');
+  let logo = new URL('logo-green.png', location.href).href;
+  try { const bl = await fetch('logo-green.png').then(r => r.blob()); logo = await new Promise(ok => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.readAsDataURL(bl); }); } catch (e) {}
+  const html = `<!doctype html><html><head><meta charset=utf-8><title>BoxUp Manifest - ${esc(MF.cou)} - ${dtx} (${L.length} orders)</title><style>
+@page{size:A4 landscape;margin:8mm 8mm 12mm;@bottom-right{content:"Page " counter(page) " of " counter(pages);font:8pt Inter,Arial,sans-serif;color:#1d5c96}}
+body{font-family:Inter,Arial,sans-serif;color:#1b1f1c;font-size:9pt;margin:0}
+thead{display:table-header-group}tr{page-break-inside:avoid;break-inside:avoid}.tl{page-break-inside:avoid;break-inside:avoid}
+.top{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #1E4A2C;padding-bottom:6px}
+.top img{height:40px}.top .m{flex:1;padding-left:16px}.top h1{font-family:Georgia,serif;font-size:15pt;margin:0}.top .m div{color:#666}
+.top .r{text-align:right}.top .r b{font-size:14pt;color:#1E4A2C;font-family:Georgia,serif}
+.k{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:7px 0}.k div{border:1px solid #e3e0d6;border-radius:6px;padding:4px 8px;background:#faf8f2}.k small{display:block;font-size:6.8pt;color:#777;letter-spacing:.05em;text-transform:uppercase}.k b{font-size:9.5pt}
+table{width:100%;border-collapse:collapse}th{background:#1E4A2C;color:#fff;font-size:8pt;text-align:left;padding:6px 5px;-webkit-print-color-adjust:exact;print-color-adjust:exact}td{border-bottom:1px solid #e3e0d6;padding:7px 5px;vertical-align:middle}
+tr:nth-child(even) td{background:#f8f6f0;-webkit-print-color-adjust:exact;print-color-adjust:exact}.c{text-align:center}.nw{white-space:nowrap}.awb{font-size:11pt;display:block}.bc{display:block;height:36px;width:165px;margin:3px 0 4px}
+.ad{font-size:8.3pt;color:#333;margin-top:2px;line-height:1.35}.alt{font-size:8.5pt;color:#444}
+.foot{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:22px}.foot div{border-top:1px solid #333;padding-top:4px;font-size:8.5pt;color:#444;height:30px}
+.note{margin-top:6px;font-size:8.5pt;color:#555}
+.pb{position:fixed;right:14px;top:14px;padding:9px 16px;background:#1E4A2C;color:#fff;border:0;border-radius:8px;font:700 13px Inter,Arial;cursor:pointer}@media print{.pb{display:none}}
+</style></head><body><button class=pb onclick="print()">Print / Save as PDF</button>
+<div class=top><img src="${logo}"><div class=m><h1>Shipment Manifest</h1><div>Courier pickup handover · BoxUp Luxury Gifting, Bengaluru</div></div><div class=r><b>${esc(MF.cou)}</b><br>Manifest No. <b style="font-size:10pt;font-family:Inter,Arial">${no}</b></div></div>
+<div class=k><div><small>Date</small><b>${dtx}</b></div><div><small>Courier</small><b>${esc(MF.cou)}</b></div><div><small>Booking branch</small><b>${branch}</b></div><div><small>Clients</small><b>${esc(clients.join(', ') || '-')}</b></div><div><small>Shipments</small><b>${L.length} order${L.length > 1 ? 's' : ''}</b></div><div><small>Total boxes</small><b>${boxes}</b></div><div><small>Total weight</small><b>${boxes * 2} kg</b></div></div>
+<table><thead><tr><th style="width:18px">#</th><th style="width:170px">Docket No. / Barcode</th><th>Order ID</th><th>Consignee &amp; Address</th><th>Phone</th><th>Employee / Company</th><th>Box</th><th>Wt</th><th>Mode</th><th style="width:70px">Received &#10003;</th></tr></thead><tbody>${rows}</tbody></table>
+<div class=tl><div class=note>Total: ${L.length} order${L.length > 1 ? 's' : ''} · ${boxes} box${boxes > 1 ? 'es' : ''} · ${boxes * 2} kg · ${esc(modeTxt)} · Goods: Gift hamper</div><div class=foot><div>Handed over by (BoxUp) · Name / Sign / Time</div><div>Received by (${esc(MF.cou)}) · Name / Sign / Time</div><div>Security check · Name / Sign</div></div></div></body></html>`;
+  w.document.open(); w.document.write(html); w.document.close();
 }
 /* reports */
 let RP = { m: '' };
